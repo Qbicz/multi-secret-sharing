@@ -19,6 +19,7 @@ def is_prime(n):
     
     
 import os # for OS random number generation
+from math import log2, floor
 
 k_secrets = 3
 s_secrets = [7, 313, 671] # s_i
@@ -36,4 +37,8 @@ print(p)
 while p <= n_participants or not is_prime(p): # p must be prime, greater than any of secrets and greater than n
     p = int.from_bytes(os.urandom(p_size), byteorder="big")
     print(p)
+    
+print('[log2(p)]+1 = ', floor(log2(p))+1)
+
+### A collision resistant hash function with variable output length / or set p
 
