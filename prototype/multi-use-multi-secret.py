@@ -20,6 +20,11 @@ def is_prime(n):
     
 import os # for OS random number generation
 from math import log2, floor
+# import SHA256
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+#import AES-CTR
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 k_secrets = 3
 s_secrets = [7, 313, 671] # s_i
@@ -40,5 +45,27 @@ while p <= n_participants or not is_prime(p): # p must be prime, greater than an
     
 print('[log2(p)]+1 = ', floor(log2(p))+1)
 
-### A collision resistant hash function with variable output length / or set p
+### A collision resistant hash function with variable output length:
+# option 1: use SHA-3 Keccak (variable length digest)
+# option 2: use BLAKE2 : variable length digest (available at "cryptography" library)
+# option 3: use the first [log2(p)]+1 bits of AES-CTR(SHA256(m))
+
+# SHA256 of message
+message = b'deadbeef'
+digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+digest.update(message)
+hashed_message = digest.finalize()
+
+print('Hash of len', len(hashed_message))
+print(hashed_message.hex())
+
+# AES-CTR of the hash
+aes_key = os.urandom(32)
+aes_nonce = os.urandom(16)
+cipher = Cipher(algorithms.AES(aes_key), modes.CTR(aes_nonce), backend=default_backend())
+encryptor = cipher.encryptor()
+ciphertext = encryptor.update(hashed_message) + encryptor.finalize()
+
+print('Ciphertext of len', len(ciphertext))
+print(ciphertext.hex())
 
