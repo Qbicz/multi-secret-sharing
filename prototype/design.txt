@@ -1,0 +1,5 @@
+class Dealer
+
+- provide p
+- provide demanded length hashing (Dealer.hash())
+- provide IDs for each participant in finite field modulo p

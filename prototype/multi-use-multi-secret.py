@@ -16,6 +16,23 @@ def is_prime(n):
     return True
 
 #def choose_prime(p_size):
+
+def take_first_bits(input, bitlen):
+    if bitlen > 8*len(input):
+        raise ValueError('input shorter than %d bits' % bitlen)
+    elif bitlen == 8*len(input):
+        return input
+    else:
+        # take all bytes needed
+        bytelen = (floor(bitlen/8)) + 1
+        input_bytelen = input[:bytelen]
+        
+        # now extract bits from the last byte
+        last_byte = input_bytelen[-1]
+        mask = ~(0xff >> (8-(8*bytelen - bitlen)))
+        output = bytearray(input_bytelen[:bytelen-1])
+        output.append(mask & last_byte)
+        return output
     
     
 import os # for OS random number generation
@@ -39,7 +56,7 @@ print(access_structures)
 ## I. Initialization stage
 p = int.from_bytes(os.urandom(p_size), byteorder="big")
 print(p)
-while p <= n_participants or not is_prime(p): # p must be prime, greater than any of secrets and greater than n
+while p <= n_participants or p <= max(s_secrets) or not is_prime(p): # p must be prime, greater than any of secrets and greater than n
     p = int.from_bytes(os.urandom(p_size), byteorder="big")
     print(p)
     
@@ -69,3 +86,7 @@ ciphertext = encryptor.update(hashed_message) + encryptor.finalize()
 print('Ciphertext of len', len(ciphertext))
 print(ciphertext.hex())
 
+# take demanded numer of bits
+var_hash = take_first_bits(ciphertext, 26)
+print('First bits:')
+print(var_hash.hex())
