@@ -11,6 +11,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from primality import is_probable_prime
 
 class Dealer:
+
     def __init__(self, p, n_participants, s_secrets, access_structure):
         
         # check sanity of p
@@ -19,17 +20,25 @@ class Dealer:
         else:
             raise ValueError('Wrong p selected!')
         
-        self.n = n_participants
+        if n_participants < 2:
+            raise ValueError('There must be at least 2 participants!')
+        else:
+            self.n = n_participants
         self.k = len(s_secrets) # number of secrets
         self.s_secrets = s_secrets # TODO: hide the secrets
         self.access_structure = access_structure
+        self.random_id = []
         self.hash_len = floor(log2(p))+1
+        self.aes_nonce = os.urandom(16)
+        
+        print('hash_len:', self.hash_len)
         print('Dealer created for Roy-Adhikari sharing of %d secrets among %d participants' % (self.k, self.n))
     
-    def hash(self, message):
+    
+    def hash(self, message, num_first_bits):
         """A collision resistant hash function with variable output length:
         # option 1: use SHA-3 Keccak (variable length digest)
-        # option 2: use BLAKE2 : variable length digest (available at "cryptography" library)
+        # option 2: use BLAKE2 : variable length digest (available at "cryptography" library - but to bytes, not bits resolution)
         # option 3 (chosen): use the first [log2(p)]+1 bits of AES-CTR(SHA256(m))"""
 
         # SHA256 of message
@@ -41,21 +50,33 @@ class Dealer:
         print(hashed_message.hex())
 
         # AES-CTR of the hash
-        aes_key = os.urandom(32)
-        aes_nonce = os.urandom(16) # they must be the same for whole scheme? not secure
-        cipher = Cipher(algorithms.AES(aes_key), modes.CTR(aes_nonce), backend=default_backend())
+        aes_key = hashed_message
+        
+        cipher = Cipher(algorithms.AES(aes_key), modes.CTR(self.aes_nonce), backend=default_backend())
         encryptor = cipher.encryptor()
-        ciphertext = encryptor.update(hashed_message) + encryptor.finalize()
+        input = b'wwwwwwwwwwwwwwww'
+        print(input.hex())
+        ciphertext = encryptor.update(input) + encryptor.finalize()
 
         print('Ciphertext of len', len(ciphertext))
         print(ciphertext.hex())
 
         # take demanded numer of bits
-        var_hash = self.take_first_bits(ciphertext, 26)
-        print('First bits:')
+        var_hash = self.take_first_bits(ciphertext, num_first_bits)
+        print('First %d bits:' % num_first_bits)
         print(var_hash.hex())
         
-            
+        
+    def provide_id(self):
+        # for each participant provide ID in p modulo field
+        for i in range(self.n):
+            while True:
+                self.random_id.append(os.urandom(32))
+                if(int.from_bytes(self.random_id[i], byteorder='big') < self.p):
+                    break
+            print('Participant ID %d, %s' % (i, self.random_id[i].hex()))
+          
+          
     def is_prime(self, n):
         if n == 2 or n == 3: return True
         if n < 2 or n%2 == 0: return False

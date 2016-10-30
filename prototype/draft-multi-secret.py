@@ -73,6 +73,7 @@ if __name__ == "__main__":
     message = b'deadbeef'
     digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
     digest.update(message)
+
     hashed_message = digest.finalize()
 
     print('Hash of len', len(hashed_message))
