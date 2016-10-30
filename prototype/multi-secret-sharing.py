@@ -17,3 +17,4 @@ d.hash(b'BYTESEQUENCE', 26) # careful, b'' syntax gives ASCII bytes string
 d.hash(b'BYTESEQUENCE', 26)
 
 d.provide_id()
+d.choose_distinct_x()

@@ -1,7 +1,7 @@
 # Prototype of Multi-secret sharing scheme by Roy & Adhikari
 # Filip Kubicz 2016
 
-import os # for OS random number generation
+from os import urandom
 from math import log2, floor
 # import SHA256
 from cryptography.hazmat.backends import default_backend
@@ -27,9 +27,9 @@ class Dealer:
         self.k = len(s_secrets) # number of secrets
         self.s_secrets = s_secrets # TODO: hide the secrets
         self.access_structure = access_structure
-        self.random_id = []
+        self.random_id = [b'ZERO'] # fill the 0th element to begin from 1 when appending
         self.hash_len = floor(log2(p))+1
-        self.aes_nonce = os.urandom(16)
+        self.aes_nonce = urandom(16)
         
         print('hash_len:', self.hash_len)
         print('Dealer created for Roy-Adhikari sharing of %d secrets among %d participants' % (self.k, self.n))
@@ -68,13 +68,15 @@ class Dealer:
         
         
     def provide_id(self):
-        # for each participant provide ID in p modulo field
-        for i in range(self.n):
+        """for each participant provide ID in p modulo field"""
+        for i in range(1, self.n+1):
             while True:
-                self.random_id.append(os.urandom(32))
+                self.random_id.append(urandom(32))
                 if(int.from_bytes(self.random_id[i], byteorder='big') < self.p):
                     break
             print('Participant ID %d, %s' % (i, self.random_id[i].hex()))
+        
+        return self.random_id
           
           
     def is_prime(self, n):
@@ -108,5 +110,20 @@ class Dealer:
             output = bytearray(input_bytelen[:bytelen-1])
             output.append(mask & last_byte)
             return output
+    
+    def choose_distinct_x(self):
+        """ dealer chooses distinct x_j and sends it secretly to each participant, j=1,2...n
+        """
+        self.x = [b'ZERO']
+        
+        for j in range(1, self.n+1):
+            while True:
+                self.x.append(urandom(32))
+                if(int.from_bytes(self.x[j], byteorder='big') < self.p):
+                    break
+            print('x%d = %s' % (j, self.x[j].hex()))
+            
+        return self.x # TODO: use yield to construct a generator
+    
     
     
