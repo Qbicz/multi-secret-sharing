@@ -35,7 +35,7 @@ class Dealer:
         print('Dealer created for Roy-Adhikari sharing of %d secrets among %d participants' % (self.k, self.n))
     
     
-    def hash(self, message, num_first_bits):
+    def hash(self, message):
         """A collision resistant hash function with variable output length:
         # option 1: use SHA-3 Keccak (variable length digest)
         # option 2: use BLAKE2 : variable length digest (available at "cryptography" library - but to bytes, not bits resolution)
@@ -45,26 +45,26 @@ class Dealer:
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
         digest.update(message)
         hashed_message = digest.finalize()
-
-        print('Hash of len', len(hashed_message))
-        print(hashed_message.hex())
+        #print(hashed_message.hex())
 
         # AES-CTR of the hash
         aes_key = hashed_message
         
         cipher = Cipher(algorithms.AES(aes_key), modes.CTR(self.aes_nonce), backend=default_backend())
         encryptor = cipher.encryptor()
-        input = b'wwwwwwwwwwwwwwww'
-        print(input.hex())
+        input = b'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww'
+        #print(input.hex())
         ciphertext = encryptor.update(input) + encryptor.finalize()
 
-        print('Ciphertext of len', len(ciphertext))
-        print(ciphertext.hex())
+        #print('Ciphertext of len', len(ciphertext))
+        #print(ciphertext.hex())
 
         # take demanded numer of bits
-        var_hash = self.take_first_bits(ciphertext, num_first_bits)
-        print('First %d bits:' % num_first_bits)
-        print(var_hash.hex())
+        varlen_hash = self.take_first_bits(ciphertext, self.hash_len)
+        print('First %d bits of hash:' % self.hash_len)
+        print(varlen_hash.hex())
+        
+        return varlen_hash
         
         
     def list_of_random_in_modulo_p(self, listlen):
@@ -133,23 +133,54 @@ class Dealer:
         return self.x # TODO: use yield to construct a generator
     
     
-    def access_group_polynomial(self):
-        """for the qth qualified set of access group, the dealer chooses d1, d2... dm in Zp modulo field to construct the polynomial fq(x) = si + d1*x + d2*x^2 + ... + dm*x^(m-1)
+    def access_group_polynomial_coeffs(self):
+        """ for the qth qualified set of access group, the dealer chooses d1, d2... dm in Zp modulo field to construct the polynomial f_q(x) = si + d1*x + d2*x^2 + ... + dm*x^(m-1)
         """
         
         for A in self.access_structure:
-            
-            d = self.list_of_random_in_modulo_p(len(A))
+            self.d = self.list_of_random_in_modulo_p(len(A))
         
             print('A: ', A)
-            self.print_list_of_hex(d, 'polynomial coeff d')
+            self.print_list_of_hex(self.d, 'polynomial coeff d')
     
+    def f_polynomial_compute(self, q):
+        """ compute f_q(x) for q-th access group in access structure """
     
+        pass
+        
     
+    def pseudo_share(self, participant, i_secret, q_group):
+        """ pseudo share generation 
+            U = h(x || i_U || q_v)
+        """
     
-    
-    
-    
-    
-    
-    
+        print('Pseudo share computation for participant %d')
+
+        # l = length of longest access group
+        lengths = []
+        for A in self.access_structure:
+            lengths.append(len(A)-1)
+        l = max(lengths)
+        print('l = ', l)
+        
+        # u = bit length of number of secrets k
+        u = floor(log2(self.k)) + 1
+        print('u = ', u)
+        
+        # v = bit length of l
+        v = floor(log2(l)) + 1
+        print('v = ', v)
+        
+        # concatenate x, i and q binary
+        bytes_x = self.x[participant]
+        bytes_i = bytes([i_secret])
+        bytes_q = bytes([q_group])
+        message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
+        print(message.hex())
+        # hash the concatenated bytes
+        share = self.hash(message)
+        
+        return share
+        
+        # TODO: check why v, u = 2 while q,i size = 1 
+

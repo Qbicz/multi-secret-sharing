@@ -15,10 +15,17 @@ access_structure = [(1,2),(2,3),(1,2,3)]
 
 dealer = Dealer(p256, n_participants, s_secrets, access_structure)
 # test hash function - it should be repeatable for the same Dealer object
-dealer.hash(b'BYTESEQUENCE', 26) # careful, b'' syntax gives ASCII bytes string
-dealer.hash(b'BYTESEQUENCE', 26)
+dealer.hash(b'BYTESEQUENCE') # careful, b'' syntax gives ASCII bytes string
+dealer.hash(b'BYTESEQUENCE')
 
 dealer.provide_id() # a list of IDs stored internally
 dealer.choose_distinct_x()
 
-dealer.access_group_polynomial()
+dealer.access_group_polynomial_coeffs()
+
+user_num = 1
+secret_num = 3
+group_num = 3
+share133 = dealer.pseudo_share(user_num, secret_num, group_num)
+print('Pseudo share for user 1, secret 3, group 3 =', share133.hex())
+print('Pseudo share length = ', len(share133))

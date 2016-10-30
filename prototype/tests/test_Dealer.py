@@ -1,3 +1,6 @@
+# Prototype of Multi-secret sharing scheme by Roy & Adhikari
+# Filip Kubicz 2016
+
 from nose.tools import *
 from multi_secret.Dealer import Dealer
 
