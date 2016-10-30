@@ -27,7 +27,7 @@ class Dealer:
         self.k = len(s_secrets) # number of secrets
         self.s_secrets = s_secrets # TODO: hide the secrets
         self.access_structure = access_structure
-        self.random_id = [b'ZERO'] # fill the 0th element to begin from 1 when appending
+        self.random_id = []
         self.hash_len = floor(log2(p))+1
         self.aes_nonce = urandom(16)
         
@@ -67,14 +67,26 @@ class Dealer:
         print(var_hash.hex())
         
         
+    def list_of_random_in_modulo_p(self, listlen):
+        """helper function returning list of random numbers less than p prime"""
+        randoms = [b'DUMMY0th'] # fill the 0th element to begin from 1 when appending
+        for i in range(1, listlen+1):
+            while True:
+                randoms.append(urandom(32))
+                if(int.from_bytes(randoms[i], byteorder='big') < self.p):
+                    break
+            
+        return randoms # TODO: yield generator for bigger problem sizes
+        
+    def print_list_of_hex(self, list_to_print, description):
+        """helper to print list of bytes objects with string description"""
+        for i in range(1, len(list_to_print)):
+            print('%s%d = %s' % (description, i, list_to_print[i].hex()))
+        
     def provide_id(self):
         """for each participant provide ID in p modulo field"""
-        for i in range(1, self.n+1):
-            while True:
-                self.random_id.append(urandom(32))
-                if(int.from_bytes(self.random_id[i], byteorder='big') < self.p):
-                    break
-            print('Participant ID %d, %s' % (i, self.random_id[i].hex()))
+        self.random_id = self.list_of_random_in_modulo_p(self.n)
+        self.print_list_of_hex(self.random_id, 'Participant ID ')
         
         return self.random_id
           
@@ -114,16 +126,30 @@ class Dealer:
     def choose_distinct_x(self):
         """ dealer chooses distinct x_j and sends it secretly to each participant, j=1,2...n
         """
-        self.x = [b'ZERO']
+        self.x = self.list_of_random_in_modulo_p(self.n)
         
-        for j in range(1, self.n+1):
-            while True:
-                self.x.append(urandom(32))
-                if(int.from_bytes(self.x[j], byteorder='big') < self.p):
-                    break
-            print('x%d = %s' % (j, self.x[j].hex()))
+        self.print_list_of_hex(self.x, 'x')
             
         return self.x # TODO: use yield to construct a generator
+    
+    
+    def access_group_polynomial(self):
+        """for the qth qualified set of access group, the dealer chooses d1, d2... dm in Zp modulo field to construct the polynomial fq(x) = si + d1*x + d2*x^2 + ... + dm*x^(m-1)
+        """
+        
+        for A in self.access_structure:
+            
+            d = self.list_of_random_in_modulo_p(len(A))
+        
+            print('A: ', A)
+            self.print_list_of_hex(d, 'polynomial coeff d')
+    
+    
+    
+    
+    
+    
+    
     
     
     
