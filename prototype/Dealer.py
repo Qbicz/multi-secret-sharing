@@ -12,13 +12,13 @@ from primality import is_probable_prime
 
 class Dealer:
 
-    def __init__(self, p, n_participants, s_secrets, access_structure):
+    def __init__(self, p, n_participants, s_secrets, access_structures):
         
         # check sanity of p
         if is_probable_prime(p) and p > n_participants and p > max(s_secrets):
             self.p = p
         else:
-            raise ValueError('Wrong p selected!')
+            raise ValueError('Wrong p selected!') # do I want to catch it?
         
         if n_participants < 2:
             raise ValueError('There must be at least 2 participants!')
@@ -26,7 +26,8 @@ class Dealer:
             self.n = n_participants
         self.k = len(s_secrets) # number of secrets
         self.s_secrets = s_secrets # TODO: hide the secrets
-        self.access_structure = access_structure
+        if isinstance(access_structures[0], list):
+            self.access_structures = access_structures
         self.random_id = []
         self.hash_len = floor(log2(p))+1
         self.aes_nonce = urandom(16)
@@ -35,8 +36,17 @@ class Dealer:
         print('Dealer created for Roy-Adhikari sharing of %d secrets among %d participants' % (self.k, self.n))
     
     
+    def modulo_p(self, number):
+    
+        if(int.from_bytes(number, byteorder='big') > self.p):
+            number_int = int.from_bytes(number, byteorder='big') % self.p
+            number = bytes([number_int])
+        
+        return number
+    
+    
     def hash(self, message):
-        """A collision resistant hash function with variable output length:
+        """A collision resistant hash function h with variable output length:
         # option 1: use SHA-3 Keccak (variable length digest)
         # option 2: use BLAKE2 : variable length digest (available at "cryptography" library - but to bytes, not bits resolution)
         # option 3 (chosen): use the first [log2(p)]+1 bits of AES-CTR(SHA256(m))"""
@@ -77,12 +87,14 @@ class Dealer:
                     break
             
         return randoms # TODO: yield generator for bigger problem sizes
+
         
     def print_list_of_hex(self, list_to_print, description):
         """helper to print list of bytes objects with string description"""
         for i in range(1, len(list_to_print)):
             print('%s%d = %s' % (description, i, list_to_print[i].hex()))
-        
+
+            
     def provide_id(self):
         """for each participant provide ID in p modulo field"""
         self.random_id = self.list_of_random_in_modulo_p(self.n)
@@ -92,6 +104,7 @@ class Dealer:
           
           
     def is_prime(self, n):
+        """ slow, deterministic prime check, superceded by Rabin-Miller """
         if n == 2 or n == 3: return True
         if n < 2 or n%2 == 0: return False
         if n < 9: return True
@@ -122,7 +135,8 @@ class Dealer:
             output = bytearray(input_bytelen[:bytelen-1])
             output.append(mask & last_byte)
             return output
-    
+
+            
     def choose_distinct_x(self):
         """ dealer chooses distinct x_j and sends it secretly to each participant, j=1,2...n
         """
@@ -137,28 +151,32 @@ class Dealer:
         """ for the qth qualified set of access group, the dealer chooses d1, d2... dm in Zp modulo field to construct the polynomial f_q(x) = si + d1*x + d2*x^2 + ... + dm*x^(m-1)
         """
         
-        for A in self.access_structure:
-            self.d = self.list_of_random_in_modulo_p(len(A))
-        
-            print('A: ', A)
-            self.print_list_of_hex(self.d, 'polynomial coeff d')
-    
+        for gindex, gamma in enumerate(self.access_structures, start=1):
+            print('gamma%d for secret s%d:' % (gindex,gindex))
+            for index, A in enumerate(gamma, start=1):
+                self.d = self.list_of_random_in_modulo_p(len(A))
+            
+                print('A%d: %r' % (index,A))
+                self.print_list_of_hex(self.d, 'polynomial coeff d')
+
+            
     def f_polynomial_compute(self, q):
         """ compute f_q(x) for q-th access group in access structure """
     
         pass
         
     
-    def pseudo_share(self, participant, i_secret, q_group):
-        """ pseudo share generation 
+    def pseudo_share_participant(self, participant, i_secret, q_group):
+        """ pseudo share generation for a single partipant
             U = h(x || i_U || q_v)
         """
     
-        print('Pseudo share computation for participant %d')
+        print('Pseudo share computation for secret s%d, access group A%d, participant P%d' % (i_secret, q_group, participant))
 
-        # l = length of longest access group
+        # l = length of longest access group for this secret
         lengths = []
-        for A in self.access_structure:
+        gamma = self.access_structures[i_secret]
+        for A in gamma:
             lengths.append(len(A)-1)
         l = max(lengths)
         print('l = ', l)
@@ -175,12 +193,15 @@ class Dealer:
         bytes_x = self.x[participant]
         bytes_i = bytes([i_secret])
         bytes_q = bytes([q_group])
+        
+        # TODO: check if bytes objects have proper lengths u,v
+        
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
         print(message.hex())
         # hash the concatenated bytes
         share = self.hash(message)
         
-        return share
+        return self.modulo_p(share)
         
         # TODO: check why v, u = 2 while q,i size = 1 
 
