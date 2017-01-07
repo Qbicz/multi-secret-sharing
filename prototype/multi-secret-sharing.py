@@ -34,4 +34,4 @@ share133 = dealer.pseudo_share_participant(user_num, secret_num, group_num)
 print('Pseudo share for user 1, secret 3, group 3 =', share133.hex())
 print('Pseudo share length = ', len(share133))
 
-
+# TODO: talk with professor about business/research meaning of the schemes

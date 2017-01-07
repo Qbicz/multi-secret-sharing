@@ -165,6 +165,9 @@ class Dealer:
     
         pass
         
+ 
+    def pseudo_share(self, )
+
     
     def pseudo_share_participant(self, participant, i_secret, q_group):
         """ pseudo share generation for a single partipant
