@@ -13,6 +13,9 @@ from primality import is_probable_prime
 class Dealer:
 
     def __init__(self, p, n_participants, s_secrets, access_structures):
+        """ Create a Dealer object with random AES-CTR nonce for collision-resistant hashing. [?]
+        Dealer stores access structures, participants and secrets in array beginning at 0
+        """
         
         # check sanity of p
         if is_probable_prime(p) and p > n_participants and p > max(s_secrets):
@@ -151,9 +154,9 @@ class Dealer:
         """ for the qth qualified set of access group, the dealer chooses d1, d2... dm in Zp modulo field to construct the polynomial f_q(x) = si + d1*x + d2*x^2 + ... + dm*x^(m-1)
         """
         
-        for gindex, gamma in enumerate(self.access_structures, start=1):
+        for gindex, gamma in enumerate(self.access_structures):
             print('gamma%d for secret s%d:' % (gindex,gindex))
-            for index, A in enumerate(gamma, start=1):
+            for index, A in enumerate(gamma):
                 self.d = self.list_of_random_in_modulo_p(len(A))
             
                 print('A%d: %r' % (index,A))
@@ -161,16 +164,32 @@ class Dealer:
 
             
     def f_polynomial_compute(self, q):
-        """ compute f_q(x) for q-th access group in access structure """
-    
-        pass
+        """ compute f_q(x) for q-th access group in access structure """    
+        
+        for i, gamma in enumerate(self.access_structures):
+            for q, A in enumerate(gamma):
+                for b, Pb in enumerate(A):
+                    print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
         
  
-    def pseudo_share(self, )
-
+    def compute_all_pseudo_shares(self):
+        """ compute all pseudo shares U """
+        
+        self.pseudo_shares = []
+        
+        for i, gamma in enumerate(self.access_structures):
+            for q, A in enumerate(gamma):
+                for b, Pb in enumerate(A):
+                    print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
+                    U = self.pseudo_share_participant(b, i, q)
+                    
+                    # STORE in a 3D array!
+                    self.pseudo_shares.append(U)
+                    print(self.pseudo_shares)
+                    
     
     def pseudo_share_participant(self, participant, i_secret, q_group):
-        """ pseudo share generation for a single partipant
+        """ pseudo share generation for a single participant
             U = h(x || i_U || q_v)
         """
     
@@ -200,11 +219,13 @@ class Dealer:
         # TODO: check if bytes objects have proper lengths u,v
         
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
-        print(message.hex())
         # hash the concatenated bytes
-        share = self.hash(message)
+        share = self.modulo_p(self.hash(message))
+        print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
         
-        return self.modulo_p(share)
-        
-        # TODO: check why v, u = 2 while q,i size = 1 
+        return (share)
 
+
+    def user_polynomial_value_B(self):
+        pass
+        
