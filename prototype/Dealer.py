@@ -153,15 +153,17 @@ class Dealer:
     def access_group_polynomial_coeffs(self):
         """ for the qth qualified set of access group, the dealer chooses d1, d2... dm in Zp modulo field to construct the polynomial f_q(x) = si + d1*x + d2*x^2 + ... + dm*x^(m-1)
         """
+        self.d = []
         
         for gindex, gamma in enumerate(self.access_structures):
             print('gamma%d for secret s%d:' % (gindex,gindex))
             for index, A in enumerate(gamma):
-                self.d = self.list_of_random_in_modulo_p(len(A))
+                self.d.append(self.list_of_random_in_modulo_p(len(A)))
             
                 print('A%d: %r' % (index,A))
-                self.print_list_of_hex(self.d, 'polynomial coeff d')
-
+                self.print_list_of_hex(self.d[index], 'polynomial coeff d')
+                # TODO: dla kazdej grupy powinno byc inaczej, osobno
+                
             
     def f_polynomial_compute(self, q):
         """ compute f_q(x) for q-th access group in access structure """    
@@ -184,8 +186,8 @@ class Dealer:
                     U = self.pseudo_share_participant(b, i, q)
                     
                     # STORE in a 3D array!
-                    self.pseudo_shares.append(U)
-                    print(self.pseudo_shares)
+                    #self.pseudo_shares.append(U)
+                    #print(self.pseudo_shares)
                     
     
     def pseudo_share_participant(self, participant, i_secret, q_group):

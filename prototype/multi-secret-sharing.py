@@ -41,6 +41,7 @@ def main():
     
     dealer.compute_all_pseudo_shares()
 
+    dealer.print_list_of_hex(dealer.d, 'd polynomial coeffs') # d coeffs are indexed from 1
     
     
     # TODO: talk with professor about research meaning of the schemes
