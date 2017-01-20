@@ -2,7 +2,7 @@
 # Filip Kubicz 2016
 
 from nose.tools import *
-from multi_secret.Dealer import Dealer
+from prototype.Dealer import Dealer
 
 # TODO: test if hash is the same for the same Dealer object and different among separate objects with random AES-CTR nonce
 
@@ -12,4 +12,5 @@ def test_hash():
     #assert_equal(result, [('direction', 'north'),
     #                      ('direction', 'south'),
     #                      ('direction', 'east')])
+    pass
     
