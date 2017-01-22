@@ -60,10 +60,32 @@ def test_hash_different():
 
 
 def test_modulo_p():
-    
     p = 1009
     dealer = Dealer(p, n_participants, s_secrets, access_structures)
     
     assert_equal(dealer.modulo_p(2011), 1002)
     
+
+def test_list_of_random_in_modulo_p():
+    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+    
+    n = 5
+    randomList = dealer.list_of_random_in_modulo_p(n)
+    
+    # check the length of the list
+    assert_equal(len(randomList), n+1)
+    # check the type of object in the list
+    assert_equal(isinstance(randomList[0], bytes), True)
+
+
+def test_provide_id():
+    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+    
+    id_list = dealer.provide_id()
+    # check the length of the list
+    assert_equal(len(id_list), n_participants+1)
+    # check the type of object in the list
+    assert_equal(isinstance(id_list[0], bytes), True)
+    
+
     
