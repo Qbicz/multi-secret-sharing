@@ -40,12 +40,23 @@ class Dealer:
     
     
     def modulo_p(self, number):
+        """ works for:
+        - int type
+        - bytes type """
+        return_bytes = False
     
-        if(int.from_bytes(number, byteorder='big') > self.p):
-            number_int = int.from_bytes(number, byteorder='big') % self.p
-            number = bytes([number_int])
+        # if input is bytes, return bytes object
+        if(isinstance(number, bytes)):
+            return_bytes = True
+            number = int.from_bytes(number, byteorder='big')
         
-        return number
+        if(number > self.p):
+            modulo_number = number % self.p
+        
+        if(return_bytes):
+            modulo_number = bytes([modulo_number])
+        
+        return modulo_number
     
     
     def hash(self, message):
