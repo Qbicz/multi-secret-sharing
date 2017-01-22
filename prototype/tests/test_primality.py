@@ -1,6 +1,6 @@
 from nose.tools import assert_equal
 from nose.tools import assert_raises
-from prototype.primality import is_probable_prime, is_prime
+from multisecret.primality import is_probable_prime, is_prime
 
 # large prime
 p256 = 2**256 - 2**224 + 2**192 + 2**96 - 1

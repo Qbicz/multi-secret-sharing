@@ -1,5 +1,5 @@
 # Prototype of Multi-secret sharing scheme by Roy & Adhikari
-# Filip Kubicz 2016
+# Filip Kubicz 2016-2017
 
 from os import urandom
 from math import log2, floor
@@ -8,7 +8,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 #import AES-CTR
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from prototype.primality import is_probable_prime
+from multisecret.primality import is_probable_prime
 
 class Dealer:
 
@@ -45,16 +45,21 @@ class Dealer:
         - bytes type """
         return_bytes = False
     
-        # if input is bytes, return bytes object
+        # if input is bytes, convert it to int, but return bytes object
         if(isinstance(number, bytes)):
             return_bytes = True
             number = int.from_bytes(number, byteorder='big')
         
+        # compare int objects
+        assert(isinstance(number, int))
         if(number > self.p):
-            modulo_number = number % self.p
+            number = number % self.p
         
         if(return_bytes):
-            modulo_number = bytes([modulo_number])
+            bit_len = floor(log2(number))+1
+            modulo_number = number.to_bytes(bit_len, byteorder='big')
+        else:
+            modulo_number = number
         
         return modulo_number
     

@@ -1,7 +1,7 @@
 # Prototype of Multi-secret sharing scheme by Roy & Adhikari
 # Filip Kubicz 2016
 
-from Dealer import Dealer
+from multisecret.Dealer import Dealer
 
 def main():
     # large prime from NIST P-256 elliptic curve 
