@@ -1,5 +1,5 @@
 # Prototype of Multi-secret sharing scheme by Roy & Adhikari
-# Filip Kubicz 2016-2017
+# Filip Kubicz 2016
 
 from os import urandom
 from math import log2, floor
@@ -49,6 +49,9 @@ class Dealer:
         if(isinstance(number, bytes)):
             return_bytes = True
             number = int.from_bytes(number, byteorder='big')
+        
+        print(number)
+        print(log2(number))
         
         # compare int objects
         assert(isinstance(number, int))
@@ -123,6 +126,8 @@ class Dealer:
     
     
     def take_first_bits(self, input, bitlen):
+        print('Length of input', len(input))
+    
         if bitlen > 8*len(input):
             raise ValueError('input shorter than %d bits' % bitlen)
         elif bitlen == 8*len(input):
@@ -222,6 +227,7 @@ class Dealer:
         
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
         # hash the concatenated bytes
+        print('DEBUG: ', message)
         share = self.modulo_p(self.hash(message))
         print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
         

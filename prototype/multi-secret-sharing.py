@@ -21,6 +21,8 @@ def main():
     # TODO: in GUI choosing access structures on a matrix
 
     # Create a Dealer
+    
+    """ TODO: test with 4099 prime """
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
 
     # test hash function - it should be repeatable for the same Dealer object
@@ -41,7 +43,7 @@ def main():
     
     dealer.compute_all_pseudo_shares()
 
-    dealer.print_list_of_hex(dealer.d, 'd polynomial coeffs') # d coeffs are indexed from 1
+    #dealer.print_list_of_hex(dealer.d, 'd polynomial coeffs') # d coeffs are indexed from 1
     
     
     # TODO: talk with professor about research meaning of the schemes
