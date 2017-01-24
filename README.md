@@ -1,3 +1,7 @@
+# How to Share a Secret?
+
+
+
 # Implementation of multi-secret sharing algorithms
 
 Imagine a situation where you want to secure vulnerable data and give access to it only to a specified group of people, e.g. board of directors of a company. The vulnerable secret can be codes to open a safe or to fire the ballistic missiles.
