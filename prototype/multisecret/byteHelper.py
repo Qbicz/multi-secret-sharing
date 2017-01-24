@@ -11,11 +11,14 @@ def bitlen(number):
     
     
 
-def int_to_bytes(integer):
-    
+def int_to_bytes(int_number):
+    pass
 
+
+def bytes_to_int(byte_number):
+    pass
     
 """ use multipledispatch """ 
  
-#def take_first_bits()
-#m
+def take_first_bits():
+    pass
