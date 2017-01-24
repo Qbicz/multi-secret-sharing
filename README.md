@@ -1,6 +1,6 @@
 # How to Share a Secret?
 
-
+![Traditional way of sharing a secret](https://raw.githubusercontent.com/Qbicz/multi-secret-sharing/master/docs/Sharing-Secrets.jpg)
 
 # Implementation of multi-secret sharing algorithms
 
