@@ -73,7 +73,7 @@ def test_list_of_random_in_modulo_p():
     randomList = dealer.list_of_random_in_modulo_p(n)
     
     # check the length of the list
-    assert_equal(len(randomList), n+1)
+    assert_equal(len(randomList), n)
     # check the type of object in the list
     assert_equal(isinstance(randomList[0], bytes), True)
 
@@ -83,7 +83,7 @@ def test_provide_id():
     
     id_list = dealer.provide_id()
     # check the length of the list
-    assert_equal(len(id_list), n_participants+1)
+    assert_equal(len(id_list), n_participants)
     # check the type of object in the list
     assert_equal(isinstance(id_list[0], bytes), True)
     

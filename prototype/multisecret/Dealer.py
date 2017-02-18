@@ -60,7 +60,7 @@ class Dealer:
         
         if(return_bytes):
             bit_len = floor(log2(number))+1
-            byte_len = floor(bit_len/8)
+            byte_len = floor(bit_len/8)+1
             print('bit_len, byte_len', bit_len, byte_len)
             modulo_number = number.to_bytes(byte_len, byteorder='big')
         else:
@@ -103,8 +103,8 @@ class Dealer:
         
     def list_of_random_in_modulo_p(self, listlen):
         """helper function returning list of random numbers less than p prime"""
-        randoms = [b'DUMMY0th'] # fill the 0th element to begin from 1 when appending
-        for i in range(1, listlen+1):
+        randoms = [] # fill the 0th element to begin from 1 when appending
+        for i in range(listlen):
             while True:
                 randoms.append(urandom(32))
                 if(int.from_bytes(randoms[i], byteorder='big') < self.p):
@@ -115,7 +115,7 @@ class Dealer:
         
     def print_list_of_hex(self, list_to_print, description):
         """helper to print list of bytes objects with string description"""
-        for i in range(1, len(list_to_print)):
+        for i in range(len(list_to_print)):
             print('%s%d = %s' % (description, i, list_to_print[i].hex()))
 
             
