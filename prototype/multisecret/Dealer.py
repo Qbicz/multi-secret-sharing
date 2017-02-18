@@ -60,7 +60,9 @@ class Dealer:
         
         if(return_bytes):
             bit_len = floor(log2(number))+1
-            modulo_number = number.to_bytes(bit_len, byteorder='big')
+            byte_len = floor(bit_len/8)
+            print('bit_len, byte_len', bit_len, byte_len)
+            modulo_number = number.to_bytes(byte_len, byteorder='big')
         else:
             modulo_number = number
         
@@ -190,7 +192,7 @@ class Dealer:
                     print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
                     U = self.pseudo_share_participant(b, i, q)
                     
-                    # STORE in a 3D array!
+                    # TODO: STORE in a 3D array!
                     #self.pseudo_shares.append(U)
                     #print(self.pseudo_shares)
                     
@@ -219,7 +221,7 @@ class Dealer:
         print('v = ', v)
         
         # concatenate x, i and q binary
-        bytes_x = self.x[participant]
+        bytes_x = self.x[participant] # !!! here DUMMY0th
         bytes_i = bytes([i_secret])
         bytes_q = bytes([q_group])
         
@@ -228,7 +230,9 @@ class Dealer:
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
         # hash the concatenated bytes
         print('DEBUG: ', message)
-        share = self.modulo_p(self.hash(message))
+        hash_of_message = self.hash(message)
+        print('hash_of_message', hash_of_message.hex())
+        share = self.modulo_p(hash_of_message)
         print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
         
         return (share)
