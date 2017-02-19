@@ -103,3 +103,6 @@ def test_take_first_bits():
     #print('test first bits: ', first_bits.hex())
     assert_equal(first_bits, bytes([0xDE, 0xA0]))
     
+    modulo_bits = dealer.take_first_bits(input, 16)
+    assert_equal(modulo_bits, bytes([0xDE, 0xAD]))
+    

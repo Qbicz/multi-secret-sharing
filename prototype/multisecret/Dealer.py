@@ -136,7 +136,10 @@ class Dealer:
             return input
         else:
             # take all bytes needed
-            bytelen = (floor(bitlen/8)) + 1
+            if bitlen % 8 == 0:
+                bytelen = int(bitlen/8)
+            else:
+                bytelen = (floor(bitlen/8)) + 1
             input_bytelen = input[:bytelen]
             
             # now extract bits from the last byte

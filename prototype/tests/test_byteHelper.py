@@ -25,6 +25,6 @@ def test_take_first_bits():
     with assert_raises(ValueError):
         dealer.take_first_bits(input, 65) # len in bits
     
-    first_bits = dealer.take_first_bits(input, 24)
+    #first_bits = dealer.take_first_bits(input, 24)
     #assert_equal(first_bits, bytes(0xDEA))
     
