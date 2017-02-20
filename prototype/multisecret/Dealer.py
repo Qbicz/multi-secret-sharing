@@ -10,6 +10,8 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from multisecret.primality import is_probable_prime
 
+import numpy as np
+
 class Dealer:
 
     def __init__(self, p, n_participants, s_secrets, access_structures):
@@ -50,8 +52,8 @@ class Dealer:
             return_bytes = True
             number = int.from_bytes(number, byteorder='big')
         
-        print(number)
-        print(log2(number))
+        #print(number)
+        #print(log2(number))
         
         # compare int objects
         assert(isinstance(number, int))
@@ -61,7 +63,7 @@ class Dealer:
         if(return_bytes):
             bit_len = floor(log2(number))+1
             byte_len = floor(bit_len/8)+1
-            print('bit_len, byte_len', bit_len, byte_len)
+            #print('bit_len, byte_len', bit_len, byte_len)
             modulo_number = number.to_bytes(byte_len, byteorder='big')
         else:
             modulo_number = number
@@ -95,7 +97,7 @@ class Dealer:
 
         # take demanded numer of bits
         varlen_hash = self.take_first_bits(ciphertext, self.hash_len)
-        print('First %d bits of hash:' % self.hash_len)
+        #print('First %d bits of hash:' % self.hash_len)
         print(varlen_hash.hex())
         
         return varlen_hash
@@ -128,7 +130,7 @@ class Dealer:
     
     
     def take_first_bits(self, input, bitlen):
-        print('Length of input', len(input))
+        #print('Length of input', len(input))
     
         if bitlen > 8*len(input):
             raise ValueError('input shorter than %d bits' % bitlen)
@@ -182,12 +184,34 @@ class Dealer:
             for q, A in enumerate(gamma):
                 for b, Pb in enumerate(A):
                     print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
+    
+    def array_share_size_iqb(self):
+        """ Return sizes i, q, b needed for holding pseudo shares and shares
         
+        """
+        max_i_list = []
+        max_q_list = []
+        max_b_list = []
+        # keep pseudo shares in a 3D array
+        for i, gamma in enumerate(self.access_structures):
+            max_i_list.append(i)
+            for q, A in enumerate(gamma):
+                max_q_list.append(q)
+                for b, Pb in enumerate(A):
+                    max_b_list.append(b)
+        
+        max_i = max(max_i_list)
+        max_q = max(max_q_list)
+        max_b = max(max_b_list)
+        
+        print('sizes: i, q, b', max_i, max_q, max_b)
+        return (max_i+1, max_q+1, max_b+1)
  
     def compute_all_pseudo_shares(self):
         """ compute all pseudo shares U """
         
-        self.pseudo_shares = []
+        # use desired type 'object' to allow holding bytes/strings in a numpy array
+        self.pseudo_shares = np.zeros(self.array_share_size_iqb(), dtype=object)
         
         for i, gamma in enumerate(self.access_structures):
             for q, A in enumerate(gamma):
@@ -195,11 +219,13 @@ class Dealer:
                     print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
                     U = self.pseudo_share_participant(b, i, q)
                     
-                    # TODO: STORE in a 3D array!
-                    #self.pseudo_shares.append(U)
+                    # STORE in a 3D array
+                    self.pseudo_shares[i][q][b] = U
                     #print(self.pseudo_shares)
-                    
-    
+            
+        print(self.pseudo_shares)
+
+
     def pseudo_share_participant(self, participant, i_secret, q_group):
         """ pseudo share generation for a single participant
             U = h(x || i_U || q_v)
@@ -213,15 +239,15 @@ class Dealer:
         for A in gamma:
             lengths.append(len(A)-1)
         l = max(lengths)
-        print('l = ', l)
+        #print('l = ', l)
         
         # u = bit length of number of secrets k
         u = floor(log2(self.k)) + 1
-        print('u = ', u)
+        #print('u = ', u)
         
         # v = bit length of l
         v = floor(log2(l)) + 1
-        print('v = ', v)
+        #print('v = ', v)
         
         # concatenate x, i and q binary
         bytes_x = self.x[participant] # !!! here DUMMY0th
@@ -232,13 +258,13 @@ class Dealer:
         
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
         # hash the concatenated bytes
-        print('DEBUG: ', message)
+        print('[x,i,q]: ', message.hex())
         hash_of_message = self.hash(message)
-        print('hash_of_message', hash_of_message.hex())
+        #print('hash of [x,i,q]', hash_of_message.hex())
         share = self.modulo_p(hash_of_message)
         print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
         
-        return (share)
+        return share
 
 
     def user_polynomial_value_B(self):
