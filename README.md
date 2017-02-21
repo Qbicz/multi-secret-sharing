@@ -5,26 +5,26 @@
 # Run example
 
 To run a Python 3.5 prototype, please install [cryptography](https://pypi.python.org/pypi/cryptography) module.
-'''bash
+```bash
 pip3 install cryptography
-'''
+```
 Run an example
-'''bash
+```bash
 cd prototype
 python3 multi-secret-sharing.py
-'''
+```
 
 # Run tests
 
 To run tests, install nosetests unit testing library for Python3:
-'''bash
+```bash
 sudo apt install python3-nose
-'''
+```
 Go to prototype folder and run tests:
-'''bash
+```bash
 cd prototype
 nosetests3
-'''
+```
 
 # Implementation of multi-secret sharing algorithms
 
