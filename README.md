@@ -2,6 +2,30 @@
 
 ![Traditional way of sharing a secret](https://raw.githubusercontent.com/Qbicz/multi-secret-sharing/master/docs/Sharing-Secrets.jpg)
 
+# Run example
+
+To run a Python 3.5 prototype, please install [cryptography](https://pypi.python.org/pypi/cryptography) module.
+'''bash
+pip3 install cryptography
+'''
+Run an example
+'''bash
+cd prototype
+python3 multi-secret-sharing.py
+'''
+
+# Run tests
+
+To run tests, install nosetests unit testing library for Python3:
+'''bash
+sudo apt install python3-nose
+'''
+Go to prototype folder and run tests:
+'''bash
+cd prototype
+nosetests3
+'''
+
 # Implementation of multi-secret sharing algorithms
 
 Imagine a situation where you want to secure vulnerable data and give access to it only to a specified group of people, e.g. board of directors of a company. The vulnerable secret can be codes to open a safe or to fire the ballistic missiles.
