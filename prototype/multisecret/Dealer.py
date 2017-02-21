@@ -171,6 +171,7 @@ class Dealer:
         for gindex, gamma in enumerate(self.access_structures):
             print('gamma%d for secret s%d:' % (gindex,gindex))
             coeffs_for_A = []
+            self.d.append([])
             
             for index, A in enumerate(gamma):
                 #self.d[index].append(self.list_of_random_in_modulo_p(len(A)))
@@ -180,9 +181,11 @@ class Dealer:
                 self.print_list_of_hex(coeffs_for_A, 'polynomial coeff d')
                 # TODO: dla kazdej grupy powinno byc inaczej, osobno
                 
+                self.d[gindex].append(coeffs_for_A)
+              
+        return self.d
             
-            self.d.append(coeffs_for_A)
-            
+
     def f_polynomial_compute(self, q):
         """ compute f_q(x) for q-th access group in access structure """    
         

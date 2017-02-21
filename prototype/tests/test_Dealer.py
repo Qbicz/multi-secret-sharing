@@ -106,3 +106,31 @@ def test_take_first_bits():
     modulo_bits = dealer.take_first_bits(input, 16)
     assert_equal(modulo_bits, bytes([0xDE, 0xAD]))
     
+    
+def test_access_group_polynomial_coeffs():
+    
+    A1 = (1,3)
+    # gamma1 is a group of users authorized to reconstruct s1
+    gamma1 = [A1]
+    gamma2 = [(1,2), (2,3)] # A1, A2 implicitly
+    gamma3 = [(1,2,3)] # to secret s3 only all 3 users together can gain access
+    access_structures = [gamma1, gamma2, gamma3]
+
+    # Create a Dealer
+    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+    
+    # compute d coeffs
+    dealer.access_group_polynomial_coeffs()
+    
+    #dealer.print_list_of_hex(dealer.d[1][1], 'd-1-1')
+    # test output
+    assert_equal(len(dealer.d), 3)
+    assert_equal(len(dealer.d[0]), 1)
+    assert_equal(len(dealer.d[1][1]), 2)
+    assert_equal(len(dealer.d[2][0]), 3)
+    
+    # Test index out of range
+    with assert_raises(IndexError):
+        print('Test', dealer.print_list_of_hex(dealer.d[2][1], 'd-2-1'))
+    
+    
