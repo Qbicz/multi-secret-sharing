@@ -163,27 +163,35 @@ class Dealer:
     
     
     def access_group_polynomial_coeffs(self):
-        """ for the qth qualified set of access group, the dealer chooses d1, d2... dm in Zp modulo field to construct the polynomial f_q(x) = si + d1*x + d2*x^2 + ... + dm*x^(m-1)
+        """ for the qth qualified set of access group, the dealer chooses d0, d1, d2... dm in Zp modulo field to construct the polynomial f_q(x) = si + d1*x + d2*x^2 + ... + dm*x^(m-1)
+            note: d0 corresponds to x^1, d1 corresponds to x^2
         """
         self.d = []
         
         for gindex, gamma in enumerate(self.access_structures):
             print('gamma%d for secret s%d:' % (gindex,gindex))
+            coeffs_for_A = []
+            
             for index, A in enumerate(gamma):
-                self.d.append(self.list_of_random_in_modulo_p(len(A)))
+                #self.d[index].append(self.list_of_random_in_modulo_p(len(A)))
+                coeffs_for_A = self.list_of_random_in_modulo_p(len(A))
             
                 print('A%d: %r' % (index,A))
-                self.print_list_of_hex(self.d[index], 'polynomial coeff d')
+                self.print_list_of_hex(coeffs_for_A, 'polynomial coeff d')
                 # TODO: dla kazdej grupy powinno byc inaczej, osobno
                 
+            
+            self.d.append(coeffs_for_A)
             
     def f_polynomial_compute(self, q):
         """ compute f_q(x) for q-th access group in access structure """    
         
+        # ?
         for i, gamma in enumerate(self.access_structures):
             for q, A in enumerate(gamma):
                 for b, Pb in enumerate(A):
                     print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
+    
     
     def array_share_size_iqb(self):
         """ Return sizes i, q, b needed for holding pseudo shares and shares
@@ -206,7 +214,8 @@ class Dealer:
         
         print('sizes: i, q, b', max_i, max_q, max_b)
         return (max_i+1, max_q+1, max_b+1)
- 
+
+
     def compute_all_pseudo_shares(self):
         """ compute all pseudo shares U """
         
