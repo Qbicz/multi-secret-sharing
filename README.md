@@ -41,3 +41,7 @@ In this repo, different multi-secret sharing schemes will be implemented and com
 # 1. "Multi-Use Multi-Secret Sharing Scheme for General Access Structure" - Roy, Adhikari
 --- python prototype
 --- C++ implementation with GUI
+
+# Continuous Integration with Jenkins
+TBD.
+https://www.blazemeter.com/blog/how-start-working-github-plugin-jenkins

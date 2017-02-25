@@ -196,7 +196,7 @@ class Dealer:
                     print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
     
     
-    def array_share_size_iqb(self):
+    def pseudo_share_array_size_iqb(self):
         """ Return sizes i, q, b needed for holding pseudo shares and shares
         
         """
@@ -223,7 +223,7 @@ class Dealer:
         """ compute all pseudo shares U """
         
         # use desired type 'object' to allow holding bytes/strings in a numpy array
-        self.pseudo_shares = np.zeros(self.array_share_size_iqb(), dtype=object)
+        self.pseudo_shares = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
         
         for i, gamma in enumerate(self.access_structures):
             for q, A in enumerate(gamma):
