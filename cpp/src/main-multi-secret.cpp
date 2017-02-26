@@ -16,8 +16,13 @@ namespace Roy
 
     public:
         Participant(int id_arg)
-        : id{id_arg} // uniform initialization C++11
+            : id{id_arg} // uniform initialization C++11
         {}
+
+        ~Participant()
+        {}
+
+        int getId() const { return id; }
 
         friend std::ostream& operator<< (std::ostream& output, const Participant& P)
         {
@@ -33,8 +38,14 @@ namespace Roy
 
     public:
         AccessGroup(vector<Participant> vP)
-        : participants {vP}
+            : participants {vP}
         {}
+
+        ~AccessGroup()
+        {}
+
+        int getParticipantsCount() const { return participants.size(); }
+        const vector<Participant>& getParticipants() const { return participants; }
 
         friend std::ostream& operator<< (std::ostream& output, const AccessGroup& A)
         {
@@ -55,6 +66,10 @@ int main(void)
 
     Roy::AccessGroup A1({P1, P2}); // fully initialize member vector using uniform initialization
     cout << A1;
+
+    cout << "A1 group has " << A1.getParticipantsCount() << " participants.\n";
+
+    cout << "First participant of A1 is: " << A1.getParticipants()[0];
 
     return 0;
 }
