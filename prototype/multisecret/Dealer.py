@@ -2,7 +2,7 @@
 # Filip Kubicz 2016
 
 from os import urandom
-from math import log2, floor
+from math import log2, floor, ceil
 # import SHA256
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -11,6 +11,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from multisecret.primality import is_probable_prime
 
 import numpy as np
+from sys import byteorder
 
 class Dealer:
 
@@ -82,23 +83,17 @@ class Dealer:
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
         digest.update(message)
         hashed_message = digest.finalize()
-        #print(hashed_message.hex())
 
         # AES-CTR of the hash
         aes_key = hashed_message
-        
         cipher = Cipher(algorithms.AES(aes_key), modes.CTR(self.aes_nonce), backend=default_backend())
         encryptor = cipher.encryptor()
         input = b'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww'
         #print(input.hex())
         ciphertext = encryptor.update(input) + encryptor.finalize()
 
-        #print('Ciphertext of len', len(ciphertext))
-        #print(ciphertext.hex())
-
         # take demanded numer of bits
         varlen_hash = self.take_first_bits(ciphertext, self.hash_len)
-        #print('First %d bits of hash:' % self.hash_len)
         print(varlen_hash.hex())
         
         return varlen_hash
@@ -106,10 +101,12 @@ class Dealer:
         
     def list_of_random_in_modulo_p(self, listlen):
         """helper function returning list of random numbers less than p prime"""
-        randoms = [] # fill the 0th element to begin from 1 when appending
+        randoms = []
+        bytelen_of_randoms_generated = 32 # TODO: write bytelenOfInt() method in byteHelper
+        
         for i in range(listlen):
             while True:
-                randoms.append(urandom(32))
+                randoms.append(urandom(bytelen_of_randoms_generated))
                 if(int.from_bytes(randoms[i], byteorder='big') < self.p):
                     break
             
@@ -164,7 +161,11 @@ class Dealer:
     
     
     def access_group_polynomial_coeffs(self):
-        """ for the qth qualified set of access group, the dealer chooses d0, d1, d2... dm in Zp modulo field to construct the polynomial f_q(x) = si + d1*x + d2*x^2 + ... + dm*x^(m-1)
+        """ for the qth qualified set of access group,
+            the dealer chooses d0, d1, d2... dm in Zp modulo field
+            to construct the polynomial
+            f_q(x) = si + d1*x + d2*x^2 + ... + dm*x^(m-1)
+            
             note: d0 corresponds to x^1, d1 corresponds to x^2
         """
         self.d = []
@@ -186,16 +187,36 @@ class Dealer:
               
         return self.d
             
+    
+    def get_d_polynomial_coeffs(self, secret, group):
+        
+        return self.d[secret][group]
 
-    def f_polynomial_compute(self, q):
+
+    def f_polynomial_compute(self, x, *, secret, group):
         """ compute f_q(x) for q-th access group in access structure """    
         
-        # ?
-        for i, gamma in enumerate(self.access_structures):
-            for q, A in enumerate(gamma):
-                for b, Pb in enumerate(A):
-                    print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
-    
+        print('f_polynomial_compute for secret %d, group A %d ' % (secret, group))
+        poly_value = 0;
+        coeffs = self.get_d_polynomial_coeffs(secret, group)
+        print(coeffs)
+        
+        if isinstance(x, bytes):
+            x = int.from_bytes(x, byteorder='big')
+        print('x=', x)
+        
+        for degree, coeff in enumerate(coeffs):
+            coeff = int.from_bytes(coeff, byteorder='big')
+            
+            print('d%d, coeff=%d' % (degree+1, coeff))
+            poly_value += coeff * x**(degree+1)
+        
+        poly_value += self.s_secrets[secret]
+        print('secret =', self.s_secrets[secret])
+        print('poly_value', poly_value)    
+        
+        return poly_value
+                
     
     def pseudo_share_array_size_iqb(self):
         """ Return sizes i, q, b needed for holding pseudo shares and shares
@@ -263,11 +284,11 @@ class Dealer:
         #print('v = ', v)
         
         # concatenate x, i and q binary
-        bytes_x = self.x[participant] # !!! here DUMMY0th
+        bytes_x = self.x[participant]
         bytes_i = bytes([i_secret])
         bytes_q = bytes([q_group])
-        
-        # TODO: check if bytes objects have proper lengths u,v
+
+        # TODO: after retrieving secret, check if bytes objects have proper lengths u,v
         
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
         # hash the concatenated bytes

@@ -71,11 +71,16 @@ def test_list_of_random_in_modulo_p():
     
     n = 5
     randomList = dealer.list_of_random_in_modulo_p(n)
-    
+    dealer.print_list_of_hex(randomList, 'test randomList')
     # check the length of the list
     assert_equal(len(randomList), n)
     # check the type of object in the list
     assert_equal(isinstance(randomList[0], bytes), True)
+    
+    #dealer_short = Dealer(1009, 2, [13], [[(1,2), ()]])
+    #randomListShort = dealer_short.list_of_random_in_modulo_p(n)
+    #dealer_short.print_list_of_hex(randomListShort, 'test randomListShort')
+    #assert_equal(len(randomListShort[0]), 1)
 
 
 def test_provide_id():
@@ -132,5 +137,30 @@ def test_access_group_polynomial_coeffs():
     # Test index out of range
     with assert_raises(IndexError):
         print('Test', dealer.print_list_of_hex(dealer.d[2][1], 'd-2-1'))
+    
+    
+def test_get_d_polynomial_coeffs():
+    
+    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+    dealer.access_group_polynomial_coeffs()
+    
+    coeff1 = dealer.get_d_polynomial_coeffs(secret=0, group=0)[1]
+    coeff2 = dealer.d[0][0][1]
+    
+    assert_equal(coeff1, coeff2)
+    
+
+def test_f_polynomial_compute():
+    
+    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+    dealer.access_group_polynomial_coeffs()
+    # override coeffs
+    dealer.d[0][0] = [bytes([0x05]), bytes([0x07])]
+    
+    value = dealer.f_polynomial_compute(bytes([0x01]), secret=0, group=0)
+    assert_equal(value, 12+s_secrets[0])
+    
+    value = dealer.f_polynomial_compute(bytes([0x02]), secret=0, group=0)
+    assert_equal(value, 38+s_secrets[0])
     
     
