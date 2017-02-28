@@ -44,7 +44,8 @@ class Dealer:
     def modulo_p(self, number):
         """ works for:
         - int type
-        - bytes type """
+        - bytes type
+        """
         return_bytes = False
     
         # if input is bytes, convert it to int, but return bytes object
