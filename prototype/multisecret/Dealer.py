@@ -200,21 +200,32 @@ class Dealer:
         poly_value = 0;
         coeffs = self.get_d_polynomial_coeffs(secret, group)
         
-        print('x=', x.hex())
+        #print('x=', x.hex())
         if isinstance(x, bytes):
             x = int.from_bytes(x, byteorder='big')
         
         for degree, coeff in enumerate(coeffs):
             coeff = int.from_bytes(coeff, byteorder='big')
             
-            print('d%d, coeff=%d' % (degree+1, coeff))
+            #print('d%d, coeff=%d' % (degree+1, coeff))
             poly_value += coeff * x**(degree+1)
         
         poly_value += self.s_secrets[secret]
-        print('secret =', self.s_secrets[secret])
+        #print('secret =', self.s_secrets[secret])
         print('poly_value', poly_value)    
         
         return poly_value
+    
+    
+    def user_polynomial_value_B(self, i_secret, q_group, participant):
+        
+        assert(participant in self.access_structures[i_secret][q_group])
+        
+        participant_id = self.random_id[participant-1]
+        print('B value for user', participant)
+        
+        # returns int
+        return self.f_polynomial_compute(participant_id, secret=i_secret, group=q_group)
                 
     
     def pseudo_share_array_size_iqb(self):
@@ -301,30 +312,36 @@ class Dealer:
         return share
 
 
-    def user_polynomial_value_B(self, i_secret, q_group, participant):
-        
-        assert(participant in self.access_structures[i_secret][q_group])
-        
-        participant_id = self.random_id[participant]
-        print('B value for user', participant)
-        
-        # returns int
-        return self.f_polynomial_compute(participant_id, secret=i_secret, group=q_group)
-
-
     def public_user_share_M(self, i_secret, q_group, participant, B_value):
         
         assert(participant in self.access_structures[i_secret][q_group])
         
-        print('Pseudo share:', self.pseudo_shares[i_secret][q_group][participant])
         U_value = int.from_bytes(self.pseudo_shares[i_secret][q_group][participant], byteorder='big')
-        M = B_value - U_value
-        print('participant %d, public M = %d' % (participant,M))
+        M_public_share = B_value - U_value
+        print('participant %d, public M = %d' % (participant, M_public_share))
         
-        # TODO save to internal list
+        return M_public_share
+    
+    
+    def compute_all_public_shares_M(self):
         
-        return M
+        # use desired type 'object' to allow holding bytes/strings in a numpy array
+        self.public_shares_M = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
+        
+        for i, gamma in enumerate(self.access_structures):
+            for q, A in enumerate(gamma):
+                for b in A:
+                    print('compute_all_public_shares_M, i=%d, q=%d, b=%d' % (i,q,b))
+                    
+                    B_value = self.user_polynomial_value_B(i, q, b)
+                    M = self.public_user_share_M(i, q, b, B_value)
+                    
+                    # STORE in a 3D array
+                    self.public_shares_M[i][q][b] = M
+        
     
     def get_M_public_user_share(self, i_secret, q_group, participant):
         pass
+        
+        
     
