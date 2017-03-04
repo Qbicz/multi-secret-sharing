@@ -199,11 +199,10 @@ class Dealer:
         print('f_polynomial_compute for secret %d, group A %d ' % (secret, group))
         poly_value = 0;
         coeffs = self.get_d_polynomial_coeffs(secret, group)
-        print(coeffs)
         
+        print('x=', x.hex())
         if isinstance(x, bytes):
             x = int.from_bytes(x, byteorder='big')
-        print('x=', x)
         
         for degree, coeff in enumerate(coeffs):
             coeff = int.from_bytes(coeff, byteorder='big')
@@ -230,6 +229,7 @@ class Dealer:
             max_i_list.append(i)
             for q, A in enumerate(gamma):
                 max_q_list.append(q)
+                
                 for b, Pb in enumerate(A):
                     max_b_list.append(b)
         
@@ -251,7 +251,7 @@ class Dealer:
             for q, A in enumerate(gamma):
                 for b, Pb in enumerate(A):
                     print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
-                    U = self.pseudo_share_participant(b, i, q)
+                    U = self.pseudo_share_participant(i, q, b)
                     
                     # STORE in a 3D array
                     self.pseudo_shares[i][q][b] = U
@@ -260,7 +260,7 @@ class Dealer:
         print(self.pseudo_shares)
 
 
-    def pseudo_share_participant(self, participant, i_secret, q_group):
+    def pseudo_share_participant(self, i_secret, q_group, participant):
         """ pseudo share generation for a single participant
             U = h(x || i_U || q_v)
         """
@@ -301,6 +301,30 @@ class Dealer:
         return share
 
 
-    def user_polynomial_value_B(self):
-        pass
+    def user_polynomial_value_B(self, i_secret, q_group, participant):
         
+        assert(participant in self.access_structures[i_secret][q_group])
+        
+        participant_id = self.random_id[participant]
+        print('B value for user', participant)
+        
+        # returns int
+        return self.f_polynomial_compute(participant_id, secret=i_secret, group=q_group)
+
+
+    def public_user_share_M(self, i_secret, q_group, participant, B_value):
+        
+        assert(participant in self.access_structures[i_secret][q_group])
+        
+        print('Pseudo share:', self.pseudo_shares[i_secret][q_group][participant])
+        U_value = int.from_bytes(self.pseudo_shares[i_secret][q_group][participant], byteorder='big')
+        M = B_value - U_value
+        print('participant %d, public M = %d' % (participant,M))
+        
+        # TODO save to internal list
+        
+        return M
+    
+    def get_M_public_user_share(self, i_secret, q_group, participant):
+        pass
+    

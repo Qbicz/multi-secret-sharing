@@ -34,7 +34,9 @@ def main():
 
     dealer.access_group_polynomial_coeffs()
 
-    
+    dealer.compute_all_pseudo_shares()
+    B_value = dealer.user_polynomial_value_B(1, 1, 2)
+    dealer.public_user_share_M(1, 1, 2, B_value)
 
     # indexes begin at 0
     #user_num = 1
@@ -43,7 +45,6 @@ def main():
     #share133 = dealer.pseudo_share_participant(user_num, secret_num, group_num)
     #print('Pseudo share length = ', len(share133))
     
-    dealer.compute_all_pseudo_shares()
 
 
 if __name__ == "__main__":
