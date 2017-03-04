@@ -229,9 +229,9 @@ class Dealer:
             max_i_list.append(i)
             for q, A in enumerate(gamma):
                 max_q_list.append(q)
-                
-                for b, Pb in enumerate(A):
-                    max_b_list.append(b)
+                max_b_list.append(max(A))
+                #for b, Pb in enumerate(A):
+                #    max_b_list.append(b)
         
         max_i = max(max_i_list)
         max_q = max(max_q_list)
@@ -249,7 +249,7 @@ class Dealer:
         
         for i, gamma in enumerate(self.access_structures):
             for q, A in enumerate(gamma):
-                for b, Pb in enumerate(A):
+                for b in A:
                     print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
                     U = self.pseudo_share_participant(i, q, b)
                     
@@ -284,7 +284,7 @@ class Dealer:
         #print('v = ', v)
         
         # concatenate x, i and q binary
-        bytes_x = self.x[participant]
+        bytes_x = self.x[participant-1]
         bytes_i = bytes([i_secret])
         bytes_q = bytes([q_group])
 
