@@ -58,7 +58,9 @@ class Dealer:
         #print(log2(number))
         
         # compare int objects
-        assert(isinstance(number, int))
+        print(number)
+        # should not typecheck
+        #assert(isinstance(number, int))
         if(number > self.p):
             number = number % self.p
         
@@ -125,6 +127,11 @@ class Dealer:
         self.print_list_of_hex(self.random_id, 'Participant ID ')
         
         return self.random_id
+    
+    
+    def get_id_int(self, participant):
+        """ returns ID as an integer, with indexing from 1 """
+        return int.from_bytes(self.random_id[participant-1], byteorder='big')
     
     
     def take_first_bits(self, input, bitlen):
@@ -264,7 +271,7 @@ class Dealer:
                     print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
                     U = self.pseudo_share_participant(i, q, b)
                     
-                    # STORE in a 3D array
+                    # store in a 3D array
                     self.pseudo_shares[i][q][b] = U
                     #print(self.pseudo_shares)
             
@@ -345,6 +352,35 @@ class Dealer:
         return self.public_shares_M[i_secret][q_group][participant]
         
         
-    def combine_secret(self, i_secret, q_group, obtained_shares):
-        pass
+    def combine_secret(self, i_secret, q_group, obtained_pseudo_shares):
+        """
+        combine a single secret using Lagrange interpolation
+        """
+        
+        print(self.access_structures[i_secret])
+        assert(q_group <= len( self.access_structures[i_secret]))
+        
+        combine_sum = 0
+        
+        print('combining s%d with A%d' % (i_secret, q_group))
+        print('Access group:', self.access_structures[i_secret][q_group])
+        for b in self.access_structures[i_secret][q_group]:
+            print('b =', b)
+            part_sum = obtained_pseudo_shares[b-1] \
+                     + self.public_shares_M[i_secret][q_group][b]
+            combine_product = 1
+            for r in self.access_structures[i_secret][q_group]:
+                if r != b:
+                    print('r =', r)
+                    part_product = -self.get_id_int(r) \
+                                 / (self.get_id_int(b) - self.get_id_int(r))
+                    combine_product *= self.modulo_p(part_product)
+                    # TODO: prove the correct modulo position in formula
+            
+            combine_sum += part_sum * combine_product
+            
+        print("Combined sum, s%d = %d" % (i_secret, combine_sum))
+            
+        # obtained shares U should be passed by argument
+        return self.modulo_p(combine_sum)
     

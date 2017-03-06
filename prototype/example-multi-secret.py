@@ -39,6 +39,18 @@ def main():
     #dealer.public_user_share_M(1, 1, 2, B_value)
     
     dealer.compute_all_public_shares_M()
+    
+    print('obtained shares', dealer.pseudo_shares[1][0])   
+    obtained_shares = []
+    for share in dealer.pseudo_shares[1][0]:
+        if share == 0:
+            obtained_shares.append(None)
+        else:
+            obtained_shares.append(int.from_bytes(share, byteorder='big'))
+    
+    print('obtained shares', obtained_shares) 
+    combined_secret = dealer.combine_secret(1, 1, obtained_shares)
+    print('Combined secret s1', combined_secret)
 
     # indexes begin at 0
     #user_num = 1
