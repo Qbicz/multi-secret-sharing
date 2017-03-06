@@ -341,7 +341,10 @@ class Dealer:
         
     
     def get_M_public_user_share(self, i_secret, q_group, participant):
+        
+        return self.public_shares_M[i_secret][q_group][participant]
+        
+        
+    def combine_secret(self, i_secret, q_group, obtained_shares):
         pass
-        
-        
     
