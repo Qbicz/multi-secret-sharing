@@ -368,13 +368,16 @@ class Dealer:
             print('b =', b)
             part_sum = obtained_pseudo_shares[b-1] \
                      + self.public_shares_M[i_secret][q_group][b]
+                     
             combine_product = 1
             for r in self.access_structures[i_secret][q_group]:
                 if r != b:
                     print('r =', r)
                     part_product = -self.get_id_int(r) \
                                  / (self.get_id_int(b) - self.get_id_int(r))
-                    combine_product *= self.modulo_p(part_product)
+                    combine_product *= self.modulo_p(int(part_product))
+                    print('part_product', part_product)
+                    print('combine_product', combine_product)
                     # TODO: prove the correct modulo position in formula
             
             combine_sum += part_sum * combine_product

@@ -2,6 +2,7 @@
 # Filip Kubicz 2016
 
 from multisecret.Dealer import Dealer
+from multisecret.byteHelper import inverse_modulo_p
 
 def main():
     # large prime from NIST P-256 elliptic curve 
@@ -51,13 +52,12 @@ def main():
     print('obtained shares', obtained_shares) 
     combined_secret = dealer.combine_secret(1, 1, obtained_shares)
     print('Combined secret s1', combined_secret)
-
-    # indexes begin at 0
-    #user_num = 1
-    #secret_num = 2
-    #group_num = 2
-    #share133 = dealer.pseudo_share_participant(user_num, secret_num, group_num)
-    #print('Pseudo share length = ', len(share133))
+    
+    a = 4
+    P = 17
+    print('Inverse modulo %d of %d' % (P,a))
+    print('=', inverse_modulo_p(a, P))
+    
     
 
 
