@@ -11,7 +11,8 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from multisecret.primality import is_probable_prime
 
 import numpy as np
-from sys import byteorder
+from multisecret.byteHelper import inverse_modulo_p
+
 
 class Dealer:
 
@@ -373,8 +374,11 @@ class Dealer:
             for r in self.access_structures[i_secret][q_group]:
                 if r != b:
                     print('r =', r)
-                    part_product = -self.get_id_int(r) \
-                                 / (self.get_id_int(b) - self.get_id_int(r))
+                    denominator = self.get_id_int(b) - self.get_id_int(r)
+                    den_inverse = inverse_modulo_p(denominator, self.p)
+                    print('den = %d\n inverse = %d' % (denominator, den_inverse))
+                    part_product = -self.get_id_int(r) * den_inverse
+
                     combine_product *= self.modulo_p(int(part_product))
                     print('part_product', part_product)
                     print('combine_product', combine_product)
