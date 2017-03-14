@@ -26,10 +26,6 @@ def main():
     """ TODO: test with 4099 prime """
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
 
-    # test hash function - it should be repeatable for the same Dealer object
-    dealer.hash(b'BYTESEQUENCE') # careful, b'' syntax gives ASCII bytes string
-    dealer.hash(b'BYTESEQUENCE')
-
     dealer.provide_id() # a list of IDs stored internally
     dealer.choose_distinct_x()
 
@@ -52,13 +48,7 @@ def main():
     print('obtained shares', obtained_shares) 
     combined_secret = dealer.combine_secret(1, 1, obtained_shares)
     print('Combined secret s1', combined_secret)
-    
-    a = 4
-    P = 17
-    print('Inverse modulo %d of %d' % (P,a))
-    print('=', inverse_modulo_p(a, P))
-    
-    
+
 
 
 if __name__ == "__main__":

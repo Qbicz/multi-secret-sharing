@@ -163,3 +163,9 @@ def test_f_polynomial_compute():
     value = dealer.f_polynomial_compute(bytes([0x02]), secret=0, group=0)
     assert_equal(value, 38+s_secrets[0])
     
+
+def test_combine_secret_2_participants():
+    pass
+
+def test_combine_secret_3_participants():
+    pass

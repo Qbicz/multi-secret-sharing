@@ -20,7 +20,6 @@ def inverse_modulo_p(a, p):
     y2 = 0
     
     while a != 1:
-        print (a)
         q = (p // a) % prime
         # use of integer division // speeded algorithm up by huge factor
         

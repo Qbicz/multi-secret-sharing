@@ -379,7 +379,7 @@ class Dealer:
                     print('den = %d\n inverse = %d' % (denominator, den_inverse))
                     part_product = -self.get_id_int(r) * den_inverse
 
-                    combine_product *= self.modulo_p(int(part_product))
+                    combine_product *= self.modulo_p(part_product)
                     print('part_product', part_product)
                     print('combine_product', combine_product)
                     # TODO: prove the correct modulo position in formula

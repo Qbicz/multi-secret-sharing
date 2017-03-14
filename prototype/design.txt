@@ -8,5 +8,7 @@ class Participant
 
 - several instances
 
+class Combiner
+- combine secrets using modulo p inverse / division
 
-TODO: change the directory layout for NOSETESTS
+directory layout for NOSETESTS
