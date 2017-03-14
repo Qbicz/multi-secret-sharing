@@ -31,5 +31,7 @@ def test_take_first_bits():
 def test_inverse_modulo_p():
     
     assert_equal(7, inverse_modulo_p(5, 17))
-    
+    assert_equal(5, inverse_modulo_p(7, 17))
+    assert_equal(9, inverse_modulo_p(3, 26))
+    assert_equal(829540, inverse_modulo_p(1009, 1000007))
     
