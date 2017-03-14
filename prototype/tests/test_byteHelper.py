@@ -28,3 +28,8 @@ def test_take_first_bits():
     #first_bits = dealer.take_first_bits(input, 24)
     #assert_equal(first_bits, bytes(0xDEA))
     
+def test_inverse_modulo_p():
+    
+    assert_equal(7, inverse_modulo_p(5, 17))
+    
+    
