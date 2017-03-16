@@ -10,8 +10,8 @@ pip3 install cryptography
 ```
 Run an example
 ```bash
-cd prototype
-python3 multi-secret-sharing.py
+cd python-prototype
+python3 example-multi-secret.py
 ```
 
 # Run tests
@@ -22,7 +22,7 @@ sudo apt install python3-nose
 ```
 Go to prototype folder and run tests:
 ```bash
-cd prototype
+cd python-prototype
 nosetests3
 ```
 
