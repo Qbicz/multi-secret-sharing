@@ -168,4 +168,35 @@ def test_combine_secret_2_participants():
     pass
 
 def test_combine_secret_3_participants():
-    pass
+    """ Acceptance test """
+    
+    s1 = 4
+    p = 7
+    # access group
+    A = (1,2,3)
+    # user IDs
+    IDs = [1,2,3]
+    # polynomial coeffs
+    d1 = 2
+    d2 = 1
+    
+    dealer = Dealer(p, len(A), [s1], [[A]])
+    assert_equal(dealer.n, 3)
+    
+    # set IDs, don't generate random
+    byte_IDs = []
+    for ID in IDs:
+        byte_IDs.append( bytes([ID]) )
+    print(byte_IDs)
+    dealer.random_id = byte_IDs
+    
+    # set polynomial coeffs
+    dealer.d = [[]]
+    dealer.d[0].append([d1, d2])
+    assert_equal([2,1], dealer.get_d_polynomial_coeffs(0, 0))
+    
+    # set x-shares for pseudo share generation only
+    dealer.x = [3,4,5]
+    
+    dealer.compute_all_pseudo_shares()
+    
