@@ -98,14 +98,14 @@ def test_take_first_bits():
     dealer = Dealer(7, 2, [5,6], [[(1,2)],[(1)]] )
     
     input = bytes([0xDE, 0xAD, 0xBE, 0xEF]) # len in bytes
-    #print('test input: ', input.hex())
+    print('test input: ', input.hex())
     
     # test correct exception raised
     with assert_raises(ValueError):
         dealer.take_first_bits(input, 65) # len in bits
     
     first_bits = dealer.take_first_bits(input, 12)
-    #print('test first bits: ', first_bits.hex())
+    print('test first bits: ', first_bits.hex())
     assert_equal(first_bits, bytes([0xDE, 0xA0]))
     
     modulo_bits = dealer.take_first_bits(input, 16)

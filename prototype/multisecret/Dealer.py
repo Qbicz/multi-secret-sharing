@@ -138,6 +138,7 @@ class Dealer:
     def take_first_bits(self, input, bitlen):
         #print('Length of input', len(input))
     
+        print('take first bits from', input)
         if bitlen > 8*len(input):
             raise ValueError('input shorter than %d bits' % bitlen)
         elif bitlen == 8*len(input):
@@ -145,16 +146,16 @@ class Dealer:
         else:
             # take all bytes needed
             if bitlen % 8 == 0:
-                bytelen = int(bitlen/8)
+                bytelen = bitlen // 8
             else:
-                bytelen = (floor(bitlen/8)) + 1
+                bytelen = bitlen // 8 + 1
             input_bytelen = input[:bytelen]
             
             # now extract bits from the last byte
             last_byte = input_bytelen[-1]
             mask = ~(0xff >> (8-(8*bytelen - bitlen)))
-            output = bytearray(input_bytelen[:bytelen-1])
-            output.append(mask & last_byte)
+            output = bytes(input_bytelen[:bytelen-1])
+            output += bytes([mask & last_byte])
             return output
 
             
@@ -189,7 +190,6 @@ class Dealer:
             
                 print('A%d: %r' % (index,A))
                 self.print_list_of_hex(coeffs_for_A, 'polynomial coeff d')
-                # TODO: dla kazdej grupy powinno byc inaczej, osobno
                 
                 self.d[gindex].append(coeffs_for_A)
               
@@ -303,7 +303,10 @@ class Dealer:
         #print('v = ', v)
         
         # concatenate x, i and q binary
-        bytes_x = self.x[participant-1]
+        if isinstance(self.x[participant-1], bytes):
+            bytes_x = self.x[participant-1]
+        else:
+            bytes_x = bytes([ self.x[participant-1] ])
         bytes_i = bytes([i_secret])
         bytes_q = bytes([q_group])
 
@@ -335,6 +338,7 @@ class Dealer:
         
         # use desired type 'object' to allow holding bytes/strings in a numpy array
         self.public_shares_M = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
+        self.B_values = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
         
         for i, gamma in enumerate(self.access_structures):
             for q, A in enumerate(gamma):
@@ -343,6 +347,9 @@ class Dealer:
                     
                     B_value = self.user_polynomial_value_B(i, q, b)
                     M = self.public_user_share_M(i, q, b, B_value)
+                    
+                    # for testing store B in an array
+                    self.B_values[i][q][b] = B_value
                     
                     # STORE in a 3D array
                     self.public_shares_M[i][q][b] = M
