@@ -66,8 +66,11 @@ class Dealer:
             number = number % self.p
         
         if(return_bytes):
-            bit_len = floor(log2(number))+1
-            byte_len = floor(bit_len/8)+1
+            if number == 0:
+                byte_len = 1
+            else:
+                bit_len = floor(log2(number))+1
+                byte_len = bit_len // 8 +1
             #print('bit_len, byte_len', bit_len, byte_len)
             modulo_number = number.to_bytes(byte_len, byteorder='big')
         else:
@@ -213,7 +216,8 @@ class Dealer:
             x = int.from_bytes(x, byteorder='big')
         
         for degree, coeff in enumerate(coeffs):
-            coeff = int.from_bytes(coeff, byteorder='big')
+            if isinstance(coeff, bytes):
+                coeff = int.from_bytes(coeff, byteorder='big')
             
             #print('d%d, coeff=%d' % (degree+1, coeff))
             poly_value += coeff * x**(degree+1)

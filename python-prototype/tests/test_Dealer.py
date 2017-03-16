@@ -199,4 +199,9 @@ def test_combine_secret_3_participants():
     dealer.x = [3,4,5]
     
     dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
+    
+    print(dealer.B_values)
+    assert_equal([0,5,5], dealer.B_values)
+    assert_equal(0,1)
     
