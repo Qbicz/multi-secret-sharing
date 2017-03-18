@@ -59,10 +59,10 @@ class Dealer:
         #print(log2(number))
         
         # compare int objects
-        print(number)
+        print('%d modulo %d' % (number,self.p))
         # should not typecheck
         #assert(isinstance(number, int))
-        if(number > self.p):
+        if(number >= self.p):
             number = number % self.p
         
         if(return_bytes):
@@ -100,7 +100,7 @@ class Dealer:
 
         # take demanded numer of bits
         varlen_hash = self.take_first_bits(ciphertext, self.hash_len)
-        print(varlen_hash.hex())
+        print('Hash is ', varlen_hash.hex())
         
         return varlen_hash
         
@@ -141,7 +141,7 @@ class Dealer:
     def take_first_bits(self, input, bitlen):
         #print('Length of input', len(input))
     
-        print('take first bits from', input)
+        #print('take first bits from', input)
         if bitlen > 8*len(input):
             raise ValueError('input shorter than %d bits' % bitlen)
         elif bitlen == 8*len(input):
@@ -210,8 +210,9 @@ class Dealer:
         print('f_polynomial_compute for secret %d, group A %d ' % (secret, group))
         poly_value = 0;
         coeffs = self.get_d_polynomial_coeffs(secret, group)
+        print('coeffs', coeffs)
         
-        #print('x=', x.hex())
+        print('x=', x.hex())
         if isinstance(x, bytes):
             x = int.from_bytes(x, byteorder='big')
         
@@ -219,11 +220,13 @@ class Dealer:
             if isinstance(coeff, bytes):
                 coeff = int.from_bytes(coeff, byteorder='big')
             
-            #print('d%d, coeff=%d' % (degree+1, coeff))
+            print('d%d, coeff=%d' % (degree+1, coeff))
             poly_value += coeff * x**(degree+1)
+            print('in for: poly_value', poly_value)
         
         poly_value += self.s_secrets[secret]
-        #print('secret =', self.s_secrets[secret])
+        poly_value = self.modulo_p(poly_value)
+        print('secret =', self.s_secrets[secret])
         print('poly_value', poly_value)    
         
         return poly_value

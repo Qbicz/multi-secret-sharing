@@ -5,6 +5,7 @@ from nose.tools import assert_equal
 from nose.tools import assert_not_equal
 from nose.tools import assert_raises
 from multisecret.Dealer import Dealer
+from numpy import array, array_equal
 
 # TODO: test if hash is the same for the same Dealer object and different among separate objects with random AES-CTR nonce
 
@@ -173,7 +174,7 @@ def test_combine_secret_3_participants():
     s1 = 4
     p = 7
     # access group
-    A = (1,2,3)
+    A = (0,1,2)
     # user IDs
     IDs = [1,2,3]
     # polynomial coeffs
@@ -202,6 +203,6 @@ def test_combine_secret_3_participants():
     dealer.compute_all_public_shares_M()
     
     print(dealer.B_values)
-    assert_equal([0,5,5], dealer.B_values)
-    assert_equal(0,1)
+    assert_equal(True, array_equal([[[5,0,5]]], dealer.B_values))
+    #assert_equal(0,1)
     
