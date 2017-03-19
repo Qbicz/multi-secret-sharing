@@ -174,7 +174,7 @@ def test_combine_secret_3_participants():
     s1 = 4
     p = 7
     # access group
-    A = (0,1,2)
+    A = (1,2,3)
     # user IDs
     IDs = [1,2,3]
     # polynomial coeffs
@@ -203,6 +203,11 @@ def test_combine_secret_3_participants():
     dealer.compute_all_public_shares_M()
     
     print(dealer.B_values)
-    assert_equal(True, array_equal([[[5,0,5]]], dealer.B_values))
-    #assert_equal(0,1)
+    assert_equal(True, array_equal([[[0,0,5,5]]], dealer.B_values))
+    
+    obtained_pseudo_shares = dealer.pseudo_shares[0][0][1:] # skip 0th element (user P0, we have P1, P2, P3)
+    print(obtained_pseudo_shares)
+    combined_secret = dealer.combine_secret(0, 0, obtained_pseudo_shares)
+    
+    assert_equal(combined_secret, s1)
     

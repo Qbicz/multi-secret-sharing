@@ -59,7 +59,7 @@ class Dealer:
         #print(log2(number))
         
         # compare int objects
-        print('%d modulo %d' % (number,self.p))
+        #print('%d modulo %d' % (number,self.p))
         # should not typecheck
         #assert(isinstance(number, int))
         if(number >= self.p):
@@ -100,7 +100,7 @@ class Dealer:
 
         # take demanded numer of bits
         varlen_hash = self.take_first_bits(ciphertext, self.hash_len)
-        print('Hash is ', varlen_hash.hex())
+        #print('Hash is ', varlen_hash.hex())
         
         return varlen_hash
         
@@ -210,9 +210,8 @@ class Dealer:
         print('f_polynomial_compute for secret %d, group A %d ' % (secret, group))
         poly_value = 0;
         coeffs = self.get_d_polynomial_coeffs(secret, group)
-        print('coeffs', coeffs)
         
-        print('x=', x.hex())
+        #print('x=', x.hex())
         if isinstance(x, bytes):
             x = int.from_bytes(x, byteorder='big')
         
@@ -220,14 +219,12 @@ class Dealer:
             if isinstance(coeff, bytes):
                 coeff = int.from_bytes(coeff, byteorder='big')
             
-            print('d%d, coeff=%d' % (degree+1, coeff))
+            #print('d%d, coeff=%d' % (degree+1, coeff))
             poly_value += coeff * x**(degree+1)
-            print('in for: poly_value', poly_value)
         
         poly_value += self.s_secrets[secret]
         poly_value = self.modulo_p(poly_value)
-        print('secret =', self.s_secrets[secret])
-        print('poly_value', poly_value)    
+        #print('poly_value', poly_value)    
         
         return poly_value
     
@@ -353,6 +350,7 @@ class Dealer:
                     print('compute_all_public_shares_M, i=%d, q=%d, b=%d' % (i,q,b))
                     
                     B_value = self.user_polynomial_value_B(i, q, b)
+                    print('B_P%d = %d' % (b, B_value))
                     M = self.public_user_share_M(i, q, b, B_value)
                     
                     # for testing store B in an array
@@ -372,6 +370,14 @@ class Dealer:
         combine a single secret using Lagrange interpolation
         """
         
+        if isinstance(obtained_pseudo_shares[0], bytes):
+            obtained_shares_int = []
+            for obtained_share in obtained_pseudo_shares:
+                obtained_shares_int.append(int.from_bytes(obtained_share, byteorder='big'))
+            obtained_pseudo_shares = obtained_shares_int
+        
+        print('TAAAAAAA', obtained_pseudo_shares)
+        
         print(self.access_structures[i_secret])
         assert(q_group <= len( self.access_structures[i_secret]))
         
@@ -381,8 +387,9 @@ class Dealer:
         print('Access group:', self.access_structures[i_secret][q_group])
         for b in self.access_structures[i_secret][q_group]:
             print('b =', b)
-            part_sum = obtained_pseudo_shares[b-1] \
+            part_sum_B = obtained_pseudo_shares[b-1] \
                      + self.public_shares_M[i_secret][q_group][b]
+            print('B = U+M, B =', part_sum_B)
                      
             combine_product = 1
             for r in self.access_structures[i_secret][q_group]:
@@ -398,9 +405,9 @@ class Dealer:
                     print('combine_product', combine_product)
                     # TODO: prove the correct modulo position in formula
             
-            combine_sum += part_sum * combine_product
+            combine_sum += part_sum_B * combine_product
             
-        print("Combined sum, s%d = %d" % (i_secret, combine_sum))
+        print("Combined sum, s%d = %d" % (i_secret, combine_sum % self.p))
             
         # obtained shares U should be passed by argument
         return self.modulo_p(combine_sum)

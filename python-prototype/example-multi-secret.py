@@ -30,16 +30,12 @@ def main():
     dealer.choose_distinct_x()
 
     dealer.access_group_polynomial_coeffs()
-
     dealer.compute_all_pseudo_shares()
-    #B_value = dealer.user_polynomial_value_B(1, 1, 2)
-    #dealer.public_user_share_M(1, 1, 2, B_value)
-    
     dealer.compute_all_public_shares_M()
     
-    print('obtained shares', dealer.pseudo_shares[1][0])   
+    print('obtained shares', dealer.pseudo_shares[2][0])   
     obtained_shares = []
-    for share in dealer.pseudo_shares[1][0]:
+    for share in dealer.pseudo_shares[2][0]:
         if share == 0:
             obtained_shares.append(None)
         else:
