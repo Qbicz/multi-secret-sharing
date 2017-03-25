@@ -1,5 +1,5 @@
 # Prototype of Multi-secret sharing scheme by Roy & Adhikari
-# Filip Kubicz 2016
+# Filip Kubicz 2016-2017
 
 from nose.tools import assert_equal
 from nose.tools import assert_not_equal
@@ -165,8 +165,13 @@ def test_f_polynomial_compute():
     assert_equal(value, 38+s_secrets[0])
     
 
+def test_pseudo_share_array_size_iqb():
+    pass
+
+
 def test_combine_secret_2_participants():
     pass
+
 
 def test_combine_secret_3_participants():
     """ Acceptance test """
@@ -174,7 +179,7 @@ def test_combine_secret_3_participants():
     s1 = 4
     p = 7
     # access group
-    A = (1,2,3)
+    A = [1,2,3]
     # user IDs
     IDs = [1,2,3]
     # polynomial coeffs
@@ -199,7 +204,7 @@ def test_combine_secret_3_participants():
     # set x-shares for pseudo share generation only
     dealer.x = [3,4,5]
     
-    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_pseudo_shares_lists()
     dealer.compute_all_public_shares_M()
     
     print(dealer.B_values)

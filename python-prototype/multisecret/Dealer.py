@@ -18,7 +18,7 @@ class Dealer:
 
     def __init__(self, p, n_participants, s_secrets, access_structures):
         """ Create a Dealer object with random AES-CTR nonce for collision-resistant hashing. [?]
-        Dealer stores access structures, participants and secrets in array beginning at 0
+        Dealer stores access structures, participants and secrets in 0-indexed arrays
         """
         
         # check sanity of p
@@ -282,6 +282,23 @@ class Dealer:
             
         print(self.pseudo_shares)
 
+
+    def compute_all_pseudo_shares_lists(self):
+        """ experimental: use nested lists, don't use numpy arrays
+            - this way we don't have empty (0) elements in pseudo_shares structure """
+        self.pseudo_shares = self.access_structures
+        print(self.access_structures)
+        
+        for i, gamma in enumerate(self.pseudo_shares):
+            for q, A in enumerate(self.pseudo_shares[i]):
+                print('[i]', self.pseudo_shares[i])
+                print('q', q)
+                for b, Pb in enumerate(self.pseudo_shares[i][q]):
+                    print('[i][q]', self.pseudo_shares[i][q])
+                    self.pseudo_shares[i][q][b] = self.pseudo_share_participant(i, q, b)
+        
+        print(self.pseudo_shares)
+        
 
     def pseudo_share_participant(self, i_secret, q_group, participant):
         """ pseudo share generation for a single participant
