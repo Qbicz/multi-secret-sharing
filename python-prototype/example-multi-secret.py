@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Prototype of Multi-secret sharing scheme by Roy & Adhikari
 # Filip Kubicz 2016
 
