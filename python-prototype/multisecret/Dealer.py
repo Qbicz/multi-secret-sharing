@@ -13,6 +13,8 @@ from multisecret.primality import is_probable_prime
 import numpy as np
 from multisecret.byteHelper import inverse_modulo_p
 
+import copy # to have deepcopy, independent copy of a list
+
 
 class Dealer:
 
@@ -286,7 +288,7 @@ class Dealer:
     def compute_all_pseudo_shares_lists(self):
         """ experimental: use nested lists, don't use numpy arrays
             - this way we don't have empty (0) elements in pseudo_shares structure """
-        self.pseudo_shares = self.access_structures
+        self.pseudo_shares = copy.deepcopy(self.access_structures)
         print(self.access_structures)
         
         for i, gamma in enumerate(self.pseudo_shares):
@@ -375,7 +377,7 @@ class Dealer:
                     
                     # STORE in a 3D array
                     self.public_shares_M[i][q][b] = M
-        
+
     
     def get_M_public_user_share(self, i_secret, q_group, participant):
         
