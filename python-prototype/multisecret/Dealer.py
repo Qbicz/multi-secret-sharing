@@ -244,8 +244,8 @@ class Dealer:
     
     def pseudo_share_array_size_iqb(self):
         """ Return sizes i, q, b needed for holding pseudo shares and shares
-        
         """
+        
         max_i_list = []
         max_q_list = []
         max_b_list = []
@@ -297,7 +297,10 @@ class Dealer:
                 print('q', q)
                 for b, Pb in enumerate(self.pseudo_shares[i][q]):
                     print('[i][q]', self.pseudo_shares[i][q])
-                    self.pseudo_shares[i][q][b] = self.pseudo_share_participant(i, q, b)
+                    # it's important to call with Pb - Participant number, not b - index
+                    # e.g when A = (2,3) we should call function with 2 and 3, not 0 and 1
+                    # but we store in in a list under indexes [i][q][0], [i][q][1]
+                    self.pseudo_shares[i][q][b] = self.pseudo_share_participant(i, q, Pb)
         
         print(self.pseudo_shares)
         
@@ -348,7 +351,7 @@ class Dealer:
 
     def public_user_share_M(self, i_secret, q_group, participant, B_value):
         
-        assert(participant in self.access_structures[i_secret][q_group])
+        #assert(participant in self.access_structures[i_secret][q_group])
         
         U_value = int.from_bytes(self.pseudo_shares[i_secret][q_group][participant], byteorder='big')
         M_public_share = B_value - U_value
@@ -358,26 +361,50 @@ class Dealer:
     
     
     def compute_all_public_shares_M(self):
-        
+
         # use desired type 'object' to allow holding bytes/strings in a numpy array
         self.public_shares_M = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
         self.B_values = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
         
         for i, gamma in enumerate(self.access_structures):
             for q, A in enumerate(gamma):
-                for b in A:
-                    print('compute_all_public_shares_M, i=%d, q=%d, b=%d' % (i,q,b))
+                for Pb in A:
+                    print('compute_all_public_shares_M, i=%d, q=%d, Pb=%d' % (i,q,Pb))
                     
-                    B_value = self.user_polynomial_value_B(i, q, b)
-                    print('B_P%d = %d' % (b, B_value))
-                    M = self.public_user_share_M(i, q, b, B_value)
+                    B_value = self.user_polynomial_value_B(i, q, Pb)
+                    print('B_P%d = %d' % (Pb, B_value))
+                    M = self.public_user_share_M(i, q, Pb, B_value)
                     
                     # for testing store B in an array
-                    self.B_values[i][q][b] = B_value
+                    self.B_values[i][q][Pb] = B_value
                     
                     # STORE in a 3D array
+                    self.public_shares_M[i][q][Pb] = M
+                    
+                    
+    def compute_all_public_shares_M_lists(self):
+        """ experimental, use nested lists instead of np.array """
+        
+        # duplicate the structure of access_structure
+        self.public_shares_M = copy.deepcopy(self.access_structures)
+        self.B_values = copy.deepcopy(self.access_structures)
+        
+        for i, gamma in enumerate(self.access_structures):
+            for q, A in enumerate(self.access_structures[i]):
+                for b, Pb in enumerate(self.access_structures[i][q]):
+                    print('compute_all_public_shares_M, i=%d, q=%d, b=%d, user P%d' % (i,q,b,Pb))
+                    
+                    B_value = self.user_polynomial_value_B(i, q, Pb)
+                    print('B_P%d = %d' % (Pb, B_value))
+                    M = self.public_user_share_M(i, q, b, B_value)
+                    
+                    # for testing store B in a nested list
+                    self.B_values[i][q][b] = B_value
+                    
+                    # STORE in a nested list
                     self.public_shares_M[i][q][b] = M
-
+                    
+        
     
     def get_M_public_user_share(self, i_secret, q_group, participant):
         
@@ -397,27 +424,27 @@ class Dealer:
         
         print('TAAAAAAA', obtained_pseudo_shares)
         
-        print(self.access_structures[i_secret])
+        print('Access group:',self.access_structures[i_secret])
         assert(q_group <= len( self.access_structures[i_secret]))
         
         combine_sum = 0
         
         print('combining s%d with A%d' % (i_secret, q_group))
         print('Access group:', self.access_structures[i_secret][q_group])
-        for b in self.access_structures[i_secret][q_group]:
+        for b, Pb in enumerate(self.access_structures[i_secret][q_group]):
             print('b =', b)
-            part_sum_B = obtained_pseudo_shares[b-1] \
+            part_sum_B = obtained_pseudo_shares[b] \
                      + self.public_shares_M[i_secret][q_group][b]
             print('B = U+M, B =', part_sum_B)
                      
             combine_product = 1
-            for r in self.access_structures[i_secret][q_group]:
+            for r, Pr in enumerate(self.access_structures[i_secret][q_group]):
                 if r != b:
                     print('r =', r)
-                    denominator = self.get_id_int(b) - self.get_id_int(r)
+                    denominator = self.get_id_int(Pb) - self.get_id_int(Pr)
                     den_inverse = inverse_modulo_p(denominator, self.p)
                     print('den = %d\n inverse = %d' % (denominator, den_inverse))
-                    part_product = -self.get_id_int(r) * den_inverse
+                    part_product = -self.get_id_int(Pr) * den_inverse
 
                     combine_product *= self.modulo_p(part_product)
                     print('part_product', part_product)
