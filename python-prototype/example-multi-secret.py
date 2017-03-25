@@ -22,15 +22,13 @@ def main():
     # TODO: in GUI choosing access structures on a matrix
 
     # Create a Dealer
-    
-    """ TODO: test with 4099 prime """
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
 
     dealer.provide_id() # a list of IDs stored internally
     dealer.choose_distinct_x()
 
     dealer.access_group_polynomial_coeffs()
-    dealer.compute_all_pseudo_shares_lists()()
+    dealer.compute_all_pseudo_shares_lists()
     dealer.compute_all_public_shares_M_lists()
     
     print('obtained shares', dealer.pseudo_shares[0][0])   

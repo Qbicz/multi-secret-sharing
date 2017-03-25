@@ -169,10 +169,6 @@ def test_pseudo_share_array_size_iqb():
     pass
 
 
-def test_combine_secret_2_participants():
-    pass
-
-
 def test_combine_secret_3_participants():
     """ Acceptance test """
     
@@ -210,9 +206,41 @@ def test_combine_secret_3_participants():
     print(dealer.B_values)
     assert_equal(True, array_equal([[[0,5,5]]], dealer.B_values))
     
-    obtained_pseudo_shares = dealer.pseudo_shares[0][0] # skip 0th element (user P0, we have P1, P2, P3)
+    obtained_pseudo_shares = dealer.pseudo_shares[0][0]
     print('Obtained pseudo shares:', obtained_pseudo_shares)
     combined_secret = dealer.combine_secret(0, 0, obtained_pseudo_shares)
     
     assert_equal(combined_secret, s1)
+    
+    
+def test_combine_secret_3_participants_in_2_groups():
+    """ Acceptance test from the example, but with 4099 prime """
+    prime = 4099
+    s_secrets = [7, 313, 671] # s_i
+    n_participants = 3
+    # gamma1 is a group of users authorized to reconstruct s1
+    gamma1 = [[1,3]]
+    gamma2 = [[1,2], [2,3]]
+    gamma3 = [[1,2,3]] # to secret s3 only all 3 users together can gain access
+    access_structures = [gamma1, gamma2, gamma3]
+
+    dealer = Dealer(prime, n_participants, s_secrets, access_structures)
+
+    """ TODO: fix number generation in mod p, it takes too long to discard numbers """
+    #dealer.provide_id() # a list of IDs stored internally
+    dealer.random_id = (bytes([1]), bytes([2]), bytes([3]))
+    #dealer.choose_distinct_x()
+    dealer.x = [3,4,5]
+    
+    dealer.d = [[[1,3]],[[1,2],[2,3]],[[1,2,3]]]
+
+    dealer.compute_all_pseudo_shares_lists()
+    dealer.compute_all_public_shares_M_lists()
+    
+    obtained_pseudo = dealer.pseudo_shares[0][0]
+    
+    combined_secret_0 = dealer.combine_secret(0, 0, obtained_pseudo)
+    
+    assert_equal(combined_secret_0, s_secrets[0])
+
     

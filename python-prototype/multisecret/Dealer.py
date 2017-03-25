@@ -221,10 +221,11 @@ class Dealer:
             if isinstance(coeff, bytes):
                 coeff = int.from_bytes(coeff, byteorder='big')
             
-            #print('d%d, coeff=%d' % (degree+1, coeff))
+            print('+ %d * %d^%d' % (coeff, x, degree+1))
             poly_value += coeff * x**(degree+1)
         
         poly_value += self.s_secrets[secret]
+        print('+ secret (%d)' % self.s_secrets[secret])
         poly_value = self.modulo_p(poly_value)
         #print('poly_value', poly_value)    
         
@@ -355,7 +356,7 @@ class Dealer:
         
         U_value = int.from_bytes(self.pseudo_shares[i_secret][q_group][participant], byteorder='big')
         M_public_share = B_value - U_value
-        print('participant %d, public M = %d' % (participant, M_public_share))
+        print('participant %d, U = %d, public M = %d' % (participant, U_value, M_public_share))
         
         return M_public_share
     
