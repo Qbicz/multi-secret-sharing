@@ -341,11 +341,11 @@ class Dealer:
         
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
         # hash the concatenated bytes
-        print('[x,i,q]: ', message.hex())
+        #print('[x,i,q]: ', message.hex())
         hash_of_message = self.hash(message)
         #print('hash of [x,i,q]', hash_of_message.hex())
         share = self.modulo_p(hash_of_message)
-        print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
+        #print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
         
         return share
 
@@ -355,7 +355,7 @@ class Dealer:
         #assert(participant in self.access_structures[i_secret][q_group])
         
         U_value = int.from_bytes(self.pseudo_shares[i_secret][q_group][participant], byteorder='big')
-        M_public_share = B_value - U_value
+        M_public_share = (B_value - U_value) % self.p
         print('participant %d, U = %d, public M = %d' % (participant, U_value, M_public_share))
         
         return M_public_share
@@ -423,7 +423,7 @@ class Dealer:
                 obtained_shares_int.append(int.from_bytes(obtained_share, byteorder='big'))
             obtained_pseudo_shares = obtained_shares_int
         
-        print('TAAAAAAA', obtained_pseudo_shares)
+        print('Obtained pseudo shares:', obtained_pseudo_shares)
         
         print('Access group:',self.access_structures[i_secret])
         assert(q_group <= len( self.access_structures[i_secret]))
@@ -434,25 +434,29 @@ class Dealer:
         print('Access group:', self.access_structures[i_secret][q_group])
         for b, Pb in enumerate(self.access_structures[i_secret][q_group]):
             print('b =', b)
-            part_sum_B = obtained_pseudo_shares[b] \
-                     + self.public_shares_M[i_secret][q_group][b]
-            print('B = U+M, B =', part_sum_B)
+            part_sum_B = (obtained_pseudo_shares[b] \
+                     + self.public_shares_M[i_secret][q_group][b]) % self.p
+            print('B = U+M, B =%d, M=%d'
+                  % (part_sum_B, self.public_shares_M[i_secret][q_group][b] ))
                      
             combine_product = 1
             for r, Pr in enumerate(self.access_structures[i_secret][q_group]):
                 if r != b:
                     print('r =', r)
-                    denominator = self.get_id_int(Pb) - self.get_id_int(Pr)
+                    print('ID_(b=%d) : %d, ID_(r=%d) : %d'
+                          % (Pb, self.get_id_int(Pb), Pr, self.get_id_int(Pr) ))
+                    denominator = (self.get_id_int(Pb) - self.get_id_int(Pr)) % self.p
                     den_inverse = inverse_modulo_p(denominator, self.p)
-                    print('den = %d\n inverse = %d' % (denominator, den_inverse))
-                    part_product = -self.get_id_int(Pr) * den_inverse
+                    print('denominator = %d\n its inverse = %d'
+                          % (denominator, den_inverse))
+                    part_product = (-self.get_id_int(Pr) * den_inverse) % self.p
 
-                    combine_product *= self.modulo_p(part_product)
+                    combine_product *= part_product
                     print('part_product', part_product)
                     print('combine_product', combine_product)
                     # TODO: prove the correct modulo position in formula
             
-            combine_sum += part_sum_B * combine_product
+            combine_sum += (part_sum_B * combine_product) % self.p
             
         print("Combined sum, s%d = %d" % (i_secret, combine_sum % self.p))
             
