@@ -203,6 +203,7 @@ def test_combine_secret_3_participants():
     dealer.compute_all_pseudo_shares_lists()
     dealer.compute_all_public_shares_M_lists()
     
+    # [0,5,5] when testing with p = 7
     print(dealer.B_values)
     assert_equal(True, array_equal([[[0,5,5]]], dealer.B_values))
     
@@ -215,8 +216,8 @@ def test_combine_secret_3_participants():
     
 def test_combine_secret_3_participants_in_2_groups():
     """ Acceptance test from the example, but with 4099 prime """
-    prime = 4099
-    s_secrets = [7, 313, 671] # s_i
+    prime = 41
+    s_secrets = [7, 5, 3] # s_i
     n_participants = 3
     # gamma1 is a group of users authorized to reconstruct s1
     gamma1 = [[1,3]]
@@ -232,10 +233,14 @@ def test_combine_secret_3_participants_in_2_groups():
     #dealer.choose_distinct_x()
     dealer.x = [3,4,5]
     
+    """ TODO: use Dealer method to generate """
     dealer.d = [[[1,3]],[[1,2],[2,3]],[[1,2,3]]]
+    assert_equal([1,3], dealer.get_d_polynomial_coeffs(0, 0))
 
     dealer.compute_all_pseudo_shares_lists()
     dealer.compute_all_public_shares_M_lists()
+    
+    #assert_equal(dealer.B_values[0][0], [11, 37])
     
     obtained_pseudo = dealer.pseudo_shares[0][0]
     
