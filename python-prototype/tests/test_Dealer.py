@@ -169,31 +169,32 @@ def test_pseudo_share_array_size_iqb():
     pass
 
 
-def test_combine_secret_3_participants():
-    """ Acceptance test """
+def test_combine_first_secret_3_participants():
+    """ Acceptance test: secret with index [0]  """
     
-    s1 = 4
-    p = 7
+    s1 = 7
+    p = 41
     # access group
     A = [1,2,3]
+    gamma1 = [A]
     # user IDs
     IDs = [1,2,3]
     # polynomial coeffs
     d1 = 2
     d2 = 1
     
-    dealer = Dealer(p, len(A), [s1], [[A]])
+    dealer = Dealer(p, len(A), [s1, 9], [gamma1])
     assert_equal(dealer.n, 3)
     
     # set IDs, don't generate random
     byte_IDs = []
     for ID in IDs:
         byte_IDs.append( bytes([ID]) )
-    print(byte_IDs)
+    print('[test] byte IDs: ', byte_IDs)
     dealer.random_id = byte_IDs
     
     # set polynomial coeffs
-    dealer.d = [[]]
+    dealer.d = [[], []]
     dealer.d[0].append([d1, d2])
     assert_equal([2,1], dealer.get_d_polynomial_coeffs(0, 0))
     
@@ -204,8 +205,8 @@ def test_combine_secret_3_participants():
     dealer.compute_all_public_shares_M_lists()
     
     # [0,5,5] when testing with p = 7
-    print(dealer.B_values)
-    assert_equal(True, array_equal([[[0,5,5]]], dealer.B_values))
+    #print(dealer.B_values)
+    #assert_equal(True, array_equal([[[0,5,5]]], dealer.B_values))
     
     obtained_pseudo_shares = dealer.pseudo_shares[0][0]
     print('Obtained pseudo shares:', obtained_pseudo_shares)
@@ -213,8 +214,56 @@ def test_combine_secret_3_participants():
     
     assert_equal(combined_secret, s1)
     
+
+def test_combine_second_secret_3_participants():
+    """ Acceptance test: secret with index [1] """
+
+    s1 = 7
+    p = 41
+    # access group
+    A = [1,2,3]
+    gamma1 = [A]
+    # user IDs
+    IDs = [1,2,3]
+    # polynomial coeffs
+    d1 = 2
+    d2 = 1
     
-def test_combine_secret_3_participants_in_2_groups():
+    dealer = Dealer(p, len(A), [s1, 9], [gamma1, gamma1])
+    assert_equal(dealer.n, 3)
+    
+    # set IDs, don't generate random
+    byte_IDs = []
+    for ID in IDs:
+        byte_IDs.append( bytes([ID]) )
+    print('[test] byte IDs: ', byte_IDs)
+    dealer.random_id = byte_IDs
+    
+    # set polynomial coeffs
+    dealer.d = [[], []]
+    dealer.d[0].append([d1, d2])
+    assert_equal([2,1], dealer.get_d_polynomial_coeffs(0, 0))
+    dealer.d[1].append([d1, d2])
+    assert_equal([2,1], dealer.get_d_polynomial_coeffs(1, 0))
+    
+    # set x-shares for pseudo share generation only
+    dealer.x = [3,4,5]
+    
+    dealer.compute_all_pseudo_shares_lists()
+    dealer.compute_all_public_shares_M_lists()
+    
+    # [0,5,5] when testing with p = 7
+    #print(dealer.B_values)
+    #assert_equal(True, array_equal([[[0,5,5]]], dealer.B_values))
+    
+    obtained_pseudo_shares = dealer.pseudo_shares[0][0]
+    print('Obtained pseudo shares:', obtained_pseudo_shares)
+    combined_secret = dealer.combine_secret(0, 0, obtained_pseudo_shares)
+    
+    assert_equal(combined_secret, 9)
+    
+    
+def test_combine_secret_3_participants_in_3_groups():
     """ Acceptance test from the example, but with 4099 prime """
     prime = 41
     s_secrets = [7, 5, 3] # s_i
@@ -245,6 +294,8 @@ def test_combine_secret_3_participants_in_2_groups():
     obtained_pseudo = dealer.pseudo_shares[0][0]
     
     combined_secret_0 = dealer.combine_secret(0, 0, obtained_pseudo)
+    
+    assert_equal([7,5,3], dealer.s_secrets)
     
     assert_equal(combined_secret_0, s_secrets[0])
 
