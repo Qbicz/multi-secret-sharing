@@ -172,8 +172,8 @@ def test_pseudo_share_array_size_iqb():
 def test_combine_first_secret_3_participants():
     """ Acceptance test: secret with index [0]  """
     
-    s1 = 7
-    p = 41
+    s1 = 4
+    p = 13
     # access group
     A = [1,2,3]
     gamma1 = [A]
@@ -216,20 +216,21 @@ def test_combine_first_secret_3_participants():
     
 
 def test_combine_second_secret_3_participants():
-    """ Acceptance test: secret with index [1] """
+    """ Acceptance test: secret with index [1] when it is the longest access group """
 
-    s1 = 7
+    secrets = [7, 9]
     p = 41
-    # access group
-    A = [1,2,3]
+    # access groups
+    A = [1,2]
     gamma1 = [A]
+    gamma2 = [[1,2,3]]
     # user IDs
     IDs = [1,2,3]
     # polynomial coeffs
     d1 = 2
     d2 = 1
     
-    dealer = Dealer(p, len(A), [s1, 9], [gamma1, gamma1])
+    dealer = Dealer(p, 3, secrets, [gamma1, gamma2])
     assert_equal(dealer.n, 3)
     
     # set IDs, don't generate random
@@ -243,8 +244,8 @@ def test_combine_second_secret_3_participants():
     dealer.d = [[], []]
     dealer.d[0].append([d1, d2])
     assert_equal([2,1], dealer.get_d_polynomial_coeffs(0, 0))
-    dealer.d[1].append([d1, d2])
-    assert_equal([2,1], dealer.get_d_polynomial_coeffs(1, 0))
+    dealer.d[1].append([d2, d1])
+    assert_equal([1,2], dealer.get_d_polynomial_coeffs(1, 0))
     
     # set x-shares for pseudo share generation only
     dealer.x = [3,4,5]
@@ -256,11 +257,66 @@ def test_combine_second_secret_3_participants():
     #print(dealer.B_values)
     #assert_equal(True, array_equal([[[0,5,5]]], dealer.B_values))
     
-    obtained_pseudo_shares = dealer.pseudo_shares[0][0]
-    print('Obtained pseudo shares:', obtained_pseudo_shares)
-    combined_secret = dealer.combine_secret(0, 0, obtained_pseudo_shares)
+    CHOSEN_SECRET = 1
     
-    assert_equal(combined_secret, 9)
+    obtained_pseudo_shares = dealer.pseudo_shares[CHOSEN_SECRET][0]
+    print('Obtained pseudo shares:', obtained_pseudo_shares)
+    combined_secret = dealer.combine_secret(CHOSEN_SECRET, 0, obtained_pseudo_shares)
+    
+    assert_equal(combined_secret, secrets[CHOSEN_SECRET])
+
+
+def test_combine_secret_for_shorter_group():
+    """ Acceptance test: combine secret with a 2-member access group 
+        when there are other 3-member groups """
+
+    secrets = [7,9]
+    p = 41
+    # access group
+    A = [1,2,3]
+    gamma1 = [A]
+    gamma2 = [[1,2]]
+    # user IDs
+    IDs = [1,2,3]
+    # polynomial coeffs
+    d1 = 2
+    d2 = 1
+    
+    dealer = Dealer(p, 3, secrets, [gamma1, gamma2])
+    assert_equal(dealer.n, 3)
+    
+    # set IDs, don't generate random
+    byte_IDs = []
+    for ID in IDs:
+        byte_IDs.append( bytes([ID]) )
+    print('[test] byte IDs: ', byte_IDs)
+    dealer.random_id = byte_IDs
+    
+    # set polynomial coeffs
+    dealer.d = [[], []]
+    dealer.d[0].append([d1, d2])
+    assert_equal([2,1], dealer.get_d_polynomial_coeffs(0, 0))
+    dealer.d[1].append([d2, d1])
+    assert_equal([1,2], dealer.get_d_polynomial_coeffs(1, 0))
+    
+    # set x-shares for pseudo share generation only
+    dealer.x = [3,4,5]
+    
+    dealer.compute_all_pseudo_shares_lists()
+    dealer.compute_all_public_shares_M_lists()
+    
+    # [0,5,5] when testing with p = 7
+    #print(dealer.B_values)
+    #assert_equal(True, array_equal([[[0,5,5]]], dealer.B_values))
+    
+    CHOSEN_SECRET = 1
+    
+    obtained_pseudo_shares = dealer.pseudo_shares[CHOSEN_SECRET][0]
+    print('Obtained pseudo shares:', obtained_pseudo_shares)
+    combined_secret = dealer.combine_secret(CHOSEN_SECRET, 0, obtained_pseudo_shares)
+    
+    assert_equal(combined_secret, secrets[CHOSEN_SECRET])
+
     
     
 def test_combine_secret_3_participants_in_3_groups():
@@ -289,7 +345,7 @@ def test_combine_secret_3_participants_in_3_groups():
     dealer.compute_all_pseudo_shares_lists()
     dealer.compute_all_public_shares_M_lists()
     
-    #assert_equal(dealer.B_values[0][0], [11, 37])
+    assert_equal(dealer.B_values[0][0], [11, 37])
     
     obtained_pseudo = dealer.pseudo_shares[0][0]
     
@@ -297,6 +353,6 @@ def test_combine_secret_3_participants_in_3_groups():
     
     assert_equal([7,5,3], dealer.s_secrets)
     
-    assert_equal(combined_secret_0, s_secrets[0])
+    #assert_equal(combined_secret_0, s_secrets[0])
 
     
