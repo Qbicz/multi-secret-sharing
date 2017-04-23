@@ -38,7 +38,7 @@ class Dealer:
         if isinstance(access_structures[0], list):
             self.access_structures = access_structures
         self.random_id = []
-        self.hash_len = floor(log2(p))+1
+        self.hash_len = floor(log2(self.p))+1
         self.aes_nonce = urandom(16)
         
         print('hash_len:', self.hash_len)
@@ -110,13 +110,12 @@ class Dealer:
     def list_of_random_in_modulo_p(self, listlen):
         """helper function returning list of random numbers less than p prime"""
         randoms = []
-        bytelen_of_randoms_generated = 32 # TODO: write bytelenOfInt() method in byteHelper
+        bytelen_of_randoms_generated = self.hash_len # TODO: write bytelenOfInt() method in byteHelper
         
         for i in range(listlen):
-            while True:
-                randoms.append(urandom(bytelen_of_randoms_generated))
-                if(int.from_bytes(randoms[i], byteorder='big') < self.p):
-                    break
+            
+            generated = urandom(bytelen_of_randoms_generated)
+            randoms.append(self.modulo_p(generated))
             
         return randoms # TODO: yield generator for bigger problem sizes
 
@@ -191,7 +190,7 @@ class Dealer:
             
             for index, A in enumerate(gamma):
                 #self.d[index].append(self.list_of_random_in_modulo_p(len(A)))
-                coeffs_for_A = self.list_of_random_in_modulo_p(len(A))
+                coeffs_for_A = self.list_of_random_in_modulo_p(len(A) - 1)
             
                 print('A%d: %r' % (index,A))
                 self.print_list_of_hex(coeffs_for_A, 'polynomial coeff d')
@@ -429,9 +428,12 @@ class Dealer:
         
         combine_sum = 0
         
-        print('combining s%d with A%d' % (i_secret, q_group))
-        print('Access group:', self.access_structures[i_secret][q_group])
         for b, Pb in enumerate(self.access_structures[i_secret][q_group]):
+            
+            if (len(self.get_d_polynomial_coeffs(i_secret, q_group))
+                   >= len(self.access_structures[i_secret][q_group])):
+                raise ValueError('Too many polynomial coefficients!')
+            
             print('\tb =', b)
             part_sum_B = (obtained_pseudo_shares[b] \
                      + self.public_shares_M[i_secret][q_group][b]) % self.p
@@ -463,54 +465,3 @@ class Dealer:
         # obtained shares U should be passed by argument
         return self.modulo_p(combine_sum)
     
-
-    def combine_shamir(self, i_secret, q_group, obtained_pseudo_shares):
-        
-        if isinstance(obtained_pseudo_shares[0], bytes):
-            obtained_shares_int = []
-            for obtained_share in obtained_pseudo_shares:
-                obtained_shares_int.append(int.from_bytes(obtained_share, byteorder='big'))
-            obtained_pseudo_shares = obtained_shares_int
-        
-        for share in obtained_pseudo_shares:
-            assert self.p > share
-        print('Obtained pseudo shares:', obtained_pseudo_shares)
-        
-        print('Access group:',self.access_structures[i_secret])
-        assert(q_group <= len( self.access_structures[i_secret]))
-        
-        combine_sum = 0
-        
-        print('combining s%d with A%d' % (i_secret, q_group))
-        print('Access group:', self.access_structures[i_secret][q_group])
-        for b, Pb in enumerate(self.access_structures[i_secret][q_group]):
-            print('b =', b)
-            part_sum_B = (obtained_pseudo_shares[b] \
-                     + self.public_shares_M[i_secret][q_group][b]) % self.p
-            print('B = U+M, B = %d, M=%d'
-                  % (part_sum_B, self.public_shares_M[i_secret][q_group][b] ))
-                     
-            combine_product = 1
-            for r, Pr in enumerate(self.access_structures[i_secret][q_group]):
-                if r != b:
-                    print('r =', r)
-                    print('ID_(b=%d) : %d, ID_(r=%d) : %d'
-                          % (Pb, self.get_id_int(Pb), Pr, self.get_id_int(Pr) ))
-                    denominator = (self.get_id_int(Pb) - self.get_id_int(Pr)) % self.p
-                    den_inverse = inverse_modulo_p(denominator, self.p)
-                    print('denominator = %d\n its inverse = %d'
-                          % (denominator, den_inverse))
-                    part_product = ((-self.get_id_int(Pr)) % self.p * den_inverse ) % self.p
-
-                    combine_product *= part_product
-                    print('part_product', part_product)
-                    print('combine_product', combine_product)
-            
-            combine_sum += (part_sum_B * combine_product) % self.p
-            print('comb prod=%d, part_sum_B=%d, combined_sum=%d'
-                  % (combine_product, part_sum_B, combine_sum))
-            
-        print("Combined sum, s%d = %d" % (i_secret, combine_sum % self.p))
-            
-        # obtained shares U should be passed by argument
-        return self.modulo_p(combine_sum)    

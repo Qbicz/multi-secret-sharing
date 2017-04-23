@@ -68,7 +68,8 @@ def test_modulo_p():
     
 
 def test_list_of_random_in_modulo_p():
-    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+    """ test: list_of_random_in_modulo_p """
+    dealer = Dealer(4099, n_participants, s_secrets, access_structures)
     
     n = 5
     randomList = dealer.list_of_random_in_modulo_p(n)
@@ -114,6 +115,7 @@ def test_take_first_bits():
     
     
 def test_access_group_polynomial_coeffs():
+    """ test: access_group_polynomial_coeffs """
     
     A1 = (1,3)
     # gamma1 is a group of users authorized to reconstruct s1
@@ -132,8 +134,8 @@ def test_access_group_polynomial_coeffs():
     # test output
     assert_equal(len(dealer.d), 3)
     assert_equal(len(dealer.d[0]), 1)
-    assert_equal(len(dealer.d[1][1]), 2)
-    assert_equal(len(dealer.d[2][0]), 3)
+    assert_equal(len(dealer.d[1][1]), 1)
+    assert_equal(len(dealer.d[2][0]), 2)
     
     # Test index out of range
     with assert_raises(IndexError):
@@ -145,8 +147,8 @@ def test_get_d_polynomial_coeffs():
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
     dealer.access_group_polynomial_coeffs()
     
-    coeff1 = dealer.get_d_polynomial_coeffs(secret=0, group=0)[1]
-    coeff2 = dealer.d[0][0][1]
+    coeff1 = dealer.get_d_polynomial_coeffs(secret=2, group=0)[1]
+    coeff2 = dealer.d[2][0][1]
     
     assert_equal(coeff1, coeff2)
     
@@ -316,7 +318,56 @@ def test_combine_secret_for_shorter_group():
     combined_secret = dealer.combine_secret(CHOSEN_SECRET, 0, obtained_pseudo_shares)
     
     assert_equal(combined_secret, secrets[CHOSEN_SECRET])
-    #assert_equal(True, False)
+    
+    
+def test_combine_with_random_d_coefficients():
+    """ Acceptance test: generate d coeffs & combine secret """
+
+    secrets = [7,13]
+    p = 41
+    # access group
+    A = [1,2]
+    gamma1 = [A]
+    gamma2 = [[1,2,3]]
+    
+    dealer = Dealer(p, 3, secrets, [gamma1, gamma2])
+    assert_equal(dealer.n, 3)
+    
+    # user IDs
+    IDs = [1,2,3]
+    
+    # set IDs, don't generate random
+    byte_IDs = []
+    for ID in IDs:
+        byte_IDs.append( bytes([ID]) )
+    print('[test] byte IDs: ', byte_IDs)
+    dealer.random_id = byte_IDs
+    
+    #
+    # set polynomial coeffs
+    #
+    dealer.access_group_polynomial_coeffs()
+    #assert_equal([2], dealer.get_d_polynomial_coeffs(0, 0))
+    #assert_equal([1,2], dealer.get_d_polynomial_coeffs(1, 0))
+    
+    # set x-shares for pseudo share generation only
+    dealer.x = [3,4,5]
+    
+    dealer.compute_all_pseudo_shares_lists()
+    dealer.compute_all_public_shares_M_lists()
+    
+    # [0,5,5] when testing with p = 7
+    #print(dealer.B_values)
+    #assert_equal(True, array_equal([[[0,5,5]]], dealer.B_values))
+    
+    CHOSEN_SECRETS = (0, 1)
+    
+    for chosen_secret in CHOSEN_SECRETS:
+        obtained_pseudo_shares = dealer.pseudo_shares[chosen_secret][0]
+        print('Obtained pseudo shares:', obtained_pseudo_shares)
+        combined_secret = dealer.combine_secret(chosen_secret, 0, obtained_pseudo_shares)
+        
+        #assert_equal(combined_secret, secrets[chosen_secret])
     
     
 def test_combine_secret_4_participants_in_3_groups():
