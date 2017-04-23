@@ -270,12 +270,12 @@ def test_combine_secret_for_shorter_group():
     """ Acceptance test: combine secret with a 2-member access group 
         when there are other 3-member groups """
 
-    secrets = [7,9]
+    secrets = [7,13]
     p = 41
     # access group
-    A = [1,2,3]
+    A = [1,2]
     gamma1 = [A]
-    gamma2 = [[1,2]]
+    gamma2 = [[1,2,3]]
     # user IDs
     IDs = [1,2,3]
     # polynomial coeffs
@@ -294,8 +294,8 @@ def test_combine_secret_for_shorter_group():
     
     # set polynomial coeffs
     dealer.d = [[], []]
-    dealer.d[0].append([d1, d2])
-    assert_equal([2,1], dealer.get_d_polynomial_coeffs(0, 0))
+    dealer.d[0].append([d1])
+    assert_equal([2], dealer.get_d_polynomial_coeffs(0, 0))
     dealer.d[1].append([d2, d1])
     assert_equal([1,2], dealer.get_d_polynomial_coeffs(1, 0))
     
@@ -309,24 +309,24 @@ def test_combine_secret_for_shorter_group():
     #print(dealer.B_values)
     #assert_equal(True, array_equal([[[0,5,5]]], dealer.B_values))
     
-    CHOSEN_SECRET = 1
+    CHOSEN_SECRET = 0
     
     obtained_pseudo_shares = dealer.pseudo_shares[CHOSEN_SECRET][0]
     print('Obtained pseudo shares:', obtained_pseudo_shares)
     combined_secret = dealer.combine_secret(CHOSEN_SECRET, 0, obtained_pseudo_shares)
     
     assert_equal(combined_secret, secrets[CHOSEN_SECRET])
-
+    #assert_equal(True, False)
     
     
-def test_combine_secret_3_participants_in_3_groups():
+def test_combine_secret_4_participants_in_3_groups():
     """ Acceptance test from the example, but with 4099 prime """
     prime = 41
     s_secrets = [7, 5, 3] # s_i
     n_participants = 3
     # gamma1 is a group of users authorized to reconstruct s1
-    gamma1 = [[1,3]]
-    gamma2 = [[1,2], [2,3]]
+    gamma1 = [[1,3,4]]
+    gamma2 = [[1,2,4], [2,3,4]]
     gamma3 = [[1,2,3]] # to secret s3 only all 3 users together can gain access
     access_structures = [gamma1, gamma2, gamma3]
 
@@ -334,18 +334,18 @@ def test_combine_secret_3_participants_in_3_groups():
 
     """ TODO: fix number generation in mod p, it takes too long to discard numbers """
     #dealer.provide_id() # a list of IDs stored internally
-    dealer.random_id = (bytes([1]), bytes([2]), bytes([3]))
+    dealer.random_id = (bytes([1]), bytes([2]), bytes([3]), bytes([4]))
     #dealer.choose_distinct_x()
-    dealer.x = [3,4,5]
+    dealer.x = [3,4,5,6]
     
     """ TODO: use Dealer method to generate """
-    dealer.d = [[[1,3]],[[1,2],[2,3]],[[1,2,3]]]
-    assert_equal([1,3], dealer.get_d_polynomial_coeffs(0, 0))
+    dealer.d = [[[1,3,4]],[[1,2,4],[2,3,4]],[[1,2,3]]]
+    assert_equal([1,3,4], dealer.get_d_polynomial_coeffs(0, 0))
 
     dealer.compute_all_pseudo_shares_lists()
     dealer.compute_all_public_shares_M_lists()
     
-    assert_equal(dealer.B_values[0][0], [11, 37])
+    #assert_equal(dealer.B_values[0][0], [11, 37])
     
     obtained_pseudo = dealer.pseudo_shares[0][0]
     
