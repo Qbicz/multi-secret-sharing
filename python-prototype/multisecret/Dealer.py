@@ -432,40 +432,34 @@ class Dealer:
         print('combining s%d with A%d' % (i_secret, q_group))
         print('Access group:', self.access_structures[i_secret][q_group])
         for b, Pb in enumerate(self.access_structures[i_secret][q_group]):
-            print('b =', b)
+            print('\tb =', b)
             part_sum_B = (obtained_pseudo_shares[b] \
                      + self.public_shares_M[i_secret][q_group][b]) % self.p
-            print('B = U+M, B = %d, M=%d'
+            print('\tB = U+M, B = %d, M=%d'
                   % (part_sum_B, self.public_shares_M[i_secret][q_group][b] ))
                      
             combine_product = 1
             for r, Pr in enumerate(self.access_structures[i_secret][q_group]):
                 if r != b:
-                    print('r =', r)
-                    print('ID_(b=%d) : %d, ID_(r=%d) : %d'
+                    print('\t\tr =', r)
+                    print('\t\tID_(b=%d) : %d, ID_(r=%d) : %d'
                           % (Pb, self.get_id_int(Pb), Pr, self.get_id_int(Pr) ))
-                    denominator = (self.get_id_int(Pb) - self.get_id_int(Pr)) % self.p
+                    denominator = (self.get_id_int(Pr) - self.get_id_int(Pb)) % self.p
                     den_inverse = inverse_modulo_p(denominator, self.p)
-                    print('denominator = %d\n its inverse = %d'
+                    print('\t\tdenominator = %d\n its inverse = %d'
                           % (denominator, den_inverse))
-                    part_product = ((-self.get_id_int(Pr)) % self.p * den_inverse ) % self.p
-
-                    #
-                    # TODO: BUG - we should compute B for each participant, even not taking part in particular secret splitting?
-                    #
-
+                    part_product = ((self.get_id_int(Pr)) % self.p * den_inverse ) % self.p
 
                     combine_product *= part_product
-                    print('part_product', part_product)
-                    print('combine_product', combine_product)
-                    # TODO: prove the correct modulo position in formula
+                    print('\t\tpart_product', part_product)
+                    print('\t\tcombine_product', combine_product)
             
             combine_sum += (part_sum_B * combine_product) % self.p
-            print('comb prod=%d, part_sum_B=%d, combined_sum=%d'
+            print('\tcomb prod=%d, part_sum_B=%d, combined_sum=%d'
                   % (combine_product, part_sum_B, combine_sum))
             
         print("Combined sum, s%d = %d" % (i_secret, combine_sum % self.p))
-            
+        
         # obtained shares U should be passed by argument
         return self.modulo_p(combine_sum)
     
@@ -508,15 +502,9 @@ class Dealer:
                           % (denominator, den_inverse))
                     part_product = ((-self.get_id_int(Pr)) % self.p * den_inverse ) % self.p
 
-                    #
-                    # TODO: BUG - we should compute B for each participant, even not taking part in particular secret splitting?
-                    #
-
-
                     combine_product *= part_product
                     print('part_product', part_product)
                     print('combine_product', combine_product)
-                    # TODO: prove the correct modulo position in formula
             
             combine_sum += (part_sum_B * combine_product) % self.p
             print('comb prod=%d, part_sum_B=%d, combined_sum=%d'
