@@ -367,7 +367,7 @@ def test_combine_with_random_d_coefficients():
         print('Obtained pseudo shares:', obtained_pseudo_shares)
         combined_secret = dealer.combine_secret(chosen_secret, 0, obtained_pseudo_shares)
         
-        #assert_equal(combined_secret, secrets[chosen_secret])
+        assert_equal(combined_secret, secrets[chosen_secret])
     
     
 def test_combine_secret_4_participants_in_3_groups():
@@ -383,15 +383,14 @@ def test_combine_secret_4_participants_in_3_groups():
 
     dealer = Dealer(prime, n_participants, s_secrets, access_structures)
 
-    """ TODO: fix number generation in mod p, it takes too long to discard numbers """
-    #dealer.provide_id() # a list of IDs stored internally
     dealer.random_id = (bytes([1]), bytes([2]), bytes([3]), bytes([4]))
     #dealer.choose_distinct_x()
     dealer.x = [3,4,5,6]
     
     """ TODO: use Dealer method to generate """
-    dealer.d = [[[1,3,4]],[[1,2,4],[2,3,4]],[[1,2,3]]]
-    assert_equal([1,3,4], dealer.get_d_polynomial_coeffs(0, 0))
+    #dealer.d = [[[1,3,4]],[[1,2,4],[2,3,4]],[[1,2,3]]]
+    #assert_equal([1,3,4], dealer.get_d_polynomial_coeffs(0, 0))
+    dealer.access_group_polynomial_coeffs()
 
     dealer.compute_all_pseudo_shares_lists()
     dealer.compute_all_public_shares_M_lists()
@@ -404,6 +403,6 @@ def test_combine_secret_4_participants_in_3_groups():
     
     assert_equal([7,5,3], dealer.s_secrets)
     
-    #assert_equal(combined_secret_0, s_secrets[0])
+    assert_equal(combined_secret_0, s_secrets[0])
 
     
