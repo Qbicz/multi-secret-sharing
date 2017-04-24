@@ -14,9 +14,19 @@ cd python-prototype
 python3 example-multi-secret.py
 ```
 
+# Run GUI
+To run GUI application, install PyQt5:
+```bash
+sudo apt install pyqt5-dev-tools
+```
+Run application:
+```
+python3 gui/multisecret-simple-app.py
+```
+
 # Run tests
 
-To run tests, install nosetests unit testing library for Python3:
+To run tests, you need nosetests unit testing library for Python3:
 ```bash
 sudo apt install python3-nose
 ```
