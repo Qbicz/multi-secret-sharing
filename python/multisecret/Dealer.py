@@ -1,5 +1,5 @@
 # Prototype of Multi-secret sharing scheme by Roy & Adhikari
-# Filip Kubicz 2016
+# Filip Kubicz 2016-2017
 
 from os import urandom
 from math import log2, floor, ceil
@@ -409,7 +409,20 @@ class Dealer:
         
         return self.public_shares_M[i_secret][q_group][participant]
         
+    
+    def split_secrets(self):
+        """ Split secret in one step """
         
+        self.provide_id() # a list of IDs stored internally
+        self.choose_distinct_x()
+
+        self.access_group_polynomial_coeffs()
+        self.compute_all_pseudo_shares_lists()
+        self.compute_all_public_shares_M_lists()
+        
+        return self.pseudo_shares
+    
+    
     def combine_secret(self, i_secret, q_group, obtained_pseudo_shares):
         """
         combine a single secret using Lagrange interpolation
