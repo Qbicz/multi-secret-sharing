@@ -443,10 +443,6 @@ class Dealer:
         
         for b, Pb in enumerate(self.access_structures[i_secret][q_group]):
             
-            if (len(self.get_d_polynomial_coeffs(i_secret, q_group))
-                   >= len(self.access_structures[i_secret][q_group])):
-                raise ValueError('Too many polynomial coefficients!')
-            
             print('\tb =', b)
             part_sum_B = (obtained_pseudo_shares[b] \
                      + self.public_shares_M[i_secret][q_group][b]) % self.p
