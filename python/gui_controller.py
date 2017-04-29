@@ -4,12 +4,24 @@ from gui.multisecret_simple_gui import Ui_multisecret_gui
 from multisecret.Dealer import Dealer
 import sys
 import json
+import base64
 
 class BytesEncoder(json.JSONEncoder):
-    """ Provide encoding method for writing bytes to JSON """
+    """ Provide encoding method for writing bytes to JSON.
+        (JSON needs a string object) """
     def default(self, byteobject):
-        return byteobject.hex()
+        if isinstance(byteobject, bytes):
+            encoded = base64.encodestring(byteobject)
+            return encoded.decode('ascii')
+        else:
+            return super(BytesEncoder, self).default(byteobject)
         
+class BytesDecoder(json.JSONEncoder):
+    """ Provide decoding method for writing bytes to JSON """
+        
+    def decode(self, encoded):
+        return encoded.decode('ascii')
+    
 
 class MultiSecretProgram(Ui_multisecret_gui):
     def __init__(self, window):
@@ -41,16 +53,19 @@ class MultiSecretProgram(Ui_multisecret_gui):
                     
                     
         # save params: prime, structure, ID (user x), to file to recreate Dealer later
-        self.save_pseudo_shares_to_file(pseudo_shares, dealer.p, 'shares_dict.log')
+        self.save_pseudo_shares_to_file(pseudo_shares,
+                                        dealer.p,
+                                        dealer.random_id,
+                                        'shares.json')
         
         self.statusbar.setText('Secret split!')
     
     
-    def save_pseudo_shares_to_file(self, pseudo_shares, prime, filename):
+    def save_pseudo_shares_to_file(self, pseudo_shares, prime, user_ids, filename):
         
         data = { 'prime' : prime,
                  'pseudo_shares' : pseudo_shares,
-                 'id' : 'lol1' }
+                 'ids' : user_ids }
         
         with open(filename, 'w') as file:
             json.dump(data, file, cls=BytesEncoder)

@@ -31,3 +31,7 @@
 # Python compiled
 *.pyc
 prototype/__pycache__
+
+# Logs and data
+*.json
+*.log
