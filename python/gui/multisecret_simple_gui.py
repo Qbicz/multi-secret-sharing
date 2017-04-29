@@ -142,7 +142,7 @@ class Ui_multisecret_gui(object):
         self.label_6.setText(_translate("multisecret_gui", "User 3"))
         self.label_8.setText(_translate("multisecret_gui", "User 1"))
         self.button_split_2.setText(_translate("multisecret_gui", "Combine secrets"))
-        self.button_split_3.setText(_translate("multisecret_gui", "Load pseudo share..."))
+        self.button_split_3.setText(_translate("multisecret_gui", "Load pseudo share from user 1..."))
         self.button_split_4.setText(_translate("multisecret_gui", "Load pseudo share..."))
         self.button_split_5.setText(_translate("multisecret_gui", "Load pseudo share..."))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("multisecret_gui", "Combine secret from file"))

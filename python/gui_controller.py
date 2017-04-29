@@ -4,24 +4,8 @@ from gui.multisecret_simple_gui import Ui_multisecret_gui
 from multisecret.Dealer import Dealer
 import sys
 import json
-import base64
+import jsonpickle
 
-class BytesEncoder(json.JSONEncoder):
-    """ Provide encoding method for writing bytes to JSON.
-        (JSON needs a string object) """
-    def default(self, byteobject):
-        if isinstance(byteobject, bytes):
-            encoded = base64.encodestring(byteobject)
-            return encoded.decode('ascii')
-        else:
-            return super(BytesEncoder, self).default(byteobject)
-        
-class BytesDecoder(json.JSONEncoder):
-    """ Provide decoding method for writing bytes to JSON """
-        
-    def decode(self, encoded):
-        return encoded.decode('ascii')
-    
 
 class MultiSecretProgram(Ui_multisecret_gui):
     def __init__(self, window):
@@ -29,6 +13,8 @@ class MultiSecretProgram(Ui_multisecret_gui):
         self.setupUi(window)
 
         self.button_split.clicked.connect(self.split_secret)
+        self.button_split_2.clicked.connect(self.combine_secret)
+        self.button_split_3.clicked.connect(self.load_pseudo_shares)
 
         
     def split_secret(self):
@@ -54,6 +40,7 @@ class MultiSecretProgram(Ui_multisecret_gui):
                     
         # save params: prime, structure, ID (user x), to file to recreate Dealer later
         self.save_pseudo_shares_to_file(pseudo_shares,
+                                        dealer.access_structures,
                                         dealer.p,
                                         dealer.random_id,
                                         'shares.json')
@@ -61,27 +48,38 @@ class MultiSecretProgram(Ui_multisecret_gui):
         self.statusbar.setText('Secret split!')
     
     
-    def save_pseudo_shares_to_file(self, pseudo_shares, prime, user_ids, filename):
+    def save_pseudo_shares_to_file(self, prime, access,
+                                   pseudo_shares, user_ids, filename):
         
         data = { 'prime' : prime,
+                 'access_structure' : access,
                  'pseudo_shares' : pseudo_shares,
                  'ids' : user_ids }
         
-        with open(filename, 'w') as file:
-            json.dump(data, file, cls=BytesEncoder)
+        json_string = jsonpickle.encode(data)
         
-        """
         with open(filename, 'w') as file:
-            for secret_shares in pseudo_shares:
-            print(' secret')
-            for group_shares in secret_shares:
-                print('  group')
-                for user_share in group_shares:
-                    print('  user', user_share.hex())
-                        file.write('\nShare')
-                        file.write(user_share.hex())
-                        """
+            json.dump(json_string, file)
+        
+
+    def load_pseudo_shares(self):
+        
+        with open('shares.json', 'r') as file:
+            json_string = json.load(file)
     
+        data = jsonpickle.decode(json_string)
+        print(data)
+        print(data['pseudo_shares'])
+    
+        
+    def combine_secret(self):
+        """ Combine secret from JSON loaded information.
+            First, check if we have all pieces needed to reconstruct. """
+        
+        assert(self.access_structures and self.loaded_shares
+               and self.loaded_ids and self.loaded_prime)
+    
+        
     
 
 if __name__ == "__main__":
