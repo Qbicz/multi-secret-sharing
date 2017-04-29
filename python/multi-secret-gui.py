@@ -13,8 +13,8 @@ class MultiSecretProgram(Ui_multisecret_gui):
         self.setupUi(window)
 
         self.button_split.clicked.connect(self.split_secret)
-        self.button_split_2.clicked.connect(self.combine_secret)
-        self.button_split_3.clicked.connect(self.load_pseudo_shares)
+        self.button_combine.clicked.connect(self.combine_secret)
+        self.load_share_1.clicked.connect(self.load_pseudo_shares)
 
         
     def split_secret(self):
@@ -39,24 +39,34 @@ class MultiSecretProgram(Ui_multisecret_gui):
                     
                     
         # save params: prime, structure, ID (user x), to file to recreate Dealer later
-        self.save_pseudo_shares_to_file(pseudo_shares,
+        self.save_pseudo_shares_to_file(dealer.p,
                                         dealer.access_structures,
-                                        dealer.p,
+                                        pseudo_shares,
                                         dealer.random_id,
+                                        dealer.public_shares_M,
                                         'shares.json')
         
         self.statusbar.setText('Secret split!')
     
     
     def save_pseudo_shares_to_file(self, prime, access,
-                                   pseudo_shares, user_ids, filename):
+                                   pseudo_shares, user_ids,
+                                   public_shares_M, filename):
+        """ Save python dictionary with data needed for secret reconstruction.
+            jsonpickle is used for encoding because data contains bytes objects,
+            not recognized by json encodera """
+        
+        # TODO: public data save to timestamp_public_info.json
+        # TODO: user share save to timestamp_pseudo_share_X.json
         
         data = { 'prime' : prime,
-                 'access_structure' : access,
+                 'access_structures' : access,
                  'pseudo_shares' : pseudo_shares,
-                 'ids' : user_ids }
+                 'ids' : user_ids,
+                 'public_shares_M' : public_shares_M}
         
         json_string = jsonpickle.encode(data)
+        print('to json', json_string)
         
         with open(filename, 'w') as file:
             json.dump(json_string, file)
@@ -68,8 +78,20 @@ class MultiSecretProgram(Ui_multisecret_gui):
             json_string = json.load(file)
     
         data = jsonpickle.decode(json_string)
-        print(data)
-        print(data['pseudo_shares'])
+        print('loaded data from JSON', data)
+        
+        # TODO: create a Combiner class
+        combiner = Dealer(data['prime'],
+                          3,
+                          [0],
+                          data['access_structures'])
+        combiner.random_id = data['ids']
+        combiner.public_shares_M = data['public_shares_M']
+        
+        secret = combiner.combine_secret(0, 0, data['pseudo_shares'][0][0])
+        print('secret:', secret)
+        
+        self.textBrowser.append('Combined a secret: {}'.format(secret) )
     
         
     def combine_secret(self):

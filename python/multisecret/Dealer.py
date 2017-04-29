@@ -57,13 +57,6 @@ class Dealer:
             return_bytes = True
             number = int.from_bytes(number, byteorder='big')
         
-        #print(number)
-        #print(log2(number))
-        
-        # compare int objects
-        #print('%d modulo %d' % (number,self.p))
-        # should not typecheck
-        #assert(isinstance(number, int))
         if(number >= self.p):
             number = number % self.p
         
@@ -84,7 +77,8 @@ class Dealer:
     def hash(self, message):
         """A collision resistant hash function h with variable output length:
         # option 1: use SHA-3 Keccak (variable length digest)
-        # option 2: use BLAKE2 : variable length digest (available at "cryptography" library - but to bytes, not bits resolution)
+        # option 2: use BLAKE2 : variable length digest (available
+            at "cryptography" library - but to bytes, not bits resolution)
         # option 3 (chosen): use the first [log2(p)]+1 bits of AES-CTR(SHA256(m))"""
 
         # SHA256 of message

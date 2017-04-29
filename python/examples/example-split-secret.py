@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-# This example shows how to use high level secret splitting functionality
-
 from multisecret.Dealer import Dealer
 from multisecret.byteHelper import inverse_modulo_p
 
 if __name__ == "__main__":
+    
+    """ This example shows how to use high level secret splitting functionality """
+    
     prime = 15487469
 
     # multi secret sharing parameters

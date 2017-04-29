@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'multisecret_simple_gui.ui'
+# Form implementation generated from reading ui file 'gui/multisecret_simple_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.5.1
 #
@@ -98,18 +98,18 @@ class Ui_multisecret_gui(object):
         self.label_8 = QtWidgets.QLabel(self.gridLayoutWidget_2)
         self.label_8.setObjectName("label_8")
         self.gridLayout_2.addWidget(self.label_8, 0, 0, 1, 1)
-        self.button_split_2 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
-        self.button_split_2.setObjectName("button_split_2")
-        self.gridLayout_2.addWidget(self.button_split_2, 5, 0, 1, 1)
-        self.button_split_3 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
-        self.button_split_3.setObjectName("button_split_3")
-        self.gridLayout_2.addWidget(self.button_split_3, 0, 2, 1, 1)
-        self.button_split_4 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
-        self.button_split_4.setObjectName("button_split_4")
-        self.gridLayout_2.addWidget(self.button_split_4, 3, 2, 1, 1)
-        self.button_split_5 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
-        self.button_split_5.setObjectName("button_split_5")
-        self.gridLayout_2.addWidget(self.button_split_5, 4, 2, 1, 1)
+        self.button_combine = QtWidgets.QPushButton(self.gridLayoutWidget_2)
+        self.button_combine.setObjectName("button_combine")
+        self.gridLayout_2.addWidget(self.button_combine, 5, 0, 1, 1)
+        self.load_share_1 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
+        self.load_share_1.setObjectName("load_share_1")
+        self.gridLayout_2.addWidget(self.load_share_1, 0, 2, 1, 1)
+        self.load_share_2 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
+        self.load_share_2.setObjectName("load_share_2")
+        self.gridLayout_2.addWidget(self.load_share_2, 3, 2, 1, 1)
+        self.load_share_3 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
+        self.load_share_3.setObjectName("load_share_3")
+        self.gridLayout_2.addWidget(self.load_share_3, 4, 2, 1, 1)
         self.textBrowser = QtWidgets.QTextBrowser(self.gridLayoutWidget_2)
         self.textBrowser.setObjectName("textBrowser")
         self.gridLayout_2.addWidget(self.textBrowser, 5, 2, 1, 1)
@@ -121,7 +121,7 @@ class Ui_multisecret_gui(object):
 
     def retranslateUi(self, multisecret_gui):
         _translate = QtCore.QCoreApplication.translate
-        multisecret_gui.setWindowTitle(_translate("multisecret_gui", "Dialog"))
+        multisecret_gui.setWindowTitle(_translate("multisecret_gui", "Multi-secret Sharing Tool"))
         self.button_split.setText(_translate("multisecret_gui", "Split secrets"))
         self.check_s2p1.setText(_translate("multisecret_gui", "User 1"))
         self.label_2.setText(_translate("multisecret_gui", "Secret 2"))
@@ -141,10 +141,10 @@ class Ui_multisecret_gui(object):
         self.label_4.setText(_translate("multisecret_gui", "User 2"))
         self.label_6.setText(_translate("multisecret_gui", "User 3"))
         self.label_8.setText(_translate("multisecret_gui", "User 1"))
-        self.button_split_2.setText(_translate("multisecret_gui", "Combine secrets"))
-        self.button_split_3.setText(_translate("multisecret_gui", "Load pseudo share from user 1..."))
-        self.button_split_4.setText(_translate("multisecret_gui", "Load pseudo share..."))
-        self.button_split_5.setText(_translate("multisecret_gui", "Load pseudo share..."))
+        self.button_combine.setText(_translate("multisecret_gui", "Combine secrets"))
+        self.load_share_1.setText(_translate("multisecret_gui", "Load pseudo share..."))
+        self.load_share_2.setText(_translate("multisecret_gui", "Load pseudo share..."))
+        self.load_share_3.setText(_translate("multisecret_gui", "Load pseudo share..."))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("multisecret_gui", "Combine secret from file"))
 
 

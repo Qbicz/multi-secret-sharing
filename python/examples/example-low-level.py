@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-# Prototype of Multi-secret sharing scheme by Roy & Adhikari
-# Filip Kubicz 2016
-
 from multisecret.Dealer import Dealer
 from multisecret.byteHelper import inverse_modulo_p
 
 def main():
+    """ This example shows low-level functions for splitting
+        and combining secrets with multi-secret sharing
+        scheme by Roy & Adhikari. """
+        
     # large prime from NIST P-256 elliptic curve 
     p256 = 2**256 - 2**224 + 2**192 + 2**96 - 1
 
