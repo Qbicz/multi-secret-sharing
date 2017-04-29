@@ -35,6 +35,7 @@ python/__pycache__
 # PyInstaller
 *.spec
 python/build
+python/dist
 
 # Logs and data
 *.json
