@@ -30,7 +30,11 @@
 
 # Python compiled
 *.pyc
-prototype/__pycache__
+python/__pycache__
+
+# PyInstaller
+*.spec
+python/build
 
 # Logs and data
 *.json
