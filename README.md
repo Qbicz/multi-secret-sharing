@@ -2,15 +2,25 @@
 
 ![Traditional way of sharing a secret](https://raw.githubusercontent.com/Qbicz/multi-secret-sharing/master/docs/Sharing-Secrets.jpg)
 
-# Run example
+**multi-secret-sharing** is a tool for splitting secret data into parts.
+The parts, or secret shares can be later distributed to several people or backed up on separate disks and online storage facilities.
 
+If you want to secure a huge file, it might be better to encrypt it using block cipher, e.g. AES and only split the password with secret sharing.
+
+**WARNING. This project is under development and is not suitable for vulnerable tasks. If you want to encrypt your disk or some important data, better use a tested program, such as [VeraCrypt](https://sourceforge.net/projects/veracrypt/).**
+
+# Download
+You can find binary executables in [releases section](https://github.com/Qbicz/multi-secret-sharing/releases).
+
+
+# Run example
 To run a Python 3.5 prototype, please install [cryptography](https://pypi.python.org/pypi/cryptography) module.
 ```bash
 pip3 install cryptography
 ```
 Run an example
 ```bash
-cd python-prototype
+cd python/examples
 python3 example-multi-secret.py
 ```
 
@@ -21,11 +31,10 @@ sudo apt install pyqt5-dev-tools
 ```
 Run application:
 ```
-python3 gui/multisecret-simple-app.py
+python3 multi-secret-gui.py
 ```
 
 # Run tests
-
 To run tests, you need nosetests unit testing library for Python3:
 ```bash
 sudo apt install python3-nose
