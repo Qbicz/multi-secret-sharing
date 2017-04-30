@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from gui.multisecret_simple_gui import Ui_multisecret_gui
+from gui.multisecret_dynamic_gui import Ui_multisecret_gui
 
 from multisecret.Dealer import Dealer
 import sys
@@ -20,9 +20,10 @@ class MultiSecretProgram(Ui_multisecret_gui):
     def split_secret(self):
         secret1 = int(self.secret_1.text())
         secret2 = int(self.secret_2.text())
-        secrets = [secret1, secret2]
+        secret3 = int(self.secret_3.text())
+        secrets = [secret1, secret2, secret3]
         
-        prime = 15487469
+        prime = 2**256 - 2**224 + 2**192 + 2**96 - 1
 
         # multi secret sharing parameters
         n_participants = 3
@@ -98,7 +99,7 @@ class MultiSecretProgram(Ui_multisecret_gui):
         """ Combine secret from JSON loaded information.
             First, check if we have all pieces needed to reconstruct. """
         
-        assert(self.access_structures and self.loaded_shares
+        assert(self.loaded_structures and self.loaded_shares
                and self.loaded_ids and self.loaded_prime)
     
         
