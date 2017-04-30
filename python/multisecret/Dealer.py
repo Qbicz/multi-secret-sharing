@@ -268,15 +268,12 @@ class Dealer:
         for A in gamma:
             lengths.append(len(A)-1)
         l = max(lengths)
-        #print('l = ', l)
         
         # u = bit length of number of secrets k
         u = floor(log2(self.k)) + 1
-        #print('u = ', u)
         
         # v = bit length of l
         v = floor(log2(l)) + 1
-        #print('v = ', v)
         
         # concatenate x, i and q binary
         if isinstance(self.x[participant-1], bytes):
@@ -290,9 +287,7 @@ class Dealer:
         
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
         # hash the concatenated bytes
-        #print('[x,i,q]: ', message.hex())
         hash_of_message = self.hash(message)
-        #print('hash of [x,i,q]', hash_of_message.hex())
         share = self.modulo_p(hash_of_message)
         #print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
         
@@ -337,6 +332,21 @@ class Dealer:
     def get_M_public_user_share(self, i_secret, q_group, participant):
         
         return self.public_shares_M[i_secret][q_group][participant]
+    
+    
+    def get_pseudo_shares_for_participant(self, participant):
+        """ Scan for pseudo shares specific to a chosen participant.
+            Returns a dictionary {(secret number,group) : pseudo_share} for participant """
+        
+        my_pseudo_shares = {}
+        
+        for i, gamma in enumerate(self.access_structures):
+            for q, A in enumerate(self.access_structures[i]):
+                for b, Pb in enumerate(self.access_structures[i][q]):
+                    if Pb == participant:
+                        my_pseudo_shares[(i,q)] = self.pseudo_shares[i][q][b]
+        
+        return my_pseudo_shares
         
     
     def split_secrets(self):

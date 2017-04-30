@@ -14,7 +14,7 @@ class MultiSecretProgram(Ui_multisecret_gui):
 
         self.button_split.clicked.connect(self.split_secret)
         self.button_combine.clicked.connect(self.combine_secret)
-        self.load_share_1.clicked.connect(self.load_pseudo_shares)
+        self.load_share_1.clicked.connect(self.load_pseudo_shares_from_user, 1)
 
         
     def split_secret(self):
@@ -27,7 +27,7 @@ class MultiSecretProgram(Ui_multisecret_gui):
 
         # multi secret sharing parameters
         n_participants = 3
-        access_structures = [[[1,2,3]], [[1,2]]]
+        access_structures = [[[1,2,3]], [[1,3]], [[1,2,3]]]
         dealer = Dealer(prime, n_participants, secrets, access_structures)
         pseudo_shares = dealer.split_secrets()
         
@@ -36,44 +36,51 @@ class MultiSecretProgram(Ui_multisecret_gui):
             for group_shares in secret_shares:
                 print('  group')
                 for user_share in group_shares:
-                    print('  user', user_share.hex())
-                    
+                    print('  user', user_share)
                     
         # save params: prime, structure, ID (user x), to file to recreate Dealer later
-        self.save_pseudo_shares_to_file(dealer.p,
-                                        dealer.access_structures,
+        self.save_pseudo_shares_to_file(dealer,
                                         pseudo_shares,
-                                        dealer.random_id,
-                                        dealer.public_shares_M,
                                         'shares.json')
         
         self.statusbar.setText('Secret split!')
     
     
-    def save_pseudo_shares_to_file(self, prime, access,
-                                   pseudo_shares, user_ids,
-                                   public_shares_M, filename):
+    def save_pseudo_shares_to_file(self, dealer, pseudo_shares, filename):
         """ Save python dictionary with data needed for secret reconstruction.
             jsonpickle is used for encoding because data contains bytes objects,
-            not recognized by json encodera """
+            not recognized by json encoder """
         
-        # TODO: public data save to timestamp_public_info.json
-        # TODO: user share save to timestamp_pseudo_share_X.json
+        # Save public data to public_info.json
+        # TODO: add timestamps and FileChooser dialogs
+        public_info = { 'prime' : dealer.p,
+                     'access_structures' : dealer.access_structures,
+                     'public_shares_M' : dealer.public_shares_M }
         
-        data = { 'prime' : prime,
-                 'access_structures' : access,
-                 'pseudo_shares' : pseudo_shares,
-                 'ids' : user_ids,
-                 'public_shares_M' : public_shares_M}
+        public_info_json_string = jsonpickle.encode(public_info)
+        print('public_info to json', public_info_json_string)
         
-        json_string = jsonpickle.encode(data)
-        print('to json', json_string)
+        with open(filename, 'w') as public_info_file:
+            json.dump(public_info_json_string, public_info_file)
         
-        with open(filename, 'w') as file:
-            json.dump(json_string, file)
+        #
+        # Save user shares (for each secret and group) and user ID to json file
+        #
+        for user in range(1, dealer.n+1):
+            
+            user_shares = dealer.get_pseudo_shares_for_participant(user)
+            user_data = {'id' : dealer.random_id[user-1],
+                         'shares' : user_shares }
+        
+            user_json_string = jsonpickle.encode(user_data)
+            print('user share and ID to json', user_json_string)
+            
+            filename = 'user' + str(user) + '.json'
+            with open(filename, 'w') as file:
+                json.dump(user_json_string, file)
         
 
-    def load_pseudo_shares(self):
+    def load_pseudo_shares_from_user(self, participant):
         
         with open('shares.json', 'r') as file:
             json_string = json.load(file)
