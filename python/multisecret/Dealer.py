@@ -236,49 +236,6 @@ class Dealer:
         # returns int
         return self.f_polynomial_compute(participant_id, secret=i_secret, group=q_group)
                 
-    
-    def pseudo_share_array_size_iqb(self):
-        """ Return sizes i, q, b needed for holding pseudo shares and shares
-        """
-        
-        max_i_list = []
-        max_q_list = []
-        max_b_list = []
-        # keep pseudo shares in a 3D array
-        for i, gamma in enumerate(self.access_structures):
-            max_i_list.append(i)
-            for q, A in enumerate(gamma):
-                max_q_list.append(q)
-                max_b_list.append(max(A))
-                #for b, Pb in enumerate(A):
-                #    max_b_list.append(b)
-        
-        max_i = max(max_i_list)
-        max_q = max(max_q_list)
-        max_b = max(max_b_list)
-        
-        print('sizes: i, q, b', max_i, max_q, max_b)
-        return (max_i+1, max_q+1, max_b+1)
-
-
-    def compute_all_pseudo_shares(self):
-        """ compute all pseudo shares U """
-        
-        # use desired type 'object' to allow holding bytes/strings in a numpy array
-        self.pseudo_shares = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
-        
-        for i, gamma in enumerate(self.access_structures):
-            for q, A in enumerate(gamma):
-                for b in A:
-                    print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
-                    U = self.pseudo_share_participant(i, q, b)
-                    
-                    # store in a 3D array
-                    self.pseudo_shares[i][q][b] = U
-                    #print(self.pseudo_shares)
-            
-        print(self.pseudo_shares)
-
 
     def compute_all_pseudo_shares_lists(self):
         """ experimental: use nested lists, don't use numpy arrays
@@ -351,28 +308,6 @@ class Dealer:
         print('participant %d, U = %d, public M = %d' % (participant, U_value, M_public_share))
         
         return M_public_share
-    
-    
-    def compute_all_public_shares_M(self):
-
-        # use desired type 'object' to allow holding bytes/strings in a numpy array
-        self.public_shares_M = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
-        self.B_values = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
-        
-        for i, gamma in enumerate(self.access_structures):
-            for q, A in enumerate(gamma):
-                for Pb in A:
-                    print('compute_all_public_shares_M, i=%d, q=%d, Pb=%d' % (i,q,Pb))
-                    
-                    B_value = self.user_polynomial_value_B(i, q, Pb)
-                    print('B_P%d = %d' % (Pb, B_value))
-                    M = self.public_user_share_M(i, q, Pb, B_value)
-                    
-                    # for testing store B in an array
-                    self.B_values[i][q][Pb] = B_value
-                    
-                    # STORE in a 3D array
-                    self.public_shares_M[i][q][Pb] = M
                     
                     
     def compute_all_public_shares_M_lists(self):
