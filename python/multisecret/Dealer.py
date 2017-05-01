@@ -2,7 +2,7 @@
 # Filip Kubicz 2016-2017
 
 from os import urandom
-from math import log2, floor, ceil
+from math import log2, floor
 # import SHA256
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -10,7 +10,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from multisecret.primality import is_probable_prime
 
-import numpy as np
 from multisecret.byteHelper import inverse_modulo_p
 
 import copy # to have deepcopy, independent copy of a list
@@ -236,49 +235,6 @@ class Dealer:
         # returns int
         return self.f_polynomial_compute(participant_id, secret=i_secret, group=q_group)
                 
-    
-    def pseudo_share_array_size_iqb(self):
-        """ Return sizes i, q, b needed for holding pseudo shares and shares
-        """
-        
-        max_i_list = []
-        max_q_list = []
-        max_b_list = []
-        # keep pseudo shares in a 3D array
-        for i, gamma in enumerate(self.access_structures):
-            max_i_list.append(i)
-            for q, A in enumerate(gamma):
-                max_q_list.append(q)
-                max_b_list.append(max(A))
-                #for b, Pb in enumerate(A):
-                #    max_b_list.append(b)
-        
-        max_i = max(max_i_list)
-        max_q = max(max_q_list)
-        max_b = max(max_b_list)
-        
-        print('sizes: i, q, b', max_i, max_q, max_b)
-        return (max_i+1, max_q+1, max_b+1)
-
-
-    def compute_all_pseudo_shares(self):
-        """ compute all pseudo shares U """
-        
-        # use desired type 'object' to allow holding bytes/strings in a numpy array
-        self.pseudo_shares = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
-        
-        for i, gamma in enumerate(self.access_structures):
-            for q, A in enumerate(gamma):
-                for b in A:
-                    print('compute_all_pseudo_shares, i=%d, q=%d, b=%d' % (i,q,b))
-                    U = self.pseudo_share_participant(i, q, b)
-                    
-                    # store in a 3D array
-                    self.pseudo_shares[i][q][b] = U
-                    #print(self.pseudo_shares)
-            
-        print(self.pseudo_shares)
-
 
     def compute_all_pseudo_shares_lists(self):
         """ experimental: use nested lists, don't use numpy arrays
@@ -311,15 +267,12 @@ class Dealer:
         for A in gamma:
             lengths.append(len(A)-1)
         l = max(lengths)
-        #print('l = ', l)
         
         # u = bit length of number of secrets k
         u = floor(log2(self.k)) + 1
-        #print('u = ', u)
         
         # v = bit length of l
         v = floor(log2(l)) + 1
-        #print('v = ', v)
         
         # concatenate x, i and q binary
         if isinstance(self.x[participant-1], bytes):
@@ -333,9 +286,7 @@ class Dealer:
         
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
         # hash the concatenated bytes
-        #print('[x,i,q]: ', message.hex())
         hash_of_message = self.hash(message)
-        #print('hash of [x,i,q]', hash_of_message.hex())
         share = self.modulo_p(hash_of_message)
         #print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
         
@@ -351,28 +302,6 @@ class Dealer:
         print('participant %d, U = %d, public M = %d' % (participant, U_value, M_public_share))
         
         return M_public_share
-    
-    
-    def compute_all_public_shares_M(self):
-
-        # use desired type 'object' to allow holding bytes/strings in a numpy array
-        self.public_shares_M = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
-        self.B_values = np.zeros(self.pseudo_share_array_size_iqb(), dtype=object)
-        
-        for i, gamma in enumerate(self.access_structures):
-            for q, A in enumerate(gamma):
-                for Pb in A:
-                    print('compute_all_public_shares_M, i=%d, q=%d, Pb=%d' % (i,q,Pb))
-                    
-                    B_value = self.user_polynomial_value_B(i, q, Pb)
-                    print('B_P%d = %d' % (Pb, B_value))
-                    M = self.public_user_share_M(i, q, Pb, B_value)
-                    
-                    # for testing store B in an array
-                    self.B_values[i][q][Pb] = B_value
-                    
-                    # STORE in a 3D array
-                    self.public_shares_M[i][q][Pb] = M
                     
                     
     def compute_all_public_shares_M_lists(self):
@@ -382,8 +311,8 @@ class Dealer:
         self.public_shares_M = copy.deepcopy(self.access_structures)
         self.B_values = copy.deepcopy(self.access_structures)
         
-        for i, gamma in enumerate(self.access_structures):
-            for q, A in enumerate(self.access_structures[i]):
+        for i, _ in enumerate(self.access_structures):
+            for q, _ in enumerate(self.access_structures[i]):
                 for b, Pb in enumerate(self.access_structures[i][q]):
                     print('compute_all_public_shares_M, i=%d, q=%d, b=%d, user P%d' % (i,q,b,Pb))
                     
@@ -402,6 +331,39 @@ class Dealer:
     def get_M_public_user_share(self, i_secret, q_group, participant):
         
         return self.public_shares_M[i_secret][q_group][participant]
+    
+    
+    def get_pseudo_shares_for_participant(self, participant):
+        """ Scan for pseudo shares specific to a chosen participant.
+            Returns a dictionary {(secret number,group) : pseudo_share}
+        """
+        my_pseudo_shares = {}
+        
+        for i, _ in enumerate(self.access_structures):
+            for q, _ in enumerate(self.access_structures[i]):
+                for b, Pb in enumerate(self.access_structures[i][q]):
+                    # if we found participant in the access structure,
+                    # copy his pseudo share to a dictionary with tuple key (secret, group)
+                    if Pb == participant:
+                        my_pseudo_shares[(i,q)] = self.pseudo_shares[i][q][b]
+                        print('Pb == participant ==', Pb)
+                        print('my_pseudo_shares[(i=%d,q=%d)]'
+                              '= self.pseudo_shares[%d][%d][b=%d]' % (i,q,i,q,b))
+        
+        return my_pseudo_shares
+        
+        
+    def set_pseudo_shares_from_participant(self, participant, my_pseudo_shares):
+        """ Take my_pseudo_shares dictionary from a specific user and put shares
+            into right places in the dealer's pseudo_shares nested list.
+            (Reverse of get_pseudo_shares_for_participant() )
+        """
+        
+        for i, _ in enumerate(self.access_structures):
+            for q, _ in enumerate(self.access_structures[i]):
+                for b, Pb in enumerate(self.access_structures[i][q]):
+                    if Pb == participant:
+                        self.pseudo_shares[i][q][b] = my_pseudo_shares['({}, {})'.format(i,q)]
         
     
     def split_secrets(self):
