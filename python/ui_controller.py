@@ -5,16 +5,25 @@ from multisecret.Dealer import Dealer
 import sys
 import json
 import jsonpickle
+from copy import deepcopy
 
 
-class MultiSecretProgram(Ui_multisecret_gui):
+class MultiSecretController(Ui_multisecret_gui):
     def __init__(self, window):
         Ui_multisecret_gui.__init__(self)
         self.setupUi(window)
 
         self.button_split.clicked.connect(self.split_secret)
         self.button_combine.clicked.connect(self.combine_secret)
-        self.load_share_1.clicked.connect(self.load_pseudo_shares_from_user, 1)
+        self.button_load_share_1.clicked.connect(lambda: self.load_pseudo_shares_from_user(1) )
+        self.button_load_share_2.clicked.connect(lambda: self.load_pseudo_shares_from_user(2) )
+        self.button_load_share_3.clicked.connect(lambda: self.load_pseudo_shares_from_user(3) )
+        self.button_load_public_info.clicked.connect(self.load_public_reconstruction_info)
+        
+        # TODO: get from the GUI
+        self.user_count = 3
+        self.user_data = [None] * self.user_count
+
 
         
     def split_secret(self):
@@ -58,9 +67,7 @@ class MultiSecretProgram(Ui_multisecret_gui):
                      'public_shares_M' : dealer.public_shares_M }
         
         public_info_json_string = jsonpickle.encode(public_info)
-        print('public_info to json', public_info_json_string)
-        
-        with open(filename, 'w') as public_info_file:
+        with open('public_info.json', 'w') as public_info_file:
             json.dump(public_info_json_string, public_info_file)
         
         #
@@ -69,46 +76,78 @@ class MultiSecretProgram(Ui_multisecret_gui):
         for user in range(1, dealer.n+1):
             
             user_shares = dealer.get_pseudo_shares_for_participant(user)
-            user_data = {'id' : dealer.random_id[user-1],
+            user_data = {'user' : user,
+                         'id' : dealer.random_id[user-1],
                          'shares' : user_shares }
         
             user_json_string = jsonpickle.encode(user_data)
-            print('user share and ID to json', user_json_string)
-            
             filename = 'user' + str(user) + '.json'
             with open(filename, 'w') as file:
                 json.dump(user_json_string, file)
         
 
-    def load_pseudo_shares_from_user(self, participant):
+    def load_public_reconstruction_info(self):
+        """ Load prime, access structures and public shares
+            to controller's internal public_info dictionary.
+        """
         
-        with open('shares.json', 'r') as file:
+        with open('public_info.json', 'r') as file:
             json_string = json.load(file)
     
-        data = jsonpickle.decode(json_string)
-        print('loaded data from JSON', data)
+        self.public_info = jsonpickle.decode(json_string)
+        print('loaded data from JSON', self.public_info)
         
-        # TODO: create a Combiner class
-        combiner = Dealer(data['prime'],
-                          3,
-                          [0],
-                          data['access_structures'])
-        combiner.random_id = data['ids']
-        combiner.public_shares_M = data['public_shares_M']
-        
-        secret = combiner.combine_secret(0, 0, data['pseudo_shares'][0][0])
-        print('secret:', secret)
-        
-        self.textBrowser.append('Combined a secret: {}'.format(secret) )
     
+    def load_pseudo_shares_from_user(self, participant):
+        """ Load user ID and user's pseudo shares for each secret.
+        """
+        
+        userfile = 'user' + str(participant) + '.json'
+        with open(userfile, 'r') as file:
+            json_string = json.load(file)
+    
+        self.user_data[participant-1] = jsonpickle.decode(json_string)
+        print('loaded data from JSON', self.user_data[participant-1])
+        
         
     def combine_secret(self):
         """ Combine secret from JSON loaded information.
-            First, check if we have all pieces needed to reconstruct. """
+            TODO: Validate all pieces needed to reconstruct.
+        """
         
-        assert(self.loaded_structures and self.loaded_shares
-               and self.loaded_ids and self.loaded_prime)
-    
+        # TODO: create a Combiner class
+        combiner = Dealer(self.public_info['prime'],
+                          3,
+                          [0]*3,
+                          self.public_info['access_structures'])
+        combiner.public_shares_M = self.public_info['public_shares_M']
+        
+        combiner.random_id = [None] * combiner.n
+        
+        # create a structure for pseudo shares
+        combiner.pseudo_shares = deepcopy(combiner.access_structures)
+        
+        for user in range(1, combiner.n+1):
+            
+            # ID from user
+            print('\nID from user', self.user_data[user-1]['id'])
+            combiner.random_id[user-1] = self.user_data[user-1]['id']
+            
+            # pseudo shares from user
+            print(self.user_data[user-1])
+            user_shares = self.user_data[user-1]['shares']
+            combiner.set_pseudo_shares_from_participant(user, user_shares)
+            
+        print('pseudo_shares:', combiner.pseudo_shares)
+        obtained_shares = combiner.pseudo_shares
+        print('obtained_shares[0][0]', obtained_shares[0][0])
+        secret1 = combiner.combine_secret(0, 0, obtained_shares[0][0])
+        secret2 = combiner.combine_secret(1, 0, obtained_shares[1][0])
+        secret3 = combiner.combine_secret(2, 0, obtained_shares[2][0])
+        
+        self.textBrowser.append('Combined a secret: {}'.format(secret1) )
+        self.textBrowser.append('Combined a secret: {}'.format(secret2) )
+        self.textBrowser.append('Combined a secret: {}'.format(secret3) )
         
     
 
@@ -116,7 +155,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = QtWidgets.QDialog()
     
-    ui = MultiSecretProgram(window)
+    ui = MultiSecretController(window)
     
     window.show()
     sys.exit(app.exec_())

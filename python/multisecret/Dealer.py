@@ -2,7 +2,7 @@
 # Filip Kubicz 2016-2017
 
 from os import urandom
-from math import log2, floor, ceil
+from math import log2, floor
 # import SHA256
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -10,7 +10,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from multisecret.primality import is_probable_prime
 
-import numpy as np
 from multisecret.byteHelper import inverse_modulo_p
 
 import copy # to have deepcopy, independent copy of a list
@@ -312,8 +311,8 @@ class Dealer:
         self.public_shares_M = copy.deepcopy(self.access_structures)
         self.B_values = copy.deepcopy(self.access_structures)
         
-        for i, gamma in enumerate(self.access_structures):
-            for q, A in enumerate(self.access_structures[i]):
+        for i, _ in enumerate(self.access_structures):
+            for q, _ in enumerate(self.access_structures[i]):
                 for b, Pb in enumerate(self.access_structures[i][q]):
                     print('compute_all_public_shares_M, i=%d, q=%d, b=%d, user P%d' % (i,q,b,Pb))
                     
@@ -336,17 +335,35 @@ class Dealer:
     
     def get_pseudo_shares_for_participant(self, participant):
         """ Scan for pseudo shares specific to a chosen participant.
-            Returns a dictionary {(secret number,group) : pseudo_share} for participant """
-        
+            Returns a dictionary {(secret number,group) : pseudo_share}
+        """
         my_pseudo_shares = {}
         
-        for i, gamma in enumerate(self.access_structures):
-            for q, A in enumerate(self.access_structures[i]):
+        for i, _ in enumerate(self.access_structures):
+            for q, _ in enumerate(self.access_structures[i]):
                 for b, Pb in enumerate(self.access_structures[i][q]):
+                    # if we found participant in the access structure,
+                    # copy his pseudo share to a dictionary with tuple key (secret, group)
                     if Pb == participant:
                         my_pseudo_shares[(i,q)] = self.pseudo_shares[i][q][b]
+                        print('Pb == participant ==', Pb)
+                        print('my_pseudo_shares[(i=%d,q=%d)]'
+                              '= self.pseudo_shares[%d][%d][b=%d]' % (i,q,i,q,b))
         
         return my_pseudo_shares
+        
+        
+    def set_pseudo_shares_from_participant(self, participant, my_pseudo_shares):
+        """ Take my_pseudo_shares dictionary from a specific user and put shares
+            into right places in the dealer's pseudo_shares nested list.
+            (Reverse of get_pseudo_shares_for_participant() )
+        """
+        
+        for i, _ in enumerate(self.access_structures):
+            for q, _ in enumerate(self.access_structures[i]):
+                for b, Pb in enumerate(self.access_structures[i][q]):
+                    if Pb == participant:
+                        self.pseudo_shares[i][q][b] = my_pseudo_shares['({}, {})'.format(i,q)]
         
     
     def split_secrets(self):
