@@ -20,7 +20,7 @@ pip3 install cryptography
 ```
 Run an example
 ```bash
-cd python/examples
+cd multi-secret-sharing/python
 python3 example-split-secret.py
 ```
 
@@ -40,9 +40,8 @@ To run tests, you need nosetests unit testing library for Python3:
 ```bash
 sudo apt install python3-nose
 ```
-Go to prototype folder and run tests:
+Run tests:
 ```bash
-cd python-prototype
 nosetests3
 ```
 
@@ -58,9 +57,8 @@ Now imagine you have 17 safes or 56 missiles. You can have 56 secret codes and s
 
 In this repo, different multi-secret sharing schemes will be implemented and compared.
 
-# 1. "Multi-Use Multi-Secret Sharing Scheme for General Access Structure" - Roy, Adhikari
---- python prototype
---- C++ implementation with GUI
+- Algorithm 1 based on "Multi-Use Multi-Secret Sharing Scheme for General Access Structure" by Roy & Adhikari
+
 
 # Continuous Integration with Jenkins
 TBD.
