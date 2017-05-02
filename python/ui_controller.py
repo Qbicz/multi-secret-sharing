@@ -90,9 +90,12 @@ class MultiSecretController(Ui_multisecret_gui):
         """ Load prime, access structures and public shares
             to controller's internal public_info dictionary.
         """
-        
-        with open('public_info.json', 'r') as file:
-            json_string = json.load(file)
+        try:
+            with open('public_info.json', 'r') as file:
+                json_string = json.load(file)
+        except FileNotFoundError as e:
+            self.textBrowser.append('Cannot open file {}'.format('public_info.json') )
+            return
     
         self.public_info = jsonpickle.decode(json_string)
         print('loaded data from JSON', self.public_info)
@@ -103,8 +106,12 @@ class MultiSecretController(Ui_multisecret_gui):
         """
         
         userfile = 'user' + str(participant) + '.json'
-        with open(userfile, 'r') as file:
-            json_string = json.load(file)
+        try:
+            with open(userfile, 'r') as file:
+                json_string = json.load(file)
+        except FileNotFoundError as e:
+            self.textBrowser.append('Cannot open file {}'.format(userfile) )
+            return
     
         self.user_data[participant-1] = jsonpickle.decode(json_string)
         print('loaded data from JSON', self.user_data[participant-1])
@@ -115,12 +122,16 @@ class MultiSecretController(Ui_multisecret_gui):
             TODO: Validate all pieces needed to reconstruct.
         """
         
-        # TODO: create a Combiner class
-        combiner = Dealer(self.public_info['prime'],
-                          3,
-                          [0]*3,
-                          self.public_info['access_structures'])
-        combiner.public_shares_M = self.public_info['public_shares_M']
+        try:
+            # TODO: create a Combiner class
+            combiner = Dealer(self.public_info['prime'],
+                              3,
+                              [0]*3,
+                              self.public_info['access_structures'])
+            combiner.public_shares_M = self.public_info['public_shares_M']
+        except AttributeError as e:
+            self.textBrowser.append('There is not enough information to reconstruct!')
+            return
         
         combiner.random_id = [None] * combiner.n
         
