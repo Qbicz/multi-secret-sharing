@@ -21,17 +21,18 @@ pip3 install cryptography
 Run an example
 ```bash
 cd python/examples
-python3 example-multi-secret.py
+python3 example-split-secret.py
 ```
 
 # Run GUI
-To run GUI application, install PyQt5:
+To run GUI application, install PyQt5 and jsonpickle:
 ```bash
-sudo apt install pyqt5-dev-tools
+pip3 install PyQt5
+pip3 install jsonpickle
 ```
-Run application:
+Run GUI application:
 ```
-python3 multi-secret-gui.py
+python3 ui_controller.py
 ```
 
 # Run tests
