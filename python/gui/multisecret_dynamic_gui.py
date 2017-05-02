@@ -170,7 +170,7 @@ class Ui_multisecret_gui(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("multisecret_gui", "Roy-Adhikari split"))
         self.label_4.setText(_translate("multisecret_gui", "User 2"))
         self.label_8.setText(_translate("multisecret_gui", "User 1"))
-        self.label_6.setText(_translate("multisecret_gui", "Load public information"))
+        self.label_6.setText(_translate("multisecret_gui", "User 3"))
         self.button_combine.setText(_translate("multisecret_gui", "Combine secrets"))
         self.button_load_share_1.setText(_translate("multisecret_gui", "Load pseudo share..."))
         self.button_load_share_2.setText(_translate("multisecret_gui", "Load pseudo share..."))
