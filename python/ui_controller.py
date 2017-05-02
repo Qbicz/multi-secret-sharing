@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from gui.multisecret_dynamic_gui import Ui_multisecret_gui
 
@@ -27,9 +29,15 @@ class MultiSecretController(Ui_multisecret_gui):
 
         
     def split_secret(self):
-        secret1 = int(self.secret_1.text())
-        secret2 = int(self.secret_2.text())
-        secret3 = int(self.secret_3.text())
+        try:
+            secret1 = int(self.secret_1.text())
+            secret2 = int(self.secret_2.text())
+            secret3 = int(self.secret_3.text())
+        except ValueError as e:
+            print('Secrets missing. Error %r' % e)
+            self.showdialog()
+            return
+            
         secrets = [secret1, secret2, secret3]
         
         prime = 2**256 - 2**224 + 2**192 + 2**96 - 1
@@ -54,6 +62,17 @@ class MultiSecretController(Ui_multisecret_gui):
         
         self.statusbar.setText('Secret split!')
     
+    
+    def showdialog(self):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+
+        msg.setText("Please specify all secrets.")
+        msg.setInformativeText("The number of secrets is set to 3. In the next version you will be able to choose a number of secrets.")
+        msg.setWindowTitle("Information")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.exec_()
+        
     
     def save_pseudo_shares_to_file(self, dealer, pseudo_shares, filename):
         """ Save python dictionary with data needed for secret reconstruction.
@@ -110,6 +129,7 @@ class MultiSecretController(Ui_multisecret_gui):
             with open(userfile, 'r') as file:
                 json_string = json.load(file)
         except FileNotFoundError as e:
+            print('caught error %r' % e)
             self.textBrowser.append('Cannot open file {}'.format(userfile) )
             return
     
@@ -130,6 +150,7 @@ class MultiSecretController(Ui_multisecret_gui):
                               self.public_info['access_structures'])
             combiner.public_shares_M = self.public_info['public_shares_M']
         except AttributeError as e:
+            print('caught error %r' % e)
             self.textBrowser.append('There is not enough information to reconstruct!')
             return
         
@@ -138,16 +159,22 @@ class MultiSecretController(Ui_multisecret_gui):
         # create a structure for pseudo shares
         combiner.pseudo_shares = deepcopy(combiner.access_structures)
         
-        for user in range(1, combiner.n+1):
+        try:
+            for user in range(1, combiner.n+1):
+                
+                # ID from user
+                print('\nID from user', self.user_data[user-1]['id'])
+                combiner.random_id[user-1] = self.user_data[user-1]['id']
+                
+                # pseudo shares from user
+                print(self.user_data[user-1])
+                user_shares = self.user_data[user-1]['shares']
+                combiner.set_pseudo_shares_from_participant(user, user_shares)
             
-            # ID from user
-            print('\nID from user', self.user_data[user-1]['id'])
-            combiner.random_id[user-1] = self.user_data[user-1]['id']
-            
-            # pseudo shares from user
-            print(self.user_data[user-1])
-            user_shares = self.user_data[user-1]['shares']
-            combiner.set_pseudo_shares_from_participant(user, user_shares)
+        except TypeError as e:
+            print('caught error %r' % e)
+            self.textBrowser.append('You have not loaded all shares. Cannot reconstruct!')
+            return
             
         print('pseudo_shares:', combiner.pseudo_shares)
         obtained_shares = combiner.pseudo_shares
