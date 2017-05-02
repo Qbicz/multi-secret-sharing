@@ -45,6 +45,20 @@ Run tests:
 nosetests3
 ```
 
+# Building executables for release
+To package application under Windows & Linux, use latest development version of PyInstaller.
+```bash
+pip3 install https://github.com/pyinstaller/pyinstaller/archive/develop.zip
+```
+
+Under Linux:
+```bash
+pyinstaller --windowed --onefile ui_controller.py
+```
+If under Windows Qt5 DLL's are not found by the PyInstaller script, explicitly point PyQt5 directory, e.g.:
+```bash
+pyinstaller --windowed --onefile --path C:\Python35\Lib\site-packages\PyQt5\Qt\bin ui_controller.py
+```
 # Implementation of multi-secret sharing algorithms
 
 Imagine a situation where you want to secure vulnerable data and give access to it only to a specified group of people, e.g. board of directors of a company. The vulnerable secret can be codes to open a safe or to fire the ballistic missiles.
