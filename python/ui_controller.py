@@ -22,11 +22,44 @@ class MultiSecretController(Ui_multisecret_gui):
         self.button_load_share_3.clicked.connect(lambda: self.load_pseudo_shares_from_user(3) )
         self.button_load_public_info.clicked.connect(self.load_public_reconstruction_info)
         
+        # Redraw dynamic tab when value changed
+        self.number_of_users.valueChanged.connect(self.refresh_dynamic_widget_secrets_users)
+        self.number_of_secrets.valueChanged.connect(self.refresh_dynamic_widget_secrets_users)
+        
         # TODO: get from the GUI
         self.user_count = 3
         self.user_data = [None] * self.user_count
 
 
+    def refresh_dynamic_widget_secrets_users(self):
+        
+        users = self.number_of_users.value()
+        secrets = self.number_of_secrets.value()
+        print('users:',  users)
+        print('secrets:', secrets)
+        
+        self.secret_labels = [None]*secrets
+        self.secret_inputs = [None]*secrets
+        self.checkboxes = [[None]*users]*secrets # 2D list of checkboxes
+        for secret in range(secrets):
+            self.secret_labels[secret] = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
+            self.secret_labels[secret].setObjectName("secret_label"+str(secret))
+            self.gridLayout_dyn.addWidget(self.secret_labels[secret], secret, 0, 1, 1)
+            self.secret_labels[secret].setText('Secret {}'.format(secret))
+            
+            self.secret_inputs[secret] = QtWidgets.QLineEdit(self.gridLayoutWidget_dyn)
+            self.secret_inputs[secret].setObjectName("secret_input"+str(secret))
+            self.gridLayout_dyn.addWidget(self.secret_inputs[secret], secret, 1, 1, 1)
+        
+            for user in range(users):
+                self.checkboxes[secret][user] = QtWidgets.QCheckBox(self.gridLayoutWidget_dyn)
+                self.checkboxes[secret][user].setObjectName("check_s{}p{}".format(secret, user))
+                self.gridLayout_dyn.addWidget(self.checkboxes[secret][user], secret, 2+user, 1, 1)
+        
+        
+        # after redrawing, call QWidget.update
+        self.tab_dyn.update()
+        
         
     def split_secret(self):
         try:

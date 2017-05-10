@@ -12,9 +12,6 @@ class Ui_multisecret_gui(object):
         self.tabWidget.setGeometry(QtCore.QRect(0, 0, 751, 481))
         self.tabWidget.setObjectName("tabWidget")
         
-        # after redrawing, call QWidget.update
-        self.tabWidget.update()
-        
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.gridLayoutWidget = QtWidgets.QWidget(self.tab)
@@ -162,6 +159,7 @@ class Ui_multisecret_gui(object):
 
         self.secret_labels = [None]*self.secrets
         self.secret_inputs = [None]*self.secrets
+        self.checkboxes = [[None]*self.users]*self.secrets # 2D list of checkboxes
         for secret in range(self.secrets):
             self.secret_labels[secret] = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
             self.secret_labels[secret].setObjectName("secret_label"+str(secret))
@@ -171,6 +169,10 @@ class Ui_multisecret_gui(object):
             self.secret_inputs[secret].setObjectName("secret_input"+str(secret))
             self.gridLayout_dyn.addWidget(self.secret_inputs[secret], secret, 1, 1, 1)
         
+            for user in range(self.users):
+                self.checkboxes[secret][user] = QtWidgets.QCheckBox(self.gridLayoutWidget_dyn)
+                self.checkboxes[secret][user].setObjectName("check_s{}p{}".format(secret, user))
+                self.gridLayout_dyn.addWidget(self.checkboxes[secret][user], secret, 2+user, 1, 1)
             
         
         self.tabWidget.addTab(self.tab_dyn, "")
@@ -183,6 +185,8 @@ class Ui_multisecret_gui(object):
         self.retranslateUi(multisecret_gui)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(multisecret_gui)
+
+        
 
     def retranslateUi(self, multisecret_gui):
         _translate = QtCore.QCoreApplication.translate
