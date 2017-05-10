@@ -135,7 +135,7 @@ class Ui_multisecret_gui(object):
         self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
         self.number_of_secrets = QtWidgets.QSpinBox(self.layoutWidget)
         self.number_of_secrets.setMinimum(2)
-        self.number_of_secrets.setMaximum(97)
+        self.number_of_secrets.setMaximum(16)
         self.number_of_secrets.setProperty("value", 3)
         self.number_of_secrets.setObjectName("number_of_secrets")
         self.gridLayout_3.addWidget(self.number_of_secrets, 0, 1, 1, 1)
@@ -160,14 +160,18 @@ class Ui_multisecret_gui(object):
         self.gridLayout_dyn.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.gridLayout_dyn.setObjectName("gridLayout_dyn")
 
-        print('test')
-
-        self.secret_label_dyn = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
-        self.secret_label_dyn.setObjectName("secret_label_dyn"+str(0))
-        self.gridLayout.addWidget(self.secret_label_dyn, 0, 0, 1, 1)
-        
+        self.secret_labels = [None]*self.secrets
+        self.secret_inputs = [None]*self.secrets
         for secret in range(self.secrets):
-            pass
+            self.secret_labels[secret] = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
+            self.secret_labels[secret].setObjectName("secret_label"+str(secret))
+            self.gridLayout_dyn.addWidget(self.secret_labels[secret], secret, 0, 1, 1)
+            
+            self.secret_inputs[secret] = QtWidgets.QLineEdit(self.gridLayoutWidget_dyn)
+            self.secret_inputs[secret].setObjectName("secret_input"+str(secret))
+            self.gridLayout_dyn.addWidget(self.secret_inputs[secret], secret, 1, 1, 1)
+        
+            
         
         self.tabWidget.addTab(self.tab_dyn, "")
         # end of tab
@@ -212,7 +216,8 @@ class Ui_multisecret_gui(object):
         self.label_2.setText(_translate("multisecret_gui", "Number of users"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("multisecret_gui", "Problem size"))
         
-        self.secret_label_dyn.setText(_translate("multisecret_gui", "Secret 1"))
+        for secret in range(self.secrets):
+            self.secret_labels[secret].setText(_translate("multisecret_gui", "Secret "+str(secret+1)))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_dyn), _translate("multisecret_gui", "Dynamic secrets and users"))
 
         
