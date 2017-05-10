@@ -1,20 +1,20 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'gui/multisecret_simple_gui.ui'
-#
-# Created by: PyQt5 UI code generator 5.5.1
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_multisecret_gui(object):
+    def __init__(self):
+        self.secrets = 3
+        self.users = 3
+    
     def setupUi(self, multisecret_gui):
         multisecret_gui.setObjectName("multisecret_gui")
         multisecret_gui.resize(733, 468)
         self.tabWidget = QtWidgets.QTabWidget(multisecret_gui)
         self.tabWidget.setGeometry(QtCore.QRect(0, 0, 751, 481))
         self.tabWidget.setObjectName("tabWidget")
+        
+        # after redrawing, call QWidget.update
+        self.tabWidget.update()
+        
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.gridLayoutWidget = QtWidgets.QWidget(self.tab)
@@ -23,9 +23,11 @@ class Ui_multisecret_gui(object):
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.gridLayout.setObjectName("gridLayout")
+        
         self.button_split = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.button_split.setObjectName("button_split")
         self.gridLayout.addWidget(self.button_split, 4, 4, 1, 1)
+        
         self.check_s2p1 = QtWidgets.QCheckBox(self.gridLayoutWidget)
         self.check_s2p1.setObjectName("check_s2p1")
         self.gridLayout.addWidget(self.check_s2p1, 2, 5, 1, 1)
@@ -51,8 +53,10 @@ class Ui_multisecret_gui(object):
         self.check_s1p1.setObjectName("check_s1p1")
         self.gridLayout.addWidget(self.check_s1p1, 0, 5, 1, 1)
         self.secret_3 = QtWidgets.QLineEdit(self.gridLayoutWidget)
+        
         self.secret_3.setObjectName("secret_3")
         self.gridLayout.addWidget(self.secret_3, 3, 4, 1, 1)
+        
         self.check_s1p3 = QtWidgets.QCheckBox(self.gridLayoutWidget)
         self.check_s1p3.setObjectName("check_s1p3")
         self.gridLayout.addWidget(self.check_s1p3, 0, 7, 1, 1)
@@ -62,9 +66,11 @@ class Ui_multisecret_gui(object):
         self.label_prime = QtWidgets.QLabel(self.gridLayoutWidget)
         self.label_prime.setObjectName("label_prime")
         self.gridLayout.addWidget(self.label_prime, 5, 0, 1, 1)
+        
         self.secret_2 = QtWidgets.QLineEdit(self.gridLayoutWidget)
         self.secret_2.setObjectName("secret_2")
         self.gridLayout.addWidget(self.secret_2, 2, 4, 1, 1)
+        
         self.check_s2p2 = QtWidgets.QCheckBox(self.gridLayoutWidget)
         self.check_s2p2.setObjectName("check_s2p2")
         self.gridLayout.addWidget(self.check_s2p2, 2, 6, 1, 1)
@@ -142,11 +148,36 @@ class Ui_multisecret_gui(object):
         self.number_of_users.setObjectName("number_of_users")
         self.gridLayout_3.addWidget(self.number_of_users, 0, 3, 1, 1)
         self.tabWidget.addTab(self.tab_3, "")
+        
+        
+        # add new experimental tab
+        self.tab_dyn = QtWidgets.QWidget()
+        self.tab_dyn.setObjectName("tab_dyn")
+        self.gridLayoutWidget_dyn = QtWidgets.QWidget(self.tab_dyn)
+        self.gridLayoutWidget_dyn.setGeometry(QtCore.QRect(10, 40, 711, 391))
+        self.gridLayoutWidget_dyn.setObjectName("gridLayoutWidget_dyn")
+        self.gridLayout_dyn = QtWidgets.QGridLayout(self.gridLayoutWidget_dyn)
+        self.gridLayout_dyn.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.gridLayout_dyn.setObjectName("gridLayout_dyn")
+
+        print('test')
+
+        self.secret_label_dyn = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
+        self.secret_label_dyn.setObjectName("secret_label_dyn"+str(0))
+        self.gridLayout.addWidget(self.secret_label_dyn, 0, 0, 1, 1)
+        
+        for secret in range(self.secrets):
+            pass
+        
+        self.tabWidget.addTab(self.tab_dyn, "")
+        # end of tab
+        
+        
         self.actionSetSecretsNumber = QtWidgets.QAction(multisecret_gui)
         self.actionSetSecretsNumber.setObjectName("actionSetSecretsNumber")
 
         self.retranslateUi(multisecret_gui)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(multisecret_gui)
 
     def retranslateUi(self, multisecret_gui):
@@ -180,6 +211,11 @@ class Ui_multisecret_gui(object):
         self.label.setText(_translate("multisecret_gui", "Number of secrets"))
         self.label_2.setText(_translate("multisecret_gui", "Number of users"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("multisecret_gui", "Problem size"))
+        
+        self.secret_label_dyn.setText(_translate("multisecret_gui", "Secret 1"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_dyn), _translate("multisecret_gui", "Dynamic secrets and users"))
+
+        
         self.actionSetSecretsNumber.setText(_translate("multisecret_gui", "setSecretsNumber"))
 
 
