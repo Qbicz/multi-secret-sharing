@@ -38,9 +38,11 @@ class MultiSecretController(Ui_multisecret_gui):
         print('users:',  users)
         print('secrets:', secrets)
         
+        _translate = QtCore.QCoreApplication.translate
         self.secret_labels = [None]*secrets
         self.secret_inputs = [None]*secrets
         self.checkboxes = [[None]*users]*secrets # 2D list of checkboxes
+        
         for secret in range(secrets):
             self.secret_labels[secret] = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
             self.secret_labels[secret].setObjectName("secret_label"+str(secret))
@@ -55,6 +57,7 @@ class MultiSecretController(Ui_multisecret_gui):
                 self.checkboxes[secret][user] = QtWidgets.QCheckBox(self.gridLayoutWidget_dyn)
                 self.checkboxes[secret][user].setObjectName("check_s{}p{}".format(secret, user))
                 self.gridLayout_dyn.addWidget(self.checkboxes[secret][user], secret, 2+user, 1, 1)
+                self.checkboxes[secret][user].setText(_translate("multisecret_gui", "User "+str(user+1)))
         
         
         # after redrawing, call QWidget.update

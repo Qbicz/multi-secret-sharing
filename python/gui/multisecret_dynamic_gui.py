@@ -150,7 +150,6 @@ class Ui_multisecret_gui(object):
         self.gridLayout_3.addWidget(self.number_of_users, 0, 3, 1, 1)
         self.tabWidget.addTab(self.tab_3, "")
         
-        
         # add new experimental tab
         self.tab_dyn = QtWidgets.QWidget()
         self.tab_dyn.setObjectName("tab_dyn")
@@ -161,6 +160,7 @@ class Ui_multisecret_gui(object):
         self.gridLayout_dyn.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.gridLayout_dyn.setObjectName("gridLayout_dyn")
 
+        _translate = QtCore.QCoreApplication.translate
         self.secret_labels = [None]*self.secrets
         self.secret_inputs = [None]*self.secrets
         self.checkboxes = [[None]*self.users]*self.secrets # 2D list of checkboxes
@@ -177,11 +177,10 @@ class Ui_multisecret_gui(object):
                 self.checkboxes[secret][user] = QtWidgets.QCheckBox(self.gridLayoutWidget_dyn)
                 self.checkboxes[secret][user].setObjectName("check_s{}p{}".format(secret, user))
                 self.gridLayout_dyn.addWidget(self.checkboxes[secret][user], secret, 2+user, 1, 1)
+                self.checkboxes[secret][user].setText(_translate("multisecret_gui", "User "+str(user+1)))
             
-        
         self.tabWidget.addTab(self.tab_dyn, "")
         # end of tab
-        
         
         self.actionSetSecretsNumber = QtWidgets.QAction(multisecret_gui)
         self.actionSetSecretsNumber.setObjectName("actionSetSecretsNumber")
@@ -190,7 +189,6 @@ class Ui_multisecret_gui(object):
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(multisecret_gui)
 
-        
 
     def retranslateUi(self, multisecret_gui):
         _translate = QtCore.QCoreApplication.translate
