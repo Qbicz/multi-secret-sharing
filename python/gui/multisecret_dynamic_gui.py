@@ -9,8 +9,12 @@ class Ui_multisecret_gui(object):
         multisecret_gui.setObjectName("multisecret_gui")
         multisecret_gui.resize(733, 468)
         self.tabWidget = QtWidgets.QTabWidget(multisecret_gui)
-        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 751, 481))
+        #self.tabWidget.setGeometry(QtCore.QRect(0, 0, 751, 481))
         self.tabWidget.setObjectName("tabWidget")
+        
+        # put QTabWidget in a layout to enable resizing
+        layout = QtWidgets.QVBoxLayout(multisecret_gui)
+        layout.addWidget(self.tabWidget)
         
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
