@@ -9,6 +9,12 @@ import json
 import jsonpickle
 from copy import deepcopy
 
+def clear_layout(layout):
+    for i in reversed(range(layout.count())):
+        widgetToRemove = layout.itemAt(i).widget()
+        layout.removeWidget(widgetToRemove)
+        widgetToRemove.setParent(None)
+        
 
 class MultiSecretController(Ui_multisecret_gui):
     def __init__(self, window):
@@ -39,11 +45,7 @@ class MultiSecretController(Ui_multisecret_gui):
         print('secrets:', secrets)
         
         # remove old widgets
-        layout = self.gridLayout_dyn
-        for i in reversed(range(layout.count())):
-            widgetToRemove = layout.itemAt(i).widget()
-            layout.removeWidget(widgetToRemove)
-            widgetToRemove.setParent( None )
+        clear_layout(self.gridLayout_dyn)
         
         _translate = QtCore.QCoreApplication.translate
         self.secret_labels = [None]*secrets
