@@ -39,21 +39,11 @@ class MultiSecretController(Ui_multisecret_gui):
         print('secrets:', secrets)
         
         # remove old widgets
-        for secret_index in range(len(self.secret_labels)):
-            print(secret_index)
-            
-            for checkbox in self.checkboxes[secret_index]:
-                print(checkbox)
-                checkbox.setText('a')
-                self.gridLayout_dyn.removeWidget(checkbox)
-                checkbox.deleteLater()
-                checkbox = None
-                checkbox.setParent(None)
-                
-            self.gridLayout_dyn.removeWidget(self.secret_labels[secret_index])
-            self.secret_labels[secret_index].deleteLater()
-            self.secret_labels[secret_index] = None
-            
+        layout = self.gridLayout_dyn
+        for i in reversed(range(layout.count())):
+            widgetToRemove = layout.itemAt(i).widget()
+            layout.removeWidget(widgetToRemove)
+            widgetToRemove.setParent( None )
         
         _translate = QtCore.QCoreApplication.translate
         self.secret_labels = [None]*secrets
