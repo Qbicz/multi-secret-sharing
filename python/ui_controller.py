@@ -51,7 +51,7 @@ class MultiSecretController(Ui_multisecret_gui):
         _translate = QtCore.QCoreApplication.translate
         self.secret_labels = [None]*secrets
         self.secret_inputs = [None]*secrets
-        self.checkboxes = [[None]*users]*secrets # 2D list of checkboxes
+        self.checkboxes = [[[None] for _ in range(users)] for _ in range(secrets)]
         
         self.old_secret_number = secrets
         
@@ -103,7 +103,9 @@ class MultiSecretController(Ui_multisecret_gui):
         access_structures = [ [] for _ in range(secrets_count)]
         
         for s in range(secrets_count):
-            list_of_users = [5]
+            print(self.checkboxes[s])
+            list_of_users = [(user+1)*int(checkbox.isChecked()) for user, checkbox in enumerate(self.checkboxes[s])]
+            print('list', list_of_users)
             # [s][0] since GUI supports only a single access group to a secret
             access_structures[s].append(list_of_users)
             
