@@ -8,6 +8,7 @@ import sys
 import json
 import jsonpickle
 from copy import deepcopy
+from posix import access
 
 def clear_layout(layout):
     for i in reversed(range(layout.count())):
@@ -82,7 +83,37 @@ class MultiSecretController(Ui_multisecret_gui):
         
         
     def split_secret_dynamic(self):
-        print('asdf', __name__)
+        
+        users_count = self.number_of_users.value()
+        secrets_count = self.number_of_secrets.value()
+        
+        # Get secrets
+        secrets = [None]*secrets_count
+        try:
+            for s in range(secrets_count):
+                secrets[s] = int(self.secret_inputs[s].text())
+        except ValueError as e:
+            print('Secrets missing. Error %r' % e)
+            self.showdialog()
+            return
+        
+        prime = 2**256 - 2**224 + 2**192 + 2**96 - 1
+        
+        # Using list comprehension, with [[]]*secrets_count we would obtain copies of the same list
+        access_structures = [ [] for _ in range(secrets_count)]
+        
+        for s in range(secrets_count):
+            list_of_users = [5]
+            # [s][0] since GUI supports only a single access group to a secret
+            access_structures[s].append(list_of_users)
+            
+            print(access_structures)
+        
+        print(access_structures)
+        #access_structures = [[[1,2,3]], [[1,3]], [[1,2,3]]]
+        #dealer = Dealer(prime, users_count, secrets, access_structures)
+        #pseudo_shares = dealer.split_secrets()
+        
         
         
     def split_secret(self):
@@ -125,7 +156,7 @@ class MultiSecretController(Ui_multisecret_gui):
         msg.setIcon(QtWidgets.QMessageBox.Information)
 
         msg.setText("Please specify all secrets.")
-        msg.setInformativeText("The number of secrets is set to 3. In the next version you will be able to choose a number of secrets.")
+        #msg.setInformativeText("The number of secrets is set to 3. In the next version you will be able to choose a number of secrets.")
         msg.setWindowTitle("Information")
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.exec_()
