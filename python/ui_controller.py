@@ -51,6 +51,7 @@ class MultiSecretController(Ui_multisecret_gui):
         _translate = QtCore.QCoreApplication.translate
         self.secret_labels = [None]*secrets
         self.secret_inputs = [None]*secrets
+        # for 2D lists, list comprehensions HAVE TO be used in order to avoid having copies of lists
         self.checkboxes = [[[None] for _ in range(users)] for _ in range(secrets)]
         
         self.old_secret_number = secrets
@@ -103,18 +104,22 @@ class MultiSecretController(Ui_multisecret_gui):
         access_structures = [ [] for _ in range(secrets_count)]
         
         for s in range(secrets_count):
-            print(self.checkboxes[s])
-            list_of_users = [(user+1)*int(checkbox.isChecked()) for user, checkbox in enumerate(self.checkboxes[s])]
-            print('list', list_of_users)
-            # [s][0] since GUI supports only a single access group to a secret
+            list_of_users = [(user+1)*int(checkbox.isChecked()) for user, checkbox
+                             in enumerate(self.checkboxes[s]) if checkbox.isChecked()]
+            # GUI supports only a single access group to a secret
             access_structures[s].append(list_of_users)
             
-            print(access_structures)
         
         print(access_structures)
-        #access_structures = [[[1,2,3]], [[1,3]], [[1,2,3]]]
-        #dealer = Dealer(prime, users_count, secrets, access_structures)
-        #pseudo_shares = dealer.split_secrets()
+        try:
+            dealer = Dealer(prime, users_count, secrets, access_structures)
+        except ValueError as e:
+            self.showdialog(str(e))
+            raise
+        pseudo_shares = dealer.split_secrets()
+        
+        self.save_pseudo_shares_to_file(dealer,
+                                        pseudo_shares)
         
         
         
@@ -147,24 +152,23 @@ class MultiSecretController(Ui_multisecret_gui):
                     
         # save params: prime, structure, ID (user x), to file to recreate Dealer later
         self.save_pseudo_shares_to_file(dealer,
-                                        pseudo_shares,
-                                        'shares.json')
+                                        pseudo_shares)
         
         self.statusbar.setText('Secret split!')
     
     
-    def showdialog(self):
+    def showdialog(self, text='Please specify all secrets.'):
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Information)
 
-        msg.setText("Please specify all secrets.")
+        msg.setText(text)
         #msg.setInformativeText("The number of secrets is set to 3. In the next version you will be able to choose a number of secrets.")
         msg.setWindowTitle("Information")
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.exec_()
         
     
-    def save_pseudo_shares_to_file(self, dealer, pseudo_shares, filename):
+    def save_pseudo_shares_to_file(self, dealer, pseudo_shares):
         """ Save python dictionary with data needed for secret reconstruction.
             jsonpickle is used for encoding because data contains bytes objects,
             not recognized by json encoder """
@@ -179,9 +183,7 @@ class MultiSecretController(Ui_multisecret_gui):
         with open('public_info.json', 'w') as public_info_file:
             json.dump(public_info_json_string, public_info_file)
         
-        #
         # Save user shares (for each secret and group) and user ID to json file
-        #
         for user in range(1, dealer.n+1):
             
             user_shares = dealer.get_pseudo_shares_for_participant(user)

@@ -35,6 +35,9 @@ class Dealer:
         self.k = len(s_secrets) # number of secrets
         self.s_secrets = s_secrets # TODO: hide the secrets
         if isinstance(access_structures[0], list):
+            for group in access_structures:
+                if len(group[0]) < 2:
+                    raise ValueError('Less than 2 participants in one of the access groups!')
             self.access_structures = access_structures
         self.random_id = []
         self.hash_len = floor(log2(self.p))+1

@@ -163,7 +163,8 @@ class Ui_multisecret_gui(object):
         _translate = QtCore.QCoreApplication.translate
         self.secret_labels = [None]*self.secrets
         self.secret_inputs = [None]*self.secrets
-        self.checkboxes = [[None]*self.users]*self.secrets # 2D list of checkboxes
+        self.checkboxes = [[[None] for _ in range(self.users)] for _ in range(self.secrets)]
+        
         for secret in range(self.secrets):
             self.secret_labels[secret] = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
             self.secret_labels[secret].setObjectName("secret_label"+str(secret))
