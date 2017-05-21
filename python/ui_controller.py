@@ -30,21 +30,25 @@ class MultiSecretController(Ui_multisecret_gui):
         self.button_load_public_info.clicked.connect(self.load_public_reconstruction_info)
         
         # Redraw dynamic tab when value changed
-        self.number_of_users.valueChanged.connect(self.refresh_dynamic_widget_secrets_users)
-        self.number_of_secrets.valueChanged.connect(self.refresh_dynamic_widget_secrets_users)
+        self.number_of_users.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
+        self.number_of_secrets.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
         
         # TODO: get from the GUI
         self.user_count = 3
         self.user_data = [None] * self.user_count
 
 
-    def refresh_dynamic_widget_secrets_users(self):
+    def refresh_dynamic_widgets_secrets_users(self):
         
         users = self.number_of_users.value()
         secrets = self.number_of_secrets.value()
         print('users:',  users)
         print('secrets:', secrets)
+        self.refresh_dynamic_split_tab(secrets, users)
+        self.refresh_dynamic_combine_tab(secrets, users)
         
+        
+    def refresh_dynamic_split_tab(self, secrets, users):
         # remove old widgets
         clear_layout(self.gridLayout_dyn)
         
@@ -81,6 +85,14 @@ class MultiSecretController(Ui_multisecret_gui):
         
         # after redrawing, call QWidget.update
         self.tab_dyn.update()
+        
+        
+    def refresh_dynamic_combine_tab(self, secrets, users):
+        #self.button_load_share_1 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
+        #self.button_load_share_1.setObjectName("button_load_share_1")
+        #self.gridLayout_2.addWidget(self.button_load_share_1, 0, 2, 1, 1)
+        pass
+        
         
         
     def split_secret_dynamic(self):
