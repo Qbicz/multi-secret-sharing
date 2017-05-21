@@ -150,7 +150,7 @@ class Ui_multisecret_gui(object):
         self.gridLayout_3.addWidget(self.number_of_users, 0, 3, 1, 1)
         self.tabWidget.addTab(self.tab_3, "")
         
-        # add new experimental tab
+        # Dynamically created tab
         self.tab_dyn = QtWidgets.QWidget()
         self.tab_dyn.setObjectName("tab_dyn")
         self.gridLayoutWidget_dyn = QtWidgets.QWidget(self.tab_dyn)
@@ -178,6 +178,13 @@ class Ui_multisecret_gui(object):
                 self.checkboxes[secret][user].setObjectName("check_s{}p{}".format(secret, user))
                 self.gridLayout_dyn.addWidget(self.checkboxes[secret][user], secret, 2+user, 1, 1)
                 self.checkboxes[secret][user].setText(_translate("multisecret_gui", "User "+str(user+1)))
+        
+        self.button_split_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn)
+        self.button_split_dyn.setObjectName("button_split")
+        self.gridLayout_dyn.addWidget(self.button_split_dyn, 4, 1, 1, 3)
+        self.button_split_dyn.setText('Split secrets')
+        
+        self.button_split_dyn.clicked.connect(self.split_secret_dynamic)
             
         self.tabWidget.addTab(self.tab_dyn, "")
         # end of tab

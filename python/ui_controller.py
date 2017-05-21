@@ -70,9 +70,19 @@ class MultiSecretController(Ui_multisecret_gui):
                 self.gridLayout_dyn.addWidget(self.checkboxes[secret][user], secret, 2+user, 1, 1)
                 self.checkboxes[secret][user].setText(_translate("multisecret_gui", "User "+str(user+1)))
         
+        self.button_split_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn)
+        self.button_split_dyn.setObjectName("button_split")
+        self.gridLayout_dyn.addWidget(self.button_split_dyn, secrets+1, 1, 1, users)
+        self.button_split_dyn.setText('Split secrets')
+        
+        self.button_split_dyn.clicked.connect(self.split_secret_dynamic)
         
         # after redrawing, call QWidget.update
         self.tab_dyn.update()
+        
+        
+    def split_secret_dynamic(self):
+        print('asdf', __name__)
         
         
     def split_secret(self):
