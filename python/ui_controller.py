@@ -37,7 +37,6 @@ class MultiSecretController(Ui_multisecret_gui):
         self.user_count = 3
         self.user_data = [None] * self.user_count
 
-
     def refresh_dynamic_widgets_secrets_users(self):
         
         users = self.number_of_users.value()
@@ -46,7 +45,6 @@ class MultiSecretController(Ui_multisecret_gui):
         print('secrets:', secrets)
         self.refresh_dynamic_split_tab(secrets, users)
         self.refresh_dynamic_combine_tab(secrets, users)
-        
         
     def refresh_dynamic_split_tab(self, secrets, users):
         # remove old widgets
@@ -85,15 +83,12 @@ class MultiSecretController(Ui_multisecret_gui):
         
         # after redrawing, call QWidget.update
         self.tab_dyn.update()
-        
-        
+
     def refresh_dynamic_combine_tab(self, secrets, users):
         #self.button_load_share_1 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
         #self.button_load_share_1.setObjectName("button_load_share_1")
         #self.gridLayout_2.addWidget(self.button_load_share_1, 0, 2, 1, 1)
         pass
-        
-        
         
     def split_secret_dynamic(self):
         
@@ -133,8 +128,6 @@ class MultiSecretController(Ui_multisecret_gui):
         self.save_pseudo_shares_to_file(dealer,
                                         pseudo_shares)
         
-        
-        
     def split_secret(self):
         try:
             secret1 = int(self.secret_1.text())
@@ -168,7 +161,6 @@ class MultiSecretController(Ui_multisecret_gui):
         
         self.statusbar.setText('Secret split!')
     
-    
     def showdialog(self, text='Please specify all secrets.'):
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Information)
@@ -179,7 +171,6 @@ class MultiSecretController(Ui_multisecret_gui):
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.exec_()
         
-    
     def save_pseudo_shares_to_file(self, dealer, pseudo_shares):
         """ Save python dictionary with data needed for secret reconstruction.
             jsonpickle is used for encoding because data contains bytes objects,
@@ -208,7 +199,6 @@ class MultiSecretController(Ui_multisecret_gui):
             with open(filename, 'w') as file:
                 json.dump(user_json_string, file)
         
-
     def load_public_reconstruction_info(self):
         """ Load prime, access structures and public shares
             to controller's internal public_info dictionary.
@@ -223,7 +213,6 @@ class MultiSecretController(Ui_multisecret_gui):
         self.public_info = jsonpickle.decode(json_string)
         print('loaded data from JSON', self.public_info)
         
-    
     def load_pseudo_shares_from_user(self, participant):
         """ Load user ID and user's pseudo shares for each secret.
         """
@@ -239,7 +228,6 @@ class MultiSecretController(Ui_multisecret_gui):
     
         self.user_data[participant-1] = jsonpickle.decode(json_string)
         print('loaded data from JSON', self.user_data[participant-1])
-        
         
     def combine_secret(self):
         """ Combine secret from JSON loaded information.
@@ -292,7 +280,6 @@ class MultiSecretController(Ui_multisecret_gui):
         self.textBrowser.append('Combined a secret: {}'.format(secret3) )
         
     
-
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = QtWidgets.QDialog()
