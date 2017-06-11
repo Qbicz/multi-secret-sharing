@@ -8,7 +8,8 @@ import sys
 import json
 import jsonpickle
 from copy import deepcopy
-from posix import access
+
+INITIAL_USER_COUNT = 3
 
 def clear_layout(layout):
     for i in reversed(range(layout.count())):
@@ -29,12 +30,11 @@ class MultiSecretController(Ui_multisecret_gui):
         self.button_load_share_3.clicked.connect(lambda: self.load_pseudo_shares_from_user(3) )
         self.button_load_public_info.clicked.connect(self.load_public_reconstruction_info)
         
-        # Redraw dynamic tab when value changed
+        # Redraw dynamic tab when value changed in "Problem size"
         self.number_of_users.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
         self.number_of_secrets.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
-        
-        # TODO: get from the GUI
-        self.user_count = 3
+
+        self.user_count = INITIAL_USER_COUNT
         self.user_data = [None] * self.user_count
 
     def refresh_dynamic_widgets_secrets_users(self):
