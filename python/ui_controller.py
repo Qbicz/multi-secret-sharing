@@ -128,6 +128,9 @@ class MultiSecretController(Ui_multisecret_gui):
         self.save_pseudo_shares_to_file(dealer,
                                         pseudo_shares)
         
+    def combine_secret_dynamic(self):
+        print('combine_secret_dynamic')
+
     def split_secret(self):
         try:
             secret1 = int(self.secret_1.text())
