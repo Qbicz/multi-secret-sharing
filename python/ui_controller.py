@@ -29,7 +29,7 @@ class MultiSecretController(Ui_multisecret_gui):
         self.button_load_share_2.clicked.connect(lambda: self.load_pseudo_shares_from_user(2) )
         self.button_load_share_3.clicked.connect(lambda: self.load_pseudo_shares_from_user(3) )
         self.button_load_public_info.clicked.connect(self.load_public_reconstruction_info)
-        
+
         # Redraw dynamic tab when value changed in "Problem size"
         self.number_of_users.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
         self.number_of_secrets.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
@@ -115,8 +115,7 @@ class MultiSecretController(Ui_multisecret_gui):
                              in enumerate(self.checkboxes[s]) if checkbox.isChecked()]
             # GUI supports only a single access group to a secret
             access_structures[s].append(list_of_users)
-            
-        
+
         print(access_structures)
         try:
             dealer = Dealer(prime, users_count, secrets, access_structures)
