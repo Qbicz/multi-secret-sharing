@@ -85,11 +85,42 @@ class MultiSecretController(Ui_multisecret_gui):
         self.tab_dyn.update()
 
     def refresh_dynamic_combine_tab(self, secrets, users):
-        #self.button_load_share_1 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
-        #self.button_load_share_1.setObjectName("button_load_share_1")
-        #self.gridLayout_2.addWidget(self.button_load_share_1, 0, 2, 1, 1)
-        pass
-        
+        clear_layout(self.gridLayout_dyn_reconstr)
+
+        self.users = users
+
+        _translate = QtCore.QCoreApplication.translate
+        self.secret_labels = [None] * users
+
+        self.reconstr_user_labels = [None] * self.users
+        self.user_data_reconstr_buttons = [None] * self.users
+
+        self.button_load_public_info_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
+        self.gridLayout_dyn_reconstr.addWidget(self.button_load_public_info_dyn, 0, 0, 1, 1)
+        self.button_load_public_info_dyn.clicked.connect(self.load_public_reconstruction_info)
+
+
+        for user in range(self.users):
+            self.user_data_reconstr_buttons[user] = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
+            self.gridLayout_dyn_reconstr.addWidget(self.user_data_reconstr_buttons[user], user + 1, 0, 1, 1)
+            # Connect loading pseudo shares to each button
+            self.user_data_reconstr_buttons[user].clicked.connect(lambda: self.load_pseudo_shares_from_user(user))
+
+        self.button_reconstr_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
+        self.gridLayout_dyn_reconstr.addWidget(self.button_reconstr_dyn, 0, 1, 1, 1)
+        self.button_reconstr_dyn.clicked.connect(self.combine_secret_dynamic)
+
+        self.textBrowser_dyn = QtWidgets.QTextBrowser(self.gridLayoutWidget_dyn_reconstr)
+        self.textBrowser_dyn.setObjectName("textBrowser_dyn")
+        self.gridLayout_dyn_reconstr.addWidget(self.textBrowser_dyn, 1, 1, users+1, 1)
+
+        # Text in buttons
+        for user in range(self.users):
+            self.user_data_reconstr_buttons[user].setText(
+                _translate("multisecret_gui", "Load pseudo share from user " + str(user + 1) + "..."))
+        self.button_reconstr_dyn.setText(_translate("multisecret_gui", "Reconstruct secrets"))
+        self.button_load_public_info_dyn.setText(_translate("multisecret_gui", "Load public info"))
+
     def split_secret_dynamic(self):
         
         users_count = self.number_of_users.value()
