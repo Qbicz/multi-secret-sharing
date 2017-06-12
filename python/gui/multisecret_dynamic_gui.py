@@ -210,7 +210,7 @@ class Ui_multisecret_gui(object):
 
         self.button_load_public_info_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
         self.gridLayout_dyn_reconstr.addWidget(self.button_load_public_info_dyn, 0, 0, 1, 1)
-        self.button_load_public_info_dyn.clicked.connect(self.load_public_reconstruction_info)
+        self.button_load_public_info_dyn.clicked.connect(self.load_public_info_dynamic)
 
         for user in range(self.users):
             self.user_data_reconstr_buttons[user] = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)

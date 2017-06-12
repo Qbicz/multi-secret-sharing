@@ -97,7 +97,7 @@ class MultiSecretController(Ui_multisecret_gui):
 
         self.button_load_public_info_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
         self.gridLayout_dyn_reconstr.addWidget(self.button_load_public_info_dyn, 0, 0, 1, 1)
-        self.button_load_public_info_dyn.clicked.connect(self.load_public_reconstruction_info)
+        self.button_load_public_info_dyn.clicked.connect(self.load_public_info_dynamic)
 
 
         for user in range(self.users):
@@ -157,7 +157,16 @@ class MultiSecretController(Ui_multisecret_gui):
         
         self.save_pseudo_shares_to_file(dealer,
                                         pseudo_shares)
-        
+
+    def load_public_info_dynamic(self):
+        # read public info from json
+        self.load_public_reconstruction_info()
+        # Show information about secrets and privileged users
+        access_structure = self.public_info['access_structures']
+        self.textBrowser_dyn.append('Public info loaded. There are {} secrets.'.format(len(access_structure)))
+        for secret, group in enumerate(access_structure):
+            self.textBrowser_dyn.append('Secret {} can be obtained by {}.'.format(secret, str(group)))
+
     def combine_secret_dynamic(self):
         print('combine_secret_dynamic')
 
