@@ -44,6 +44,10 @@ class MultiSecretController(Ui_multisecret_gui):
         secrets = self.number_of_secrets.value()
         print('users:',  users)
         print('secrets:', secrets)
+
+        self.user_count = users
+        self.user_data = [None] * users
+
         self.refresh_dynamic_split_tab(secrets, users)
         self.refresh_dynamic_combine_tab(secrets, users)
         
@@ -104,7 +108,8 @@ class MultiSecretController(Ui_multisecret_gui):
             self.user_data_reconstr_buttons[user] = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
             self.gridLayout_dyn_reconstr.addWidget(self.user_data_reconstr_buttons[user], user + 1, 0, 1, 1)
             # Connect loading pseudo shares to each button
-            print('connect user', user)
+            # functools.partial() is used instead of lambda, to pass actual value of user
+            # to connected function and not the variable captured in closure
             self.user_data_reconstr_buttons[user].clicked.connect(
                 functools.partial(self.load_pseudo_shares_from_user, user+1) )
 
@@ -171,6 +176,7 @@ class MultiSecretController(Ui_multisecret_gui):
 
     def combine_secret_dynamic(self):
         print('combine_secret_dynamic')
+
 
     def split_secret(self):
         try:
@@ -260,7 +266,7 @@ class MultiSecretController(Ui_multisecret_gui):
     def load_pseudo_shares_from_user(self, participant):
         """ Load user ID and user's pseudo shares for each secret.
         """
-        print('load_pseudo_shares_from_user', participant)
+        self.textBrowser_dyn.append('Loaded pseudo shares from user {}'.format(participant))
 
         userfile = 'user' + str(participant) + '.json'
         try:
