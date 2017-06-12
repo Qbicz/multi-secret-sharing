@@ -8,6 +8,7 @@ import sys
 import json
 import jsonpickle
 from copy import deepcopy
+import functools
 
 INITIAL_USER_COUNT = 3
 
@@ -99,12 +100,13 @@ class MultiSecretController(Ui_multisecret_gui):
         self.gridLayout_dyn_reconstr.addWidget(self.button_load_public_info_dyn, 0, 0, 1, 1)
         self.button_load_public_info_dyn.clicked.connect(self.load_public_info_dynamic)
 
-
         for user in range(self.users):
             self.user_data_reconstr_buttons[user] = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
             self.gridLayout_dyn_reconstr.addWidget(self.user_data_reconstr_buttons[user], user + 1, 0, 1, 1)
             # Connect loading pseudo shares to each button
-            self.user_data_reconstr_buttons[user].clicked.connect(lambda: self.load_pseudo_shares_from_user(user))
+            print('connect user', user)
+            self.user_data_reconstr_buttons[user].clicked.connect(
+                functools.partial(self.load_pseudo_shares_from_user, user+1) )
 
         self.button_reconstr_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
         self.gridLayout_dyn_reconstr.addWidget(self.button_reconstr_dyn, 0, 1, 1, 1)
@@ -258,7 +260,8 @@ class MultiSecretController(Ui_multisecret_gui):
     def load_pseudo_shares_from_user(self, participant):
         """ Load user ID and user's pseudo shares for each secret.
         """
-        
+        print('load_pseudo_shares_from_user', participant)
+
         userfile = 'user' + str(participant) + '.json'
         try:
             with open(userfile, 'r') as file:

@@ -216,6 +216,7 @@ class Ui_multisecret_gui(object):
             self.user_data_reconstr_buttons[user] = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
             self.gridLayout_dyn_reconstr.addWidget(self.user_data_reconstr_buttons[user], user+1, 0, 1, 1)
             # Connect loading pseudo shares to each button
+            print('connect user', user)
             self.user_data_reconstr_buttons[user].clicked.connect(lambda: self.load_pseudo_shares_from_user(user))
 
         self.button_reconstr_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
