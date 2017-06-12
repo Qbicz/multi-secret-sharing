@@ -1,17 +1,15 @@
 # Prototype of Multi-secret sharing scheme by Roy & Adhikari
 # Filip Kubicz 2016-2017
 
-from os import urandom
-from math import log2, floor
 # import SHA256
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
-#import AES-CTR
+# import AES-CTR
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from os import urandom
+from math import log2, floor
 from multisecret.primality import is_probable_prime
-
 from multisecret.byteHelper import inverse_modulo_p
-
 import copy # to have deepcopy, independent copy of a list
 
 
@@ -35,6 +33,9 @@ class Dealer:
         self.k = len(s_secrets) # number of secrets
         self.s_secrets = s_secrets # TODO: hide the secrets
         if isinstance(access_structures[0], list):
+            for group in access_structures:
+                if len(group[0]) < 2:
+                    raise ValueError('Less than 2 participants in one of the access groups!')
             self.access_structures = access_structures
         self.random_id = []
         self.hash_len = floor(log2(self.p))+1
@@ -42,7 +43,6 @@ class Dealer:
         
         print('hash_len:', self.hash_len)
         print('Dealer created for Roy-Adhikari sharing of %d secrets among %d participants' % (self.k, self.n))
-    
     
     def modulo_p(self, number):
         """ works for:
@@ -72,7 +72,6 @@ class Dealer:
         
         return modulo_number
     
-    
     def hash(self, message):
         """A collision resistant hash function h with variable output length:
         # option 1: use SHA-3 Keccak (variable length digest)
@@ -99,7 +98,6 @@ class Dealer:
         
         return varlen_hash
         
-        
     def list_of_random_in_modulo_p(self, listlen):
         """helper function returning list of random numbers less than p prime"""
         randoms = []
@@ -112,13 +110,11 @@ class Dealer:
             
         return randoms # TODO: yield generator for bigger problem sizes
 
-        
     def print_list_of_hex(self, list_to_print, description):
         """helper to print list of bytes objects with string description"""
         for i in range(len(list_to_print)):
             print('%s%d = %s' % (description, i, list_to_print[i].hex()))
 
-            
     def provide_id(self):
         """for each participant provide ID in p modulo field"""
         self.random_id = self.list_of_random_in_modulo_p(self.n)
@@ -126,11 +122,9 @@ class Dealer:
         
         return self.random_id
     
-    
     def get_id_int(self, participant):
         """ returns ID as an integer, with indexing from 1 """
         return int.from_bytes(self.random_id[participant-1], byteorder='big')
-    
     
     def take_first_bits(self, input, bitlen):
         #print('Length of input', len(input))
@@ -155,7 +149,6 @@ class Dealer:
             output += bytes([mask & last_byte])
             return output
 
-            
     def choose_distinct_x(self):
         """ dealer chooses distinct x_j and sends it secretly to each participant, j=1,2...n
         """
@@ -164,7 +157,6 @@ class Dealer:
         self.print_list_of_hex(self.x, 'x')
             
         return self.x # TODO: use yield to construct a generator
-    
     
     def access_group_polynomial_coeffs(self):
         """ for the qth qualified set of access group,
@@ -192,11 +184,8 @@ class Dealer:
               
         return self.d
             
-    
     def get_d_polynomial_coeffs(self, secret, group):
-        
         return self.d[secret][group]
-
 
     def f_polynomial_compute(self, x, *, secret, group):
         """ compute f_q(x) for q-th access group in access structure """    
@@ -223,9 +212,7 @@ class Dealer:
         
         return poly_value
     
-    
     def user_polynomial_value_B(self, i_secret, q_group, participant):
-        
         assert(participant in self.access_structures[i_secret][q_group])
         print('polynomial value for user', participant)
         
@@ -235,7 +222,6 @@ class Dealer:
         # returns int
         return self.f_polynomial_compute(participant_id, secret=i_secret, group=q_group)
                 
-
     def compute_all_pseudo_shares_lists(self):
         """ experimental: use nested lists, don't use numpy arrays
             - this way we don't have empty (0) elements in pseudo_shares structure """
@@ -252,8 +238,6 @@ class Dealer:
                     self.pseudo_shares[i][q][b] = self.pseudo_share_participant(i, q, Pb)
                     print('[i=%d][q=%d][b=%d][Pb=%d], pseudo_share=%r' % (i, q, b, Pb, self.pseudo_shares[i][q][b] ))
         
-        
-
     def pseudo_share_participant(self, i_secret, q_group, participant):
         """ pseudo share generation for a single participant
             U = h(x || i_U || q_v)
@@ -289,9 +273,7 @@ class Dealer:
         hash_of_message = self.hash(message)
         share = self.modulo_p(hash_of_message)
         #print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
-        
         return share
-
 
     def public_user_share_M(self, i_secret, q_group, participant, B_value):
         
@@ -300,9 +282,7 @@ class Dealer:
         U_value = int.from_bytes(self.pseudo_shares[i_secret][q_group][participant], byteorder='big')
         M_public_share = (B_value - U_value) % self.p
         print('participant %d, U = %d, public M = %d' % (participant, U_value, M_public_share))
-        
         return M_public_share
-                    
                     
     def compute_all_public_shares_M_lists(self):
         """ experimental, use nested lists instead of np.array """
@@ -325,14 +305,11 @@ class Dealer:
                     
                     # STORE in a nested list
                     self.public_shares_M[i][q][b] = M
-                    
-        
-    
+
     def get_M_public_user_share(self, i_secret, q_group, participant):
         
         return self.public_shares_M[i_secret][q_group][participant]
-    
-    
+
     def get_pseudo_shares_for_participant(self, participant):
         """ Scan for pseudo shares specific to a chosen participant.
             Returns a dictionary {(secret number,group) : pseudo_share}
@@ -349,10 +326,8 @@ class Dealer:
                         print('Pb == participant ==', Pb)
                         print('my_pseudo_shares[(i=%d,q=%d)]'
                               '= self.pseudo_shares[%d][%d][b=%d]' % (i,q,i,q,b))
-        
         return my_pseudo_shares
-        
-        
+
     def set_pseudo_shares_from_participant(self, participant, my_pseudo_shares):
         """ Take my_pseudo_shares dictionary from a specific user and put shares
             into right places in the dealer's pseudo_shares nested list.
@@ -365,7 +340,6 @@ class Dealer:
                     if Pb == participant:
                         self.pseudo_shares[i][q][b] = my_pseudo_shares['({}, {})'.format(i,q)]
         
-    
     def split_secrets(self):
         """ Split secret in one step """
         
@@ -377,7 +351,6 @@ class Dealer:
         self.compute_all_public_shares_M_lists()
         
         return self.pseudo_shares
-    
     
     def combine_secret(self, i_secret, q_group, obtained_pseudo_shares):
         """
@@ -400,7 +373,7 @@ class Dealer:
         for b, Pb in enumerate(self.access_structures[i_secret][q_group]):
             
             print('\tb =', b)
-            part_sum_B = (obtained_pseudo_shares[b] \
+            part_sum_B = (obtained_pseudo_shares[b]
                      + self.public_shares_M[i_secret][q_group][b]) % self.p
             print('\tB = U+M, B = %d, M=%d'
                   % (part_sum_B, self.public_shares_M[i_secret][q_group][b] ))

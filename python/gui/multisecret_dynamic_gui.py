@@ -1,4 +1,4 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 class Ui_multisecret_gui(object):
     def __init__(self):
@@ -11,11 +11,11 @@ class Ui_multisecret_gui(object):
         self.tabWidget = QtWidgets.QTabWidget(multisecret_gui)
         #self.tabWidget.setGeometry(QtCore.QRect(0, 0, 751, 481))
         self.tabWidget.setObjectName("tabWidget")
-        
+
         # put QTabWidget in a layout to enable resizing
         layout = QtWidgets.QVBoxLayout(multisecret_gui)
         layout.addWidget(self.tabWidget)
-        
+
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.gridLayoutWidget = QtWidgets.QWidget(self.tab)
@@ -24,11 +24,11 @@ class Ui_multisecret_gui(object):
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.gridLayout.setObjectName("gridLayout")
-        
+
         self.button_split = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.button_split.setObjectName("button_split")
         self.gridLayout.addWidget(self.button_split, 4, 4, 1, 1)
-        
+
         self.check_s2p1 = QtWidgets.QCheckBox(self.gridLayoutWidget)
         self.check_s2p1.setObjectName("check_s2p1")
         self.gridLayout.addWidget(self.check_s2p1, 2, 5, 1, 1)
@@ -54,10 +54,10 @@ class Ui_multisecret_gui(object):
         self.check_s1p1.setObjectName("check_s1p1")
         self.gridLayout.addWidget(self.check_s1p1, 0, 5, 1, 1)
         self.secret_3 = QtWidgets.QLineEdit(self.gridLayoutWidget)
-        
+
         self.secret_3.setObjectName("secret_3")
         self.gridLayout.addWidget(self.secret_3, 3, 4, 1, 1)
-        
+
         self.check_s1p3 = QtWidgets.QCheckBox(self.gridLayoutWidget)
         self.check_s1p3.setObjectName("check_s1p3")
         self.gridLayout.addWidget(self.check_s1p3, 0, 7, 1, 1)
@@ -67,11 +67,11 @@ class Ui_multisecret_gui(object):
         self.label_prime = QtWidgets.QLabel(self.gridLayoutWidget)
         self.label_prime.setObjectName("label_prime")
         self.gridLayout.addWidget(self.label_prime, 5, 0, 1, 1)
-        
+
         self.secret_2 = QtWidgets.QLineEdit(self.gridLayoutWidget)
         self.secret_2.setObjectName("secret_2")
         self.gridLayout.addWidget(self.secret_2, 2, 4, 1, 1)
-        
+
         self.check_s2p2 = QtWidgets.QCheckBox(self.gridLayoutWidget)
         self.check_s2p2.setObjectName("check_s2p2")
         self.gridLayout.addWidget(self.check_s2p2, 2, 6, 1, 1)
@@ -149,8 +149,10 @@ class Ui_multisecret_gui(object):
         self.number_of_users.setObjectName("number_of_users")
         self.gridLayout_3.addWidget(self.number_of_users, 0, 3, 1, 1)
         self.tabWidget.addTab(self.tab_3, "")
-        
-        # add new experimental tab
+
+        #
+        # Dynamically created split tab
+        #
         self.tab_dyn = QtWidgets.QWidget()
         self.tab_dyn.setObjectName("tab_dyn")
         self.gridLayoutWidget_dyn = QtWidgets.QWidget(self.tab_dyn)
@@ -163,25 +165,70 @@ class Ui_multisecret_gui(object):
         _translate = QtCore.QCoreApplication.translate
         self.secret_labels = [None]*self.secrets
         self.secret_inputs = [None]*self.secrets
-        self.checkboxes = [[None]*self.users]*self.secrets # 2D list of checkboxes
+        self.checkboxes = [[[None] for _ in range(self.users)] for _ in range(self.secrets)]
+
         for secret in range(self.secrets):
             self.secret_labels[secret] = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
             self.secret_labels[secret].setObjectName("secret_label"+str(secret))
             self.gridLayout_dyn.addWidget(self.secret_labels[secret], secret, 0, 1, 1)
-            
+
             self.secret_inputs[secret] = QtWidgets.QLineEdit(self.gridLayoutWidget_dyn)
             self.secret_inputs[secret].setObjectName("secret_input"+str(secret))
             self.gridLayout_dyn.addWidget(self.secret_inputs[secret], secret, 1, 1, 1)
-        
+
             for user in range(self.users):
                 self.checkboxes[secret][user] = QtWidgets.QCheckBox(self.gridLayoutWidget_dyn)
                 self.checkboxes[secret][user].setObjectName("check_s{}p{}".format(secret, user))
                 self.gridLayout_dyn.addWidget(self.checkboxes[secret][user], secret, 2+user, 1, 1)
                 self.checkboxes[secret][user].setText(_translate("multisecret_gui", "User "+str(user+1)))
-            
+
+        self.button_split_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn)
+        self.button_split_dyn.setObjectName("button_split")
+        self.gridLayout_dyn.addWidget(self.button_split_dyn, 4, 1, 1, 3)
+        self.button_split_dyn.setText('Split secrets')
+
+        self.button_split_dyn.clicked.connect(self.split_secret_dynamic)
+
         self.tabWidget.addTab(self.tab_dyn, "")
         # end of tab
-        
+
+        #
+        # Dynamically created reconstruction tab
+        #
+        self.tab_dyn_reconstr = QtWidgets.QWidget()
+        self.tab_dyn_reconstr.setObjectName("tab_dyn_reconstr")
+        self.gridLayoutWidget_dyn_reconstr = QtWidgets.QWidget(self.tab_dyn_reconstr)
+        self.gridLayoutWidget_dyn_reconstr.setGeometry(QtCore.QRect(10, 40, 711, 391))
+        self.gridLayoutWidget_dyn_reconstr.setObjectName("gridLayoutWidget_dyn_reconstr")
+        self.gridLayout_dyn_reconstr = QtWidgets.QGridLayout(self.gridLayoutWidget_dyn_reconstr)
+        self.gridLayout_dyn_reconstr.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.gridLayout_dyn_reconstr.setObjectName("gridLayout_dyn_reconstr")
+
+        _translate = QtCore.QCoreApplication.translate
+        self.reconstr_user_labels = [None] * self.users
+        self.user_data_reconstr_buttons = [None] * self.users
+
+        self.button_load_public_info_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
+        self.gridLayout_dyn_reconstr.addWidget(self.button_load_public_info_dyn, 0, 0, 1, 1)
+        self.button_load_public_info_dyn.clicked.connect(self.load_public_info_dynamic)
+
+        for user in range(self.users):
+            self.user_data_reconstr_buttons[user] = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
+            self.gridLayout_dyn_reconstr.addWidget(self.user_data_reconstr_buttons[user], user+1, 0, 1, 1)
+            # Connect loading pseudo shares to each button
+            self.user_data_reconstr_buttons[user].clicked.connect(lambda: self.load_pseudo_shares_from_user(user))
+
+        self.button_reconstr_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn_reconstr)
+        self.gridLayout_dyn_reconstr.addWidget(self.button_reconstr_dyn, 0, 1, 1, 1)
+        self.button_reconstr_dyn.clicked.connect(self.combine_secret_dynamic)
+
+        self.textBrowser_dyn = QtWidgets.QTextBrowser(self.gridLayoutWidget_dyn_reconstr)
+        self.textBrowser_dyn.setObjectName("textBrowser_dyn")
+        self.gridLayout_dyn_reconstr.addWidget(self.textBrowser_dyn, 1, 1, 4, 1)
+
+        self.tabWidget.addTab(self.tab_dyn_reconstr, "")
+        # end of tab
+
         self.actionSetSecretsNumber = QtWidgets.QAction(multisecret_gui)
         self.actionSetSecretsNumber.setObjectName("actionSetSecretsNumber")
 
@@ -224,9 +271,16 @@ class Ui_multisecret_gui(object):
         
         for secret in range(self.secrets):
             self.secret_labels[secret].setText(_translate("multisecret_gui", "Secret "+str(secret+1)))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_dyn), _translate("multisecret_gui", "Dynamic secrets and users"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_dyn), _translate("multisecret_gui", "Dynamic split"))
 
-        
+        # Dynamic reconstruction tab
+        for user in range(self.users):
+            self.user_data_reconstr_buttons[user].setText(_translate("multisecret_gui", "Load pseudo share from user "+str(user+1)+"..."))
+        self.button_reconstr_dyn.setText(_translate("multisecret_gui", "Reconstruct secrets"))
+        self.button_load_public_info_dyn.setText(_translate("multisecret_gui", "Load public info"))
+
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_dyn_reconstr), _translate("multisecret_gui", "Dynamic reconstruction"))
+
         self.actionSetSecretsNumber.setText(_translate("multisecret_gui", "setSecretsNumber"))
 
 
