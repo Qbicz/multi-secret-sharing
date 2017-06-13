@@ -176,6 +176,7 @@ class MultiSecretController(Ui_multisecret_gui):
 
     def combine_secret_dynamic(self):
         print('combine_secret_dynamic')
+        self.combine_secret()
 
 
     def split_secret(self):
@@ -266,7 +267,7 @@ class MultiSecretController(Ui_multisecret_gui):
     def load_pseudo_shares_from_user(self, participant):
         """ Load user ID and user's pseudo shares for each secret.
         """
-        self.textBrowser_dyn.append('Loaded pseudo shares from user {}'.format(participant))
+        self.textBrowser_dyn.append('Load pseudo shares from user {}...'.format(participant))
 
         userfile = 'user' + str(participant) + '.json'
         try:
@@ -274,7 +275,7 @@ class MultiSecretController(Ui_multisecret_gui):
                 json_string = json.load(file)
         except FileNotFoundError as e:
             print('caught error %r' % e)
-            self.textBrowser.append('Cannot open file {}'.format(userfile) )
+            self.textBrowser_dyn.append('Cannot open file {}'.format(userfile) )
             return
     
         self.user_data[participant-1] = jsonpickle.decode(json_string)
@@ -284,17 +285,18 @@ class MultiSecretController(Ui_multisecret_gui):
         """ Combine secret from JSON loaded information.
             TODO: Validate all pieces needed to reconstruct.
         """
-        
+        print('combine_secret ', self.user_count)
+
         try:
             # TODO: create a Combiner class
             combiner = Dealer(self.public_info['prime'],
-                              3,
-                              [0]*3,
+                              self.user_count,
+                              [0]*self.user_count,
                               self.public_info['access_structures'])
             combiner.public_shares_M = self.public_info['public_shares_M']
         except AttributeError as e:
             print('caught error %r' % e)
-            self.textBrowser.append('There is not enough information to reconstruct!')
+            self.textBrowser_dyn.append('There is not enough information to reconstruct!')
             return
         
         combiner.random_id = [None] * combiner.n
@@ -316,7 +318,7 @@ class MultiSecretController(Ui_multisecret_gui):
             
         except TypeError as e:
             print('caught error %r' % e)
-            self.textBrowser.append('You have not loaded all shares. Cannot reconstruct!')
+            self.textBrowser_dyn.append('You have not loaded all shares. Cannot reconstruct!')
             return
             
         print('pseudo_shares:', combiner.pseudo_shares)
@@ -326,9 +328,9 @@ class MultiSecretController(Ui_multisecret_gui):
         secret2 = combiner.combine_secret(1, 0, obtained_shares[1][0])
         secret3 = combiner.combine_secret(2, 0, obtained_shares[2][0])
         
-        self.textBrowser.append('Combined a secret: {}'.format(secret1) )
-        self.textBrowser.append('Combined a secret: {}'.format(secret2) )
-        self.textBrowser.append('Combined a secret: {}'.format(secret3) )
+        self.textBrowser_dyn.append('Combined a secret: {}'.format(secret1) )
+        self.textBrowser_dyn.append('Combined a secret: {}'.format(secret2) )
+        self.textBrowser_dyn.append('Combined a secret: {}'.format(secret3) )
         
     
 if __name__ == "__main__":
