@@ -174,8 +174,14 @@ class Ui_multisecret_gui(object):
         self.gridLayout_dyn_reconstr.addWidget(self.button_reconstr_dyn, 0, 1, 1, 1)
         self.button_reconstr_dyn.clicked.connect(self.combine_secret_dynamic)
 
+        # Spinbox for choosing a secret to reconstruct
+        self.spinbox_secret = QtWidgets.QSpinBox()
+        self.gridLayout_dyn_reconstr.addWidget(self.spinbox_secret, 0, 2, 1, 1)
+        self.spinbox_secret.setRange(0, self.secrets - 1)
+        self.spinbox_secret.valueChanged.connect(self.choose_secret_to_combine)
+
         self.textBrowser_dyn = QtWidgets.QTextBrowser(self.gridLayoutWidget_dyn_reconstr)
-        self.gridLayout_dyn_reconstr.addWidget(self.textBrowser_dyn, 1, 1, 4, 1)
+        self.gridLayout_dyn_reconstr.addWidget(self.textBrowser_dyn, 1, 1, 4, 3)
 
         self.tabWidget.addTab(self.tab_dyn_reconstr, "")
         # end of tab
@@ -227,7 +233,7 @@ class Ui_multisecret_gui(object):
         # Dynamic reconstruction tab
         for user in range(self.users):
             self.user_data_reconstr_buttons[user].setText(_translate("multisecret_gui", "Load pseudo share from user "+str(user+1)+"..."))
-        self.button_reconstr_dyn.setText(_translate("multisecret_gui", "Reconstruct secrets"))
+        self.button_reconstr_dyn.setText(_translate("multisecret_gui", "Reconstruct secret"))
         self.button_load_public_info_dyn.setText(_translate("multisecret_gui", "Load public info"))
 
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_dyn_reconstr), _translate("multisecret_gui", "Dynamic reconstruction"))

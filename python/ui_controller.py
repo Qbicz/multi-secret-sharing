@@ -11,6 +11,7 @@ from copy import deepcopy
 import functools
 
 INITIAL_USER_COUNT = 3
+INITIAL_SECRET_COUNT = 3
 
 def clear_layout(layout):
     for i in reversed(range(layout.count())):
@@ -36,20 +37,22 @@ class MultiSecretController(Ui_multisecret_gui):
         self.number_of_secrets.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
 
         self.user_count = INITIAL_USER_COUNT
+        self.secret_count = INITIAL_SECRET_COUNT
         self.user_data = [None] * self.user_count
 
+        self.secret_to_combine = 0
+
     def refresh_dynamic_widgets_secrets_users(self):
-        
-        users = self.number_of_users.value()
-        secrets = self.number_of_secrets.value()
-        print('users:',  users)
-        print('secrets:', secrets)
 
-        self.user_count = users
-        self.user_data = [None] * users
+        self.user_count = self.number_of_users.value()
+        self.secret_count = self.number_of_secrets.value()
+        print('users:',  self.user_count)
+        print('secrets:', self.secret_count)
 
-        self.refresh_dynamic_split_tab(secrets, users)
-        self.refresh_dynamic_combine_tab(secrets, users)
+        self.user_data = [None] * self.user_count
+
+        self.refresh_dynamic_split_tab(self.secret_count, self.user_count)
+        self.refresh_dynamic_combine_tab(self.secret_count, self.user_count)
         
     def refresh_dynamic_split_tab(self, secrets, users):
         # remove old widgets
@@ -93,6 +96,7 @@ class MultiSecretController(Ui_multisecret_gui):
         clear_layout(self.gridLayout_dyn_reconstr)
 
         self.users = users
+        self.secret_count = secrets
 
         _translate = QtCore.QCoreApplication.translate
         self.secret_labels = [None] * users
@@ -117,16 +121,26 @@ class MultiSecretController(Ui_multisecret_gui):
         self.gridLayout_dyn_reconstr.addWidget(self.button_reconstr_dyn, 0, 1, 1, 1)
         self.button_reconstr_dyn.clicked.connect(self.combine_secret_dynamic)
 
+        # Spinbox for choosing a secret to reconstruct
+        self.spinbox_secret = QtWidgets.QSpinBox()
+        self.gridLayout_dyn_reconstr.addWidget(self.spinbox_secret, 0, 2, 1, 1)
+        print('secrets:', secrets)
+        self.spinbox_secret.setRange(0, secrets - 1)
+        self.spinbox_secret.valueChanged.connect(self.choose_secret_to_combine)
+
         self.textBrowser_dyn = QtWidgets.QTextBrowser(self.gridLayoutWidget_dyn_reconstr)
         self.textBrowser_dyn.setObjectName("textBrowser_dyn")
-        self.gridLayout_dyn_reconstr.addWidget(self.textBrowser_dyn, 1, 1, users+1, 1)
+        self.gridLayout_dyn_reconstr.addWidget(self.textBrowser_dyn, 1, 1, users+1, 3)
 
         # Text in buttons
         for user in range(self.users):
             self.user_data_reconstr_buttons[user].setText(
                 _translate("multisecret_gui", "Load pseudo share from user " + str(user + 1) + "..."))
-        self.button_reconstr_dyn.setText(_translate("multisecret_gui", "Reconstruct secrets"))
+        self.button_reconstr_dyn.setText(_translate("multisecret_gui", "Reconstruct secret"))
         self.button_load_public_info_dyn.setText(_translate("multisecret_gui", "Load public info"))
+
+    def choose_secret_to_combine(self):
+        self.secret_to_combine = self.spinbox_secret.value()
 
     def split_secret_dynamic(self):
         
@@ -291,7 +305,7 @@ class MultiSecretController(Ui_multisecret_gui):
             # TODO: create a Combiner class
             combiner = Dealer(self.public_info['prime'],
                               self.user_count,
-                              [0]*self.user_count,
+                              [0]*self.secret_count,
                               self.public_info['access_structures'])
             combiner.public_shares_M = self.public_info['public_shares_M']
         except AttributeError as e:
@@ -320,18 +334,17 @@ class MultiSecretController(Ui_multisecret_gui):
             print('caught error %r' % e)
             self.textBrowser_dyn.append('You have not loaded all shares. Cannot reconstruct!')
             return
-            
-        print('pseudo_shares:', combiner.pseudo_shares)
+
         obtained_shares = combiner.pseudo_shares
-        print('obtained_shares[0][0]', obtained_shares[0][0])
-        secret1 = combiner.combine_secret(0, 0, obtained_shares[0][0])
-        secret2 = combiner.combine_secret(1, 0, obtained_shares[1][0])
-        secret3 = combiner.combine_secret(2, 0, obtained_shares[2][0])
-        
-        self.textBrowser_dyn.append('Combined a secret: {}'.format(secret1) )
-        self.textBrowser_dyn.append('Combined a secret: {}'.format(secret2) )
-        self.textBrowser_dyn.append('Combined a secret: {}'.format(secret3) )
-        
+        # in GUI it's only possible to create 1 access group for secret
+        access_group = 0
+        secret = combiner.combine_secret(
+            self.secret_to_combine, access_group,
+            obtained_shares[self.secret_to_combine][access_group])
+
+        self.textBrowser_dyn.append('Combined a secret: s{} = {}'.format(
+                                    self.secret_to_combine, secret) )
+
     
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
