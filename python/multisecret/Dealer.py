@@ -43,7 +43,19 @@ class Dealer:
         
         print('hash_len:', self.hash_len)
         print('Dealer created for Roy-Adhikari sharing of %d secrets among %d participants' % (self.k, self.n))
-    
+
+    @staticmethod
+    def user_count_from_access_structure(access_structure):
+        max_user_count = 0
+        for secret in access_structure:
+            for group in secret:
+                if max(group) > max_user_count:
+                    max_user_count = max(group)
+        print('only returns maximal user number, not a total number of users.\n'
+              'But the user over this number is irrelevant.\n'
+              'TODO: reconstruct for subsets of shares - will solve the problem')
+        return max_user_count
+
     def modulo_p(self, number):
         """ works for:
         - int type

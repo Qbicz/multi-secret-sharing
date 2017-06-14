@@ -184,7 +184,13 @@ class MultiSecretController(Ui_multisecret_gui):
         self.load_public_reconstruction_info()
         # Show information about secrets and privileged users
         access_structure = self.public_info['access_structures']
-        self.textBrowser_dyn.append('Public info loaded. There are {} secrets.'.format(len(access_structure)))
+
+        # after loading public info, change GUI to current secrets and users number
+        self.user_count = Dealer.user_count_from_access_structure(access_structure)
+        self.secret_count = len(access_structure)
+        self.refresh_dynamic_combine_tab(self.secret_count, self.user_count)
+
+        self.textBrowser_dyn.append('Public info loaded. There are {} secrets.'.format(self.secret_count))
         for secret, group in enumerate(access_structure):
             self.textBrowser_dyn.append('Secret {} can be obtained by {}.'.format(secret, str(group)))
 
