@@ -18,97 +18,6 @@ class Ui_multisecret_gui(object):
         layout.addWidget(self.tabWidget)
 
         self.tab = QtWidgets.QWidget()
-        self.gridLayoutWidget = QtWidgets.QWidget(self.tab)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(9, 9, 711, 391))
-        self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
-        self.gridLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
-
-        self.button_split = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.button_split, 4, 4, 1, 1)
-
-        self.check_s2p1 = QtWidgets.QCheckBox(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.check_s2p1, 2, 5, 1, 1)
-        self.secret_1 = QtWidgets.QLineEdit(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.secret_1, 0, 4, 1, 1)
-        self.label_secret2 = QtWidgets.QLabel(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.label_secret2, 2, 0, 1, 1)
-        self.prime = QtWidgets.QSpinBox(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.prime, 5, 4, 1, 1)
-        self.check_s3p2 = QtWidgets.QCheckBox(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.check_s3p2, 3, 6, 1, 1)
-        self.label_secret3 = QtWidgets.QLabel(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.label_secret3, 3, 0, 1, 1)
-        self.check_s1p2 = QtWidgets.QCheckBox(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.check_s1p2, 0, 6, 1, 1)
-        self.check_s1p1 = QtWidgets.QCheckBox(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.check_s1p1, 0, 5, 1, 1)
-        self.secret_3 = QtWidgets.QLineEdit(self.gridLayoutWidget)
-
-        self.gridLayout.addWidget(self.secret_3, 3, 4, 1, 1)
-
-        self.check_s1p3 = QtWidgets.QCheckBox(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.check_s1p3, 0, 7, 1, 1)
-        self.check_s3p1 = QtWidgets.QCheckBox(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.check_s3p1, 3, 5, 1, 1)
-        self.label_prime = QtWidgets.QLabel(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.label_prime, 5, 0, 1, 1)
-
-        self.secret_2 = QtWidgets.QLineEdit(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.secret_2, 2, 4, 1, 1)
-
-        self.check_s2p2 = QtWidgets.QCheckBox(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.check_s2p2, 2, 6, 1, 1)
-        self.label_secret1 = QtWidgets.QLabel(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.label_secret1, 0, 0, 1, 1)
-        self.check_s2p3 = QtWidgets.QCheckBox(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.check_s2p3, 2, 7, 1, 1)
-        self.check_s3p3 = QtWidgets.QCheckBox(self.gridLayoutWidget)
-        self.gridLayout.addWidget(self.check_s3p3, 3, 7, 1, 1)
-        self.statusbar = QtWidgets.QLabel(self.tab)
-        self.statusbar.setGeometry(QtCore.QRect(10, 417, 721, 20))
-        self.tabWidget.addTab(self.tab, "")
-        self.tab_2 = QtWidgets.QWidget()
-        self.gridLayoutWidget_2 = QtWidgets.QWidget(self.tab_2)
-        self.gridLayoutWidget_2.setGeometry(QtCore.QRect(10, 40, 711, 391))
-        self.gridLayout_2 = QtWidgets.QGridLayout(self.gridLayoutWidget_2)
-        self.gridLayout_2.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
-        self.label_4 = QtWidgets.QLabel(self.gridLayoutWidget_2)
-        self.gridLayout_2.addWidget(self.label_4, 3, 0, 1, 1)
-        self.label_8 = QtWidgets.QLabel(self.gridLayoutWidget_2)
-        self.gridLayout_2.addWidget(self.label_8, 0, 0, 1, 1)
-        self.textBrowser = QtWidgets.QTextBrowser(self.gridLayoutWidget_2)
-        self.gridLayout_2.addWidget(self.textBrowser, 6, 2, 1, 1)
-        self.label_6 = QtWidgets.QLabel(self.gridLayoutWidget_2)
-        self.gridLayout_2.addWidget(self.label_6, 4, 0, 1, 1)
-        self.button_combine = QtWidgets.QPushButton(self.gridLayoutWidget_2)
-        self.gridLayout_2.addWidget(self.button_combine, 6, 0, 1, 1)
-        self.button_load_share_1 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
-        self.gridLayout_2.addWidget(self.button_load_share_1, 0, 2, 1, 1)
-        self.button_load_share_2 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
-        self.gridLayout_2.addWidget(self.button_load_share_2, 3, 2, 1, 1)
-        self.button_load_share_3 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
-        self.gridLayout_2.addWidget(self.button_load_share_3, 4, 2, 1, 1)
-        self.button_load_public_info = QtWidgets.QPushButton(self.gridLayoutWidget_2)
-        self.gridLayout_2.addWidget(self.button_load_public_info, 5, 2, 1, 1)
-        self.tabWidget.addTab(self.tab_2, "")
-        self.tab_3 = QtWidgets.QWidget()
-        self.layoutWidget = QtWidgets.QWidget(self.tab_3)
-        self.layoutWidget.setGeometry(QtCore.QRect(20, 20, 691, 181))
-        self.gridLayout_3 = QtWidgets.QGridLayout(self.layoutWidget)
-        self.label = QtWidgets.QLabel(self.layoutWidget)
-        self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
-        self.number_of_secrets = QtWidgets.QSpinBox(self.layoutWidget)
-        self.number_of_secrets.setMinimum(2)
-        self.number_of_secrets.setMaximum(16)
-        self.number_of_secrets.setProperty("value", 3)
-        self.gridLayout_3.addWidget(self.number_of_secrets, 0, 1, 1, 1)
-        self.label_2 = QtWidgets.QLabel(self.layoutWidget)
-        self.gridLayout_3.addWidget(self.label_2, 0, 2, 1, 1)
-        self.number_of_users = QtWidgets.QSpinBox(self.layoutWidget)
-        self.number_of_users.setMinimum(2)
-        self.number_of_users.setProperty("value", 3)
-        self.gridLayout_3.addWidget(self.number_of_users, 0, 3, 1, 1)
-        self.tabWidget.addTab(self.tab_3, "")
 
         #
         # Dynamically created split tab
@@ -186,6 +95,29 @@ class Ui_multisecret_gui(object):
         self.tabWidget.addTab(self.tab_dyn_reconstr, "")
         # end of tab
 
+        #
+        # Problem size tab
+        #
+        self.tab_3 = QtWidgets.QWidget()
+        self.layoutWidget = QtWidgets.QWidget(self.tab_3)
+        self.layoutWidget.setGeometry(QtCore.QRect(20, 20, 691, 181))
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.layoutWidget)
+        self.label = QtWidgets.QLabel(self.layoutWidget)
+        self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
+        self.number_of_secrets = QtWidgets.QSpinBox(self.layoutWidget)
+        self.number_of_secrets.setMinimum(2)
+        self.number_of_secrets.setMaximum(16)
+        self.number_of_secrets.setProperty("value", 3)
+        self.gridLayout_3.addWidget(self.number_of_secrets, 0, 1, 1, 1)
+        self.label_2 = QtWidgets.QLabel(self.layoutWidget)
+        self.gridLayout_3.addWidget(self.label_2, 0, 2, 1, 1)
+        self.number_of_users = QtWidgets.QSpinBox(self.layoutWidget)
+        self.number_of_users.setMinimum(2)
+        self.number_of_users.setProperty("value", 3)
+        self.gridLayout_3.addWidget(self.number_of_users, 0, 3, 1, 1)
+        self.tabWidget.addTab(self.tab_3, "")
+        # end of tab
+
         self.actionSetSecretsNumber = QtWidgets.QAction(multisecret_gui)
         self.actionSetSecretsNumber.setObjectName("actionSetSecretsNumber")
 
@@ -197,40 +129,18 @@ class Ui_multisecret_gui(object):
     def retranslateUi(self, multisecret_gui):
         _translate = QtCore.QCoreApplication.translate
         multisecret_gui.setWindowTitle(_translate("multisecret_gui", "Multi-secret Sharing Tool"))
-        self.button_split.setText(_translate("multisecret_gui", "Split secrets"))
-        self.check_s2p1.setText(_translate("multisecret_gui", "User 1"))
-        self.label_secret2.setText(_translate("multisecret_gui", "Secret 2"))
-        self.check_s3p2.setText(_translate("multisecret_gui", "User 2"))
-        self.label_secret3.setText(_translate("multisecret_gui", "Secret 3"))
-        self.check_s1p2.setText(_translate("multisecret_gui", "User 2"))
-        self.check_s1p1.setText(_translate("multisecret_gui", "User 1"))
-        self.check_s1p3.setText(_translate("multisecret_gui", "User 3"))
-        self.check_s3p1.setText(_translate("multisecret_gui", "User 1"))
-        self.label_prime.setText(_translate("multisecret_gui", "Prime"))
-        self.check_s2p2.setText(_translate("multisecret_gui", "User 2"))
-        self.label_secret1.setText(_translate("multisecret_gui", "Secret 1"))
-        self.check_s2p3.setText(_translate("multisecret_gui", "User 3"))
-        self.check_s3p3.setText(_translate("multisecret_gui", "User 3"))
-        self.statusbar.setText(_translate("multisecret_gui", "Status Bar"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("multisecret_gui", "Roy-Adhikari split"))
-        self.label_4.setText(_translate("multisecret_gui", "User 2"))
-        self.label_8.setText(_translate("multisecret_gui", "User 1"))
-        self.label_6.setText(_translate("multisecret_gui", "User 3"))
-        self.button_combine.setText(_translate("multisecret_gui", "Combine secrets"))
-        self.button_load_share_1.setText(_translate("multisecret_gui", "Load pseudo share..."))
-        self.button_load_share_2.setText(_translate("multisecret_gui", "Load pseudo share..."))
-        self.button_load_share_3.setText(_translate("multisecret_gui", "Load pseudo share..."))
-        self.button_load_public_info.setText(_translate("multisecret_gui", "Load public information"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("multisecret_gui", "Combine secret from file"))
+
+        # Text for problem size tab
         self.label.setText(_translate("multisecret_gui", "Number of secrets"))
         self.label_2.setText(_translate("multisecret_gui", "Number of users"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("multisecret_gui", "Problem size"))
-        
+
+        # Text for dynamic split tab
         for secret in range(self.secrets):
             self.secret_labels[secret].setText(_translate("multisecret_gui", "Secret "+str(secret+1)))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_dyn), _translate("multisecret_gui", "Dynamic split"))
 
-        # Dynamic reconstruction tab
+        # Text for dynamic reconstruction tab
         for user in range(self.users):
             self.user_data_reconstr_buttons[user].setText(_translate("multisecret_gui", "Load pseudo share from user "+str(user+1)+"..."))
         self.button_reconstr_dyn.setText(_translate("multisecret_gui", "Reconstruct secret"))
@@ -249,4 +159,3 @@ if __name__ == "__main__":
     ui.setupUi(multisecret_gui)
     multisecret_gui.show()
     sys.exit(app.exec_())
-

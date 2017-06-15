@@ -25,13 +25,6 @@ class MultiSecretController(Ui_multisecret_gui):
         Ui_multisecret_gui.__init__(self)
         self.setupUi(window)
 
-        self.button_split.clicked.connect(self.split_secret)
-        self.button_combine.clicked.connect(self.combine_secret)
-        self.button_load_share_1.clicked.connect(lambda: self.load_pseudo_shares_from_user(1) )
-        self.button_load_share_2.clicked.connect(lambda: self.load_pseudo_shares_from_user(2) )
-        self.button_load_share_3.clicked.connect(lambda: self.load_pseudo_shares_from_user(3) )
-        self.button_load_public_info.clicked.connect(self.load_public_reconstruction_info)
-
         # Redraw dynamic tab when value changed in "Problem size"
         self.number_of_users.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
         self.number_of_secrets.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
@@ -186,6 +179,7 @@ class MultiSecretController(Ui_multisecret_gui):
         access_structure = self.public_info['access_structures']
 
         # after loading public info, change GUI to current secrets and users number
+        # TODO: test how it affects reconstruction with not-full sets
         self.user_count = Dealer.user_count_from_access_structure(access_structure)
         self.secret_count = len(access_structure)
         self.refresh_dynamic_combine_tab(self.secret_count, self.user_count)
