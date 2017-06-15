@@ -166,7 +166,8 @@ class MultiSecretController(Ui_multisecret_gui):
             dealer = Dealer(prime, users_count, secrets, access_structures)
         except ValueError as e:
             self.showdialog(str(e))
-            raise
+            print('Error %r' % e)
+            return
         pseudo_shares = dealer.split_secrets()
         
         self.save_pseudo_shares_to_file(dealer,
