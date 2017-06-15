@@ -8,7 +8,7 @@ class Ui_multisecret_gui(object):
     
     def setupUi(self, multisecret_gui):
         multisecret_gui.setObjectName("multisecret_gui")
-        multisecret_gui.resize(733, 468)
+        multisecret_gui.resize(751, 481)
         self.tabWidget = QtWidgets.QTabWidget(multisecret_gui)
         #self.tabWidget.setGeometry(QtCore.QRect(0, 0, 751, 481))
         self.tabWidget.setObjectName("tabWidget")
@@ -22,31 +22,36 @@ class Ui_multisecret_gui(object):
         #
         # Dynamically created split tab
         #
-        self.tab_dyn = QtWidgets.QWidget()
+        self.tab_dyn = QtWidgets.QWidget(multisecret_gui)
         self.gridLayoutWidget_dyn = QtWidgets.QWidget(self.tab_dyn)
         self.gridLayoutWidget_dyn.setGeometry(QtCore.QRect(10, 40, 711, 391))
         self.gridLayout_dyn = QtWidgets.QGridLayout(self.gridLayoutWidget_dyn)
         self.gridLayout_dyn.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
 
         _translate = QtCore.QCoreApplication.translate
+
+        #self.algorithm_label = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
+        #self.gridLayout_dyn.addWidget(self.algorithm_label, 0, 0, 1, 1)
+        #self.algorithm_label.setText('Algorithm ')
+
         self.secret_labels = [None]*self.secrets
         self.secret_inputs = [None]*self.secrets
         self.checkboxes = [[[None] for _ in range(self.users)] for _ in range(self.secrets)]
 
         for secret in range(self.secrets):
             self.secret_labels[secret] = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
-            self.gridLayout_dyn.addWidget(self.secret_labels[secret], secret, 0, 1, 1)
+            self.gridLayout_dyn.addWidget(self.secret_labels[secret], secret+1, 0, 1, 1)
 
             self.secret_inputs[secret] = QtWidgets.QLineEdit(self.gridLayoutWidget_dyn)
-            self.gridLayout_dyn.addWidget(self.secret_inputs[secret], secret, 1, 1, 1)
+            self.gridLayout_dyn.addWidget(self.secret_inputs[secret], secret+1, 1, 1, 1)
 
             for user in range(self.users):
                 self.checkboxes[secret][user] = QtWidgets.QCheckBox(self.gridLayoutWidget_dyn)
-                self.gridLayout_dyn.addWidget(self.checkboxes[secret][user], secret, 2+user, 1, 1)
+                self.gridLayout_dyn.addWidget(self.checkboxes[secret][user], secret+1, 2+user, 1, 1)
                 self.checkboxes[secret][user].setText(_translate("multisecret_gui", "User "+str(user+1)))
 
         self.button_split_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn)
-        self.gridLayout_dyn.addWidget(self.button_split_dyn, 4, 1, 1, 3)
+        self.gridLayout_dyn.addWidget(self.button_split_dyn, 5, 1, 1, 3)
         self.button_split_dyn.setText('Split secrets')
 
         self.button_split_dyn.clicked.connect(self.split_secret_dynamic)
