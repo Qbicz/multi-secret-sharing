@@ -63,7 +63,7 @@ def test_modulo_p():
     p = 1009
     dealer = Dealer(p, n_participants, s_secrets, access_structures)
     
-    assert_equal(dealer.modulo_p(2011), 1002)
+    assert_equal(dealer.modulo_p(p, 2011), 1002)
     
 
 def test_list_of_random_in_modulo_p():

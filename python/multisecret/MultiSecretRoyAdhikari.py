@@ -119,7 +119,7 @@ class Dealer:
         for i in range(listlen):
             
             generated = urandom(bytelen_of_randoms_generated)
-            randoms.append(self.modulo_p(generated))
+            randoms.append(self.modulo_p(self.p, generated))
             
         return randoms # TODO: yield generator for bigger problem sizes
 
@@ -220,7 +220,7 @@ class Dealer:
         
         poly_value += self.s_secrets[secret]
         print('+ secret (%d)' % self.s_secrets[secret])
-        poly_value = self.modulo_p(poly_value)
+        poly_value = self.modulo_p(self.p, poly_value)
         #print('poly_value', poly_value)    
         
         return poly_value
@@ -284,7 +284,7 @@ class Dealer:
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
         # hash the concatenated bytes
         hash_of_message = self.hash(message)
-        share = self.modulo_p(hash_of_message)
+        share = self.modulo_p(self.p, hash_of_message)
         #print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
         return share
 
@@ -414,5 +414,5 @@ class Dealer:
         print("Combined sum, s%d = %d" % (i_secret, combine_sum % self.p))
         
         # obtained shares U should be passed by argument
-        return self.modulo_p(combine_sum)
+        return self.modulo_p(self.p, combine_sum)
     
