@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import multisecret.MultiSecretRoyAdhikari
-from multisecret.byteHelper import inverse_modulo_p
+import multisecret.byteHelper as bytehelper
+import multisecret.MultiSecretCommon as common
 
 def main():
     """ This example shows low-level functions for splitting
@@ -27,8 +28,10 @@ def main():
     # Create a Dealer
     dealer = multisecret.MultiSecretRoyAdhikari.Dealer(p256, n_participants, s_secrets, access_structures)
 
-    dealer.provide_id() # a list of IDs stored internally
-    dealer.choose_distinct_x()
+    dealer.random_id = common.provide_id(n_participants,
+                                         dealer.hash_len,
+                                         dealer.p) # a list of IDs stored internally
+    dealer.master_shares_x = dealer.choose_distinct_master_shares_x()
 
     dealer.access_group_polynomial_coeffs()
     dealer.compute_all_pseudo_shares_lists()
