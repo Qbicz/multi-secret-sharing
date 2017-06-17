@@ -78,15 +78,13 @@ class Dealer:
         return int.from_bytes(self.random_id[participant-1], byteorder='big')
     
 
-    def choose_distinct_x(self):
-        """ dealer chooses distinct x_j and sends it secretly to each participant, j=1,2...n
+    def choose_distinct_master_shares_x(self):
+        """ dealer chooses distinct master share x_j for each participant
         """
-        self.x = common.list_of_random_in_modulo_p(self.n, self.hash_len,
+        master_shares_x = common.list_of_random_in_modulo_p(self.n, self.hash_len,
                                                  self.p)
-        
-        common.print_list_of_hex(self.x, 'x')
-            
-        return self.x # TODO: use yield to construct a generator
+        common.print_list_of_hex(master_shares_x, 'x')
+        return master_shares_x # TODO: use yield to construct a generator
     
     def access_group_polynomial_coeffs(self):
         """ for the qth qualified set of access group,
@@ -189,10 +187,10 @@ class Dealer:
         v = floor(log2(l)) + 1
         
         # concatenate x, i and q binary
-        if isinstance(self.x[participant-1], bytes):
-            bytes_x = self.x[participant-1]
+        if isinstance(self.master_shares_x[participant-1], bytes):
+            bytes_x = self.master_shares_x[participant-1]
         else:
-            bytes_x = bytes([ self.x[participant-1] ])
+            bytes_x = bytes([ self.master_shares_x[participant-1] ])
         bytes_i = bytes([i_secret])
         bytes_q = bytes([q_group])
 
@@ -274,7 +272,7 @@ class Dealer:
         """ Split secret in one step """
 
         self.random_id = common.provide_id(self.n, self.hash_len, self.p)
-        self.choose_distinct_x()
+        self.master_shares_x = self.choose_distinct_master_shares_x()
 
         self.access_group_polynomial_coeffs()
         self.compute_all_pseudo_shares_lists()
