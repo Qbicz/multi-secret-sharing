@@ -3,7 +3,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from gui.multisecret_dynamic_gui import Ui_multisecret_gui
 
-from multisecret.Dealer import Dealer
+import multisecret.MultiSecretRoyAdhikari
 import sys
 import json
 import jsonpickle
@@ -23,7 +23,6 @@ def clear_layout(layout):
 class MultiSecretController(Ui_multisecret_gui):
     def __init__(self, window):
         Ui_multisecret_gui.__init__(self)
-        self.setupUi(window)
 
         # Redraw dynamic tab when value changed in "Problem size"
         self.number_of_users.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
@@ -163,7 +162,7 @@ class MultiSecretController(Ui_multisecret_gui):
 
         print(access_structures)
         try:
-            dealer = Dealer(prime, users_count, secrets, access_structures)
+            dealer = multisecret.MultiSecretRoyAdhikari.Dealer(prime, users_count, secrets, access_structures)
         except ValueError as e:
             self.showdialog(str(e))
             raise
@@ -180,7 +179,7 @@ class MultiSecretController(Ui_multisecret_gui):
 
         # after loading public info, change GUI to current secrets and users number
         # TODO: test how it affects reconstruction with not-full sets
-        self.user_count = Dealer.user_count_from_access_structure(access_structure)
+        self.user_count = multisecret.MultiSecretRoyAdhikari.Dealer.user_count_from_access_structure(access_structure)
         self.secret_count = len(access_structure)
         self.refresh_dynamic_combine_tab(self.secret_count, self.user_count)
 
@@ -303,7 +302,7 @@ class MultiSecretController(Ui_multisecret_gui):
 
         try:
             # TODO: create a Combiner class
-            combiner = Dealer(self.public_info['prime'],
+            combiner = multisecret.MultiSecretRoyAdhikari.Dealer(self.public_info['prime'],
                               self.user_count,
                               [0]*self.secret_count,
                               self.public_info['access_structures'])

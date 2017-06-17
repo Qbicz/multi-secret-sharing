@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from multisecret.Dealer import Dealer
+import multisecret.MultiSecretRoyAdhikari
 from multisecret.byteHelper import inverse_modulo_p
 
 def main():
@@ -25,7 +25,7 @@ def main():
     # TODO: in GUI choosing access structures on a matrix
 
     # Create a Dealer
-    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+    dealer = multisecret.MultiSecretRoyAdhikari.Dealer(p256, n_participants, s_secrets, access_structures)
 
     dealer.provide_id() # a list of IDs stored internally
     dealer.choose_distinct_x()
