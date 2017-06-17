@@ -97,20 +97,6 @@ def test_get_d_polynomial_coeffs():
     coeff2 = dealer.d[2][0][1]
     
     assert_equal(coeff1, coeff2)
-    
-
-def test_f_polynomial_compute():
-    
-    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
-    dealer.access_group_polynomial_coeffs()
-    # override coeffs
-    dealer.d[0][0] = [bytes([0x05]), bytes([0x07])]
-    
-    value = dealer.f_polynomial_compute(bytes([0x01]), secret=0, group=0)
-    assert_equal(value, 12+s_secrets[0])
-    
-    value = dealer.f_polynomial_compute(bytes([0x02]), secret=0, group=0)
-    assert_equal(value, 38+s_secrets[0])
 
 
 def test_combine_first_secret_3_participants():

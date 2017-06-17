@@ -53,3 +53,21 @@ def test_provide_id():
     assert_equal(len(id_list), n_participants)
     # check the type of object in the list
     assert_equal(isinstance(id_list[0], bytes), True)
+
+
+def test_shamir_polynomial_compute():
+    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+    dealer.access_group_polynomial_coeffs()
+    # override coeffs
+    dealer.d[0][0] = [bytes([0x05]), bytes([0x07])]
+
+    coeffs = dealer.get_d_polynomial_coeffs(0, 0)
+    secret_value = dealer.s_secrets[0]
+
+    value = common.shamir_polynomial_compute(bytes([0x01]), coeffs,
+                                             secret_value, dealer.p)
+    assert_equal(value, 12 + s_secrets[0])
+
+    value = common.shamir_polynomial_compute(bytes([0x02]), coeffs,
+                                             secret_value, dealer.p)
+    assert_equal(value, 38 + s_secrets[0])
