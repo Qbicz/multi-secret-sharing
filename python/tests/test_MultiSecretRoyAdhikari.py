@@ -145,8 +145,8 @@ def test_combine_first_secret_3_participants():
     # set x-shares for pseudo share generation only
     dealer.master_shares_x = [3,4,5]
     
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     # [0,5,5] when testing with p = 7
     #print(dealer.B_values)
@@ -194,8 +194,8 @@ def test_combine_second_secret_3_participants():
     # set x-shares for pseudo share generation only
     dealer.master_shares_x = [3,4,5]
     
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     # [0,5,5] when testing with p = 7
     #print(dealer.B_values)
@@ -246,8 +246,8 @@ def test_combine_secret_for_shorter_group():
     # set x-shares for pseudo share generation only
     dealer.master_shares_x = [3,4,5]
     
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     # [0,5,5] when testing with p = 7
     #print(dealer.B_values)
@@ -295,8 +295,8 @@ def test_combine_with_random_d_coefficients():
     # set x-shares for pseudo share generation only
     dealer.master_shares_x = [3,4,5]
     
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     # [0,5,5] when testing with p = 7
     #print(dealer.B_values)
@@ -334,8 +334,8 @@ def test_combine_secret_4_participants_in_3_groups():
     #assert_equal([1,3,4], dealer.get_d_polynomial_coeffs(0, 0))
     dealer.access_group_polynomial_coeffs()
 
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     #assert_equal(dealer.B_values[0][0], [11, 37])
     

@@ -70,13 +70,11 @@ class Dealer:
         # take demanded numer of bits
         varlen_hash = bytehelper.take_first_bits(ciphertext, self.hash_len)
         #print('Hash is ', varlen_hash.hex())
-        
         return varlen_hash
 
     def get_id_int(self, participant):
         """ returns ID as an integer, with indexing from 1 """
         return int.from_bytes(self.random_id[participant-1], byteorder='big')
-    
 
     def choose_distinct_master_shares_x(self):
         """ dealer chooses distinct master share x_j for each participant
@@ -137,7 +135,6 @@ class Dealer:
         print('+ secret (%d)' % self.s_secrets[secret])
         poly_value = common.modulo_p(self.p, poly_value)
         #print('poly_value', poly_value)    
-        
         return poly_value
     
     def user_polynomial_value_B(self, i_secret, q_group, participant):
@@ -150,7 +147,7 @@ class Dealer:
         # returns int
         return self.f_polynomial_compute(participant_id, secret=i_secret, group=q_group)
                 
-    def compute_all_pseudo_shares_lists(self):
+    def compute_all_pseudo_shares(self):
         """ experimental: use nested lists, don't use numpy arrays
             - this way we don't have empty (0) elements in pseudo_shares structure """
         self.pseudo_shares = copy.deepcopy(self.access_structures)
@@ -212,7 +209,7 @@ class Dealer:
         print('participant %d, U = %d, public M = %d' % (participant, U_value, M_public_share))
         return M_public_share
                     
-    def compute_all_public_shares_M_lists(self):
+    def compute_all_public_shares_M(self):
         """ experimental, use nested lists instead of np.array """
         
         # duplicate the structure of access_structure
@@ -275,8 +272,8 @@ class Dealer:
         self.master_shares_x = self.choose_distinct_master_shares_x()
 
         self.access_group_polynomial_coeffs()
-        self.compute_all_pseudo_shares_lists()
-        self.compute_all_public_shares_M_lists()
+        self.compute_all_pseudo_shares()
+        self.compute_all_public_shares_M()
         
         return self.pseudo_shares
     
