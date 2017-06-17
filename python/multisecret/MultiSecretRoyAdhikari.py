@@ -70,16 +70,17 @@ class Dealer:
         #print('Hash is ', varlen_hash.hex())
         
         return varlen_hash
-        
-    def list_of_random_in_modulo_p(self, listlen, hash_len, prime):
+
+    @staticmethod
+    def list_of_random_in_modulo_p(listlen, hashlen, prime):
         """helper function returning list of random numbers less than p prime"""
         randoms = []
-        bytelen_of_randoms_generated = self.hash_len # TODO: write bytelenOfInt() method in byteHelper
+        bytelen_of_randoms_generated = hashlen # TODO: write bytelenOfInt() method in byteHelper
         
         for i in range(listlen):
             
             generated = urandom(bytelen_of_randoms_generated)
-            randoms.append(common.modulo_p(self.p, generated))
+            randoms.append(common.modulo_p(prime, generated))
             
         return randoms # TODO: yield generator for bigger problem sizes
 
@@ -91,7 +92,9 @@ class Dealer:
 
     def provide_id(self):
         """for each participant provide ID in p modulo field"""
-        self.random_id = self.list_of_random_in_modulo_p(self.n)
+        self.random_id = self.list_of_random_in_modulo_p(self.n,
+                                                         self.hash_len,
+                                                         self.p)
         self.print_list_of_hex(self.random_id, 'Participant ID ')
         
         return self.random_id
@@ -126,7 +129,8 @@ class Dealer:
     def choose_distinct_x(self):
         """ dealer chooses distinct x_j and sends it secretly to each participant, j=1,2...n
         """
-        self.x = self.list_of_random_in_modulo_p(self.n)
+        self.x = self.list_of_random_in_modulo_p(self.n, self.hash_len,
+                                                 self.p)
         
         self.print_list_of_hex(self.x, 'x')
             
@@ -149,8 +153,9 @@ class Dealer:
             
             for index, A in enumerate(gamma):
                 #self.d[index].append(self.list_of_random_in_modulo_p(len(A)))
-                coeffs_for_A = self.list_of_random_in_modulo_p(len(A) - 1)
-            
+                coeffs_for_A = self.list_of_random_in_modulo_p(len(A) - 1,
+                                                               self.hash_len,
+                                                               self.p)
                 print('A%d: %r' % (index,A))
                 self.print_list_of_hex(coeffs_for_A, 'polynomial coeff d')
                 
@@ -245,7 +250,7 @@ class Dealer:
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
         # hash the concatenated bytes
         hash_of_message = self.hash(message)
-        share = self.modulo_p(self.p, hash_of_message)
+        share = common.modulo_p(self.p, hash_of_message)
         #print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
         return share
 
