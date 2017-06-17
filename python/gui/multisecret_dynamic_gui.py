@@ -112,13 +112,11 @@ class Ui_multisecret_gui(object):
         self.number_of_secrets = QtWidgets.QSpinBox(self.layoutWidget)
         self.number_of_secrets.setMinimum(2)
         self.number_of_secrets.setMaximum(16)
-        self.number_of_secrets.setProperty("value", 3)
         self.gridLayout_3.addWidget(self.number_of_secrets, 0, 1, 1, 1)
         self.label_2 = QtWidgets.QLabel(self.layoutWidget)
         self.gridLayout_3.addWidget(self.label_2, 0, 2, 1, 1)
         self.number_of_users = QtWidgets.QSpinBox(self.layoutWidget)
         self.number_of_users.setMinimum(2)
-        self.number_of_users.setProperty("value", 3)
         self.gridLayout_3.addWidget(self.number_of_users, 0, 3, 1, 1)
         self.tabWidget.addTab(self.tab_3, "")
         # end of tab

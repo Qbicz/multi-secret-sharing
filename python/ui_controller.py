@@ -26,6 +26,10 @@ class MultiSecretController(Ui_multisecret_gui):
         Ui_multisecret_gui.__init__(self)
         self.setupUi(window)
 
+        # Initialize problem size in UI
+        self.number_of_users.setProperty("value", INITIAL_USER_COUNT)
+        self.number_of_secrets.setProperty("value", INITIAL_SECRET_COUNT)
+
         # Redraw dynamic tab when value changed in "Problem size"
         self.number_of_users.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
         self.number_of_secrets.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
@@ -232,7 +236,6 @@ class MultiSecretController(Ui_multisecret_gui):
         msg.setIcon(QtWidgets.QMessageBox.Information)
 
         msg.setText(text)
-        #msg.setInformativeText("The number of secrets is set to 3. In the next version you will be able to choose a number of secrets.")
         msg.setWindowTitle("Information")
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.exec_()
