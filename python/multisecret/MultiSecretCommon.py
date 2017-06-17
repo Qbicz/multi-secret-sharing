@@ -83,3 +83,23 @@ def provide_id(participants_num, hash_len, prime):
     print_list_of_hex(random_id, 'Participant ID ')
 
     return random_id
+
+def shamir_polynomial_compute(argument, coeffs, secret_value, prime):
+    """ compute f_q(x) for q-th access group in access structure """
+
+    poly_value = 0
+    if isinstance(argument, bytes):
+        argument = int.from_bytes(argument, byteorder='big')
+
+    for degree, coeff in enumerate(coeffs):
+        if isinstance(coeff, bytes):
+            coeff = int.from_bytes(coeff, byteorder='big')
+
+        print('+ %d * %d^%d' % (coeff, argument, degree + 1))
+        poly_value += coeff * argument ** (degree + 1)
+
+    poly_value += secret_value
+    print('+ secret (%d)'.format(secret_value))
+    poly_value = modulo_p(prime, poly_value)
+    # print('poly_value', poly_value)
+    return poly_value

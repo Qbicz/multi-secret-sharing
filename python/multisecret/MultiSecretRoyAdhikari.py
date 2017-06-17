@@ -42,7 +42,8 @@ class Dealer:
         self.random_id = []
         self.hash_len = bytehelper.bitlen(self.p)
         self.aes_nonce = urandom(16)
-        
+        self.d = []
+
         print('hash_len:', self.hash_len)
         print('Dealer created for Roy-Adhikari sharing of %d secrets among %d participants' % (self.k, self.n))
 
@@ -83,7 +84,7 @@ class Dealer:
                                                  self.p)
         common.print_list_of_hex(master_shares_x, 'x')
         return master_shares_x # TODO: use yield to construct a generator
-    
+
     def access_group_polynomial_coeffs(self):
         """ for the qth qualified set of access group,
             the dealer chooses d0, d1, d2... dm in Zp modulo field
@@ -92,8 +93,6 @@ class Dealer:
             
             note: d0 corresponds to x^1, d1 corresponds to x^2
         """
-        self.d = []
-        
         for gindex, gamma in enumerate(self.access_structures):
             print('gamma%d for secret s%d:' % (gindex,gindex))
             coeffs_for_A = []
@@ -107,45 +106,23 @@ class Dealer:
                 common.print_list_of_hex(coeffs_for_A, 'polynomial coeff d')
                 
                 self.d[gindex].append(coeffs_for_A)
-              
         return self.d
             
     def get_d_polynomial_coeffs(self, secret, group):
         return self.d[secret][group]
 
-    def f_polynomial_compute(self, x, *, secret, group):
-        """ compute f_q(x) for q-th access group in access structure """    
-        
-        print('f_polynomial_compute for secret %d, group A %d ' % (secret, group))
-        poly_value = 0;
-        coeffs = self.get_d_polynomial_coeffs(secret, group)
-        
-        #print('x=', x.hex())
-        if isinstance(x, bytes):
-            x = int.from_bytes(x, byteorder='big')
-        
-        for degree, coeff in enumerate(coeffs):
-            if isinstance(coeff, bytes):
-                coeff = int.from_bytes(coeff, byteorder='big')
-            
-            print('+ %d * %d^%d' % (coeff, x, degree+1))
-            poly_value += coeff * x**(degree+1)
-        
-        poly_value += self.s_secrets[secret]
-        print('+ secret (%d)' % self.s_secrets[secret])
-        poly_value = common.modulo_p(self.p, poly_value)
-        #print('poly_value', poly_value)    
-        return poly_value
-    
     def user_polynomial_value_B(self, i_secret, q_group, participant):
         assert(participant in self.access_structures[i_secret][q_group])
-        print('polynomial value for user', participant)
-        
+
+        print('user_polynomial_value_B for secret %d, group A %d '.format(i_secret, q_group))
         participant_id = self.random_id[participant-1]
-        print('B value for user', participant)
-        
+        print('B value for user %d with ID %d'.format(participant, participant_id))
+
+        coeffs = self.get_d_polynomial_coeffs(i_secret, q_group)
+        secret_value = self.s_secrets[i_secret]
+
         # returns int
-        return self.f_polynomial_compute(participant_id, secret=i_secret, group=q_group)
+        return common.shamir_polynomial_compute(participant_id, coeffs, secret_value, self.p)
                 
     def compute_all_pseudo_shares(self):
         """ experimental: use nested lists, don't use numpy arrays

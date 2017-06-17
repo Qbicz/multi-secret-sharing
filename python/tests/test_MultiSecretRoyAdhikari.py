@@ -75,7 +75,7 @@ def test_access_group_polynomial_coeffs():
     
     # compute d coeffs
     dealer.access_group_polynomial_coeffs()
-    
+
     #dealer.print_list_of_hex(dealer.d[1][1], 'd-1-1')
     # test output
     assert_equal(len(dealer.d), 3)
@@ -92,7 +92,7 @@ def test_get_d_polynomial_coeffs():
     
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
     dealer.access_group_polynomial_coeffs()
-    
+
     coeff1 = dealer.get_d_polynomial_coeffs(secret=2, group=0)[1]
     coeff2 = dealer.d[2][0][1]
     
