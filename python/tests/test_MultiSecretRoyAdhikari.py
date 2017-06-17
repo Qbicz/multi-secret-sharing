@@ -58,13 +58,10 @@ def test_hash_different():
     hash2 = dealer2.hash(b'BYTESEQUENCE')
     assert_not_equal(hash1, hash2)
 
-
 def test_modulo_p():
     p = 1009
     dealer = Dealer(p, n_participants, s_secrets, access_structures)
-    
     assert_equal(dealer.modulo_p(p, 2011), 1002)
-    
 
 def test_list_of_random_in_modulo_p():
     """ test: list_of_random_in_modulo_p """

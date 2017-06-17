@@ -71,15 +71,6 @@ class Dealer:
         
         return varlen_hash
 
-    def provide_id(self):
-        """for each participant provide ID in p modulo field"""
-        self.random_id = common.list_of_random_in_modulo_p(self.n,
-                                                         self.hash_len,
-                                                         self.p)
-        common.print_list_of_hex(self.random_id, 'Participant ID ')
-        
-        return self.random_id
-    
     def get_id_int(self, participant):
         """ returns ID as an integer, with indexing from 1 """
         return int.from_bytes(self.random_id[participant-1], byteorder='big')
@@ -301,8 +292,8 @@ class Dealer:
         
     def split_secrets(self):
         """ Split secret in one step """
-        
-        self.provide_id() # a list of IDs stored internally
+
+        self.random_id = common.provide_id(self.n, self.hash_len, self.p)
         self.choose_distinct_x()
 
         self.access_group_polynomial_coeffs()
