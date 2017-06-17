@@ -112,14 +112,15 @@ class Dealer:
                     # e.g when A = (2,3) we should call function with 2 and 3, not 0 and 1
                     # but we store in in a list under indexes [i][q][0], [i][q][1]
                     self.pseudo_shares[i][q][b] = self.pseudo_share_participant(i, q, Pb)
-                    print('[i=%d][q=%d][b=%d][Pb=%d], pseudo_share=%r' % (i, q, b, Pb, self.pseudo_shares[i][q][b] ))
+                    print('[i=%d][q=%d][b=%d][Pb=%d], pseudo_share=%r'.format(
+                          i, q, b, Pb, self.pseudo_shares[i][q][b] ))
         
     def pseudo_share_participant(self, i_secret, q_group, participant):
         """ pseudo share generation for a single participant
             U = h(x || i_U || q_v)
         """
-    
-        print('Pseudo share computation for secret s%r, access group A%r, participant P%r' % (i_secret, q_group, participant))
+        print('Pseudo share computation for secret s%r, access group A%r,'
+              'participant P%r' % (i_secret, q_group, participant))
 
         # l = length of longest access group for this secret
         lengths = []
@@ -127,12 +128,8 @@ class Dealer:
         for A in gamma:
             lengths.append(len(A)-1)
         l = max(lengths)
-        
-        # u = bit length of number of secrets k
-        u = floor(log2(self.k)) + 1
-        
-        # v = bit length of l
-        v = floor(log2(l)) + 1
+        u = floor(log2(self.k)) + 1 # u = bit length of number of secrets k
+        v = floor(log2(l)) + 1  # v = bit length of l
         
         # concatenate x, i and q binary
         if isinstance(self.master_shares_x[participant-1], bytes):
@@ -142,9 +139,7 @@ class Dealer:
         bytes_i = bytes([i_secret])
         bytes_q = bytes([q_group])
 
-        # TODO: after retrieving secret, check if bytes objects have proper lengths u,v
-        
-        message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
+        message = b''.join([bytes_x, bytes_i, bytes_q])  # python 3.x
         # hash the concatenated bytes
         hash_of_message = common.hash(message, self.hash_len, self.aes_nonce)
         share = common.modulo_p(self.p, hash_of_message)

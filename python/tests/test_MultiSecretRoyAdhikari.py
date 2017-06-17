@@ -43,20 +43,21 @@ def test_hash():
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
 
     # test hash function - it should be repeatable for the same Dealer object
-    hash1 = dealer.hash(b'BYTESEQUENCE')
-    hash2 = dealer.hash(b'BYTESEQUENCE')
+    hash1 = common.hash(b'BYTESEQUENCE', dealer.hash_len, dealer.aes_nonce)
+    hash2 = common.hash(b'BYTESEQUENCE', dealer.hash_len, dealer.aes_nonce)
     assert_equal(hash1, hash2)
     
 def test_hash_different():
-    """ different instances of Dealer should have different hash results as the have separate random AES nonces"""
+    """ different instances of Dealer should have different
+        hash results as they have separate random AES nonces"""
     
     # Create a Dealer
     dealer1 = Dealer(p256, n_participants, s_secrets, access_structures)
     dealer2 = Dealer(p256, n_participants, s_secrets, access_structures)
     
-    # test hash function - it should be repeatable for the same Dealer object
-    hash1 = dealer1.hash(b'BYTESEQUENCE')
-    hash2 = dealer2.hash(b'BYTESEQUENCE')
+    # test hash function - it should be different for distinct Dealers
+    hash1 = common.hash(b'BYTESEQUENCE', dealer1.hash_len, dealer1.aes_nonce)
+    hash2 = common.hash(b'BYTESEQUENCE', dealer2.hash_len, dealer2.aes_nonce)
     assert_not_equal(hash1, hash2)
 
 
