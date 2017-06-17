@@ -9,9 +9,11 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from os import urandom
 from math import log2, floor
 import copy # to have deepcopy, independent copy of a list
+
 from multisecret.primality import is_probable_prime
-from multisecret.byteHelper import inverse_modulo_p
+import multisecret.byteHelper as bytehelper
 import multisecret.MultiSecretCommon as common
+
 
 class Dealer:
 
@@ -38,7 +40,7 @@ class Dealer:
                     raise ValueError('Less than 2 participants in one of the access groups!')
             self.access_structures = access_structures
         self.random_id = []
-        self.hash_len = floor(log2(self.p))+1
+        self.hash_len = bytehelper.bitlen(self.p)
         self.aes_nonce = urandom(16)
         
         print('hash_len:', self.hash_len)
@@ -66,7 +68,7 @@ class Dealer:
         ciphertext = encryptor.update(input) + encryptor.finalize()
 
         # take demanded numer of bits
-        varlen_hash = self.take_first_bits(ciphertext, self.hash_len)
+        varlen_hash = bytehelper.take_first_bits(ciphertext, self.hash_len)
         #print('Hash is ', varlen_hash.hex())
         
         return varlen_hash
@@ -75,28 +77,6 @@ class Dealer:
         """ returns ID as an integer, with indexing from 1 """
         return int.from_bytes(self.random_id[participant-1], byteorder='big')
     
-    def take_first_bits(self, input, bitlen):
-        #print('Length of input', len(input))
-    
-        #print('take first bits from', input)
-        if bitlen > 8*len(input):
-            raise ValueError('input shorter than %d bits' % bitlen)
-        elif bitlen == 8*len(input):
-            return input
-        else:
-            # take all bytes needed
-            if bitlen % 8 == 0:
-                bytelen = bitlen // 8
-            else:
-                bytelen = bitlen // 8 + 1
-            input_bytelen = input[:bytelen]
-            
-            # now extract bits from the last byte
-            last_byte = input_bytelen[-1]
-            mask = ~(0xff >> (8-(8*bytelen - bitlen)))
-            output = bytes(input_bytelen[:bytelen-1])
-            output += bytes([mask & last_byte])
-            return output
 
     def choose_distinct_x(self):
         """ dealer chooses distinct x_j and sends it secretly to each participant, j=1,2...n
@@ -335,7 +315,7 @@ class Dealer:
                     print('\t\tID_(b=%d) : %d, ID_(r=%d) : %d'
                           % (Pb, self.get_id_int(Pb), Pr, self.get_id_int(Pr) ))
                     denominator = (self.get_id_int(Pr) - self.get_id_int(Pb)) % self.p
-                    den_inverse = inverse_modulo_p(denominator, self.p)
+                    den_inverse = bytehelper.inverse_modulo_p(denominator, self.p)
                     print('\t\tdenominator = %d\n its inverse = %d'
                           % (denominator, den_inverse))
                     part_product = ((self.get_id_int(Pr)) % self.p * den_inverse ) % self.p

@@ -74,6 +74,7 @@ def print_list_of_hex(list_to_print, description):
     for i in range(len(list_to_print)):
         print('%s%d = %s' % (description, i, list_to_print[i].hex()))
 
+
 def provide_id(participants_num, hash_len, prime):
     """for each participant provide ID in p modulo field"""
     random_id = list_of_random_in_modulo_p(participants_num,
