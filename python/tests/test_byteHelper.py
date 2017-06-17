@@ -1,7 +1,7 @@
 from nose.tools import assert_equal
 from nose.tools import assert_raises
 from multisecret.byteHelper import *
-from multisecret.Dealer import Dealer
+from multisecret.MultiSecretRoyAdhikari import Dealer
 
 # large prime
 p256 = 2**256 - 2**224 + 2**192 + 2**96 - 1
@@ -17,7 +17,7 @@ def test_bytes_to_int():
     
 def test_take_first_bits():
 
-    dealer = Dealer(7, 2, [5,6], [[(1,2)],[(1)]] )
+    dealer = Dealer(7, 2, [5,6], [[(1,2)],[(1,3)]] )
     
     input = (0xDEADBEEF).to_bytes(8, byteorder='big') # len in bytes
     

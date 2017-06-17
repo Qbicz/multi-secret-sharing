@@ -4,7 +4,7 @@
 from nose.tools import assert_equal
 from nose.tools import assert_not_equal
 from nose.tools import assert_raises
-from multisecret.Dealer import Dealer
+from multisecret.MultiSecretRoyAdhikari import Dealer
 from numpy import array, array_equal
 
 # TODO: test if hash is the same for the same Dealer object and different among separate objects with random AES-CTR nonce
@@ -97,7 +97,7 @@ def test_provide_id():
 
 def test_take_first_bits():
 
-    dealer = Dealer(7, 2, [5,6], [[(1,2)],[(1)]] )
+    dealer = Dealer(7, 2, [5, 6], [[(1, 2)],[(1, 3)]] )
     
     input = bytes([0xDE, 0xAD, 0xBE, 0xEF]) # len in bytes
     print('test input: ', input.hex())
