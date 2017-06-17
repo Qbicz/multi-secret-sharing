@@ -23,6 +23,7 @@ def clear_layout(layout):
 class MultiSecretController(Ui_multisecret_gui):
     def __init__(self, window):
         Ui_multisecret_gui.__init__(self)
+        self.setupUi(window)
 
         # Redraw dynamic tab when value changed in "Problem size"
         self.number_of_users.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
