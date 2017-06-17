@@ -8,10 +8,10 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from os import urandom
 from math import log2, floor
+import copy # to have deepcopy, independent copy of a list
 from multisecret.primality import is_probable_prime
 from multisecret.byteHelper import inverse_modulo_p
-import copy # to have deepcopy, independent copy of a list
-
+import multisecret.MultiSecretCommon as common
 
 class Dealer:
 
@@ -44,46 +44,6 @@ class Dealer:
         print('hash_len:', self.hash_len)
         print('Dealer created for Roy-Adhikari sharing of %d secrets among %d participants' % (self.k, self.n))
 
-    @staticmethod
-    def user_count_from_access_structure(access_structure):
-        max_user_count = 0
-        for secret in access_structure:
-            for group in secret:
-                if max(group) > max_user_count:
-                    max_user_count = max(group)
-        print('only returns maximal user number, not a total number of users.\n'
-              'But the user over this number is irrelevant.\n'
-              'TODO: reconstruct for subsets of shares - will solve the problem')
-        return max_user_count
-
-    @staticmethod
-    def modulo_p(prime, number):
-        """ works for:
-        - int type
-        - bytes type
-        """
-        return_bytes = False
-    
-        # if input is bytes, convert it to int, but return bytes object
-        if(isinstance(number, bytes)):
-            return_bytes = True
-            number = int.from_bytes(number, byteorder='big')
-        
-        if(number >= prime):
-            number = number % prime
-        
-        if(return_bytes):
-            if number == 0:
-                byte_len = 1
-            else:
-                bit_len = floor(log2(number))+1
-                byte_len = bit_len // 8 +1
-            #print('bit_len, byte_len', bit_len, byte_len)
-            modulo_number = number.to_bytes(byte_len, byteorder='big')
-        else:
-            modulo_number = number
-        
-        return modulo_number
     
     def hash(self, message):
         """A collision resistant hash function h with variable output length:
@@ -111,7 +71,7 @@ class Dealer:
         
         return varlen_hash
         
-    def list_of_random_in_modulo_p(self, listlen):
+    def list_of_random_in_modulo_p(self, listlen, hash_len, prime):
         """helper function returning list of random numbers less than p prime"""
         randoms = []
         bytelen_of_randoms_generated = self.hash_len # TODO: write bytelenOfInt() method in byteHelper
@@ -119,11 +79,12 @@ class Dealer:
         for i in range(listlen):
             
             generated = urandom(bytelen_of_randoms_generated)
-            randoms.append(self.modulo_p(self.p, generated))
+            randoms.append(common.modulo_p(self.p, generated))
             
         return randoms # TODO: yield generator for bigger problem sizes
 
-    def print_list_of_hex(self, list_to_print, description):
+    @staticmethod
+    def print_list_of_hex(list_to_print, description):
         """helper to print list of bytes objects with string description"""
         for i in range(len(list_to_print)):
             print('%s%d = %s' % (description, i, list_to_print[i].hex()))
@@ -220,7 +181,7 @@ class Dealer:
         
         poly_value += self.s_secrets[secret]
         print('+ secret (%d)' % self.s_secrets[secret])
-        poly_value = self.modulo_p(self.p, poly_value)
+        poly_value = common.modulo_p(self.p, poly_value)
         #print('poly_value', poly_value)    
         
         return poly_value
@@ -414,5 +375,5 @@ class Dealer:
         print("Combined sum, s%d = %d" % (i_secret, combine_sum % self.p))
         
         # obtained shares U should be passed by argument
-        return self.modulo_p(self.p, combine_sum)
+        return common.modulo_p(self.p, combine_sum)
     

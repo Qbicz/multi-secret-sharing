@@ -3,6 +3,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from gui.multisecret_dynamic_gui import Ui_multisecret_gui
 
+import multisecret.MultiSecretCommon
 import multisecret.MultiSecretRoyAdhikari
 import sys
 import json
@@ -180,7 +181,7 @@ class MultiSecretController(Ui_multisecret_gui):
 
         # after loading public info, change GUI to current secrets and users number
         # TODO: test how it affects reconstruction with not-full sets
-        self.user_count = multisecret.MultiSecretRoyAdhikari.Dealer.user_count_from_access_structure(access_structure)
+        self.user_count = multisecret.MultiSecretCommon.user_count_from_access_structure(access_structure)
         self.secret_count = len(access_structure)
         self.refresh_dynamic_combine_tab(self.secret_count, self.user_count)
 
