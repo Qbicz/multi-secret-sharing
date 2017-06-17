@@ -56,3 +56,20 @@ def modulo_p(prime, number):
 
     return modulo_number
 
+
+def list_of_random_in_modulo_p(listlen, hashlen, prime):
+    """helper function returning list of random numbers less than p prime"""
+    randoms = []
+    bytelen_of_randoms_generated = hashlen  # TODO: write bytelenOfInt() method in byteHelper
+
+    for i in range(listlen):
+        generated = urandom(bytelen_of_randoms_generated)
+        randoms.append(modulo_p(prime, generated))
+
+    return randoms  # TODO: yield generator for bigger problem sizes
+
+
+def print_list_of_hex(list_to_print, description):
+    """helper to print list of bytes objects with string description"""
+    for i in range(len(list_to_print)):
+        print('%s%d = %s' % (description, i, list_to_print[i].hex()))

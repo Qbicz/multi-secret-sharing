@@ -71,31 +71,12 @@ class Dealer:
         
         return varlen_hash
 
-    @staticmethod
-    def list_of_random_in_modulo_p(listlen, hashlen, prime):
-        """helper function returning list of random numbers less than p prime"""
-        randoms = []
-        bytelen_of_randoms_generated = hashlen # TODO: write bytelenOfInt() method in byteHelper
-        
-        for i in range(listlen):
-            
-            generated = urandom(bytelen_of_randoms_generated)
-            randoms.append(common.modulo_p(prime, generated))
-            
-        return randoms # TODO: yield generator for bigger problem sizes
-
-    @staticmethod
-    def print_list_of_hex(list_to_print, description):
-        """helper to print list of bytes objects with string description"""
-        for i in range(len(list_to_print)):
-            print('%s%d = %s' % (description, i, list_to_print[i].hex()))
-
     def provide_id(self):
         """for each participant provide ID in p modulo field"""
-        self.random_id = self.list_of_random_in_modulo_p(self.n,
+        self.random_id = common.list_of_random_in_modulo_p(self.n,
                                                          self.hash_len,
                                                          self.p)
-        self.print_list_of_hex(self.random_id, 'Participant ID ')
+        common.print_list_of_hex(self.random_id, 'Participant ID ')
         
         return self.random_id
     
@@ -129,10 +110,10 @@ class Dealer:
     def choose_distinct_x(self):
         """ dealer chooses distinct x_j and sends it secretly to each participant, j=1,2...n
         """
-        self.x = self.list_of_random_in_modulo_p(self.n, self.hash_len,
+        self.x = common.list_of_random_in_modulo_p(self.n, self.hash_len,
                                                  self.p)
         
-        self.print_list_of_hex(self.x, 'x')
+        common.print_list_of_hex(self.x, 'x')
             
         return self.x # TODO: use yield to construct a generator
     
@@ -152,12 +133,11 @@ class Dealer:
             self.d.append([])
             
             for index, A in enumerate(gamma):
-                #self.d[index].append(self.list_of_random_in_modulo_p(len(A)))
-                coeffs_for_A = self.list_of_random_in_modulo_p(len(A) - 1,
+                coeffs_for_A = common.list_of_random_in_modulo_p(len(A) - 1,
                                                                self.hash_len,
                                                                self.p)
                 print('A%d: %r' % (index,A))
-                self.print_list_of_hex(coeffs_for_A, 'polynomial coeff d')
+                common.print_list_of_hex(coeffs_for_A, 'polynomial coeff d')
                 
                 self.d[gindex].append(coeffs_for_A)
               
