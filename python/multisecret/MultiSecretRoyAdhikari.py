@@ -24,7 +24,7 @@ class Dealer:
         if is_probable_prime(p) and p > n_participants and p > max(s_secrets):
             self.p = p
         else:
-            raise ValueError('Wrong p selected!') # do I want to catch it?
+            raise ValueError('Wrong p selected!')
         
         if n_participants < 2:
             raise ValueError('There must be at least 2 participants!')
@@ -56,7 +56,8 @@ class Dealer:
               'TODO: reconstruct for subsets of shares - will solve the problem')
         return max_user_count
 
-    def modulo_p(self, number):
+    @staticmethod
+    def modulo_p(prime, number):
         """ works for:
         - int type
         - bytes type
@@ -68,8 +69,8 @@ class Dealer:
             return_bytes = True
             number = int.from_bytes(number, byteorder='big')
         
-        if(number >= self.p):
-            number = number % self.p
+        if(number >= prime):
+            number = number % prime
         
         if(return_bytes):
             if number == 0:

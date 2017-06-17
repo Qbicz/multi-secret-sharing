@@ -5,7 +5,6 @@ from nose.tools import assert_equal
 from nose.tools import assert_not_equal
 from nose.tools import assert_raises
 from multisecret.MultiSecretRoyAdhikari import Dealer
-from numpy import array, array_equal
 
 # TODO: test if hash is the same for the same Dealer object and different among separate objects with random AES-CTR nonce
 
