@@ -47,32 +47,6 @@ class Dealer:
         print('hash_len:', self.hash_len)
         print('Dealer created for Roy-Adhikari sharing of %d secrets among %d participants' % (self.k, self.n))
 
-    
-    def hash(self, message):
-        """A collision resistant hash function h with variable output length:
-        # option 1: use SHA-3 Keccak (variable length digest)
-        # option 2: use BLAKE2 : variable length digest (available
-            at "cryptography" library - but to bytes, not bits resolution)
-        # option 3 (chosen): use the first [log2(p)]+1 bits of AES-CTR(SHA256(m))"""
-
-        # SHA256 of message
-        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-        digest.update(message)
-        hashed_message = digest.finalize()
-
-        # AES-CTR of the hash
-        aes_key = hashed_message
-        cipher = Cipher(algorithms.AES(aes_key), modes.CTR(self.aes_nonce), backend=default_backend())
-        encryptor = cipher.encryptor()
-        input = b'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww'
-        #print(input.hex())
-        ciphertext = encryptor.update(input) + encryptor.finalize()
-
-        # take demanded numer of bits
-        varlen_hash = bytehelper.take_first_bits(ciphertext, self.hash_len)
-        #print('Hash is ', varlen_hash.hex())
-        return varlen_hash
-
     def get_id_int(self, participant):
         """ returns ID as an integer, with indexing from 1 """
         return int.from_bytes(self.random_id[participant-1], byteorder='big')
@@ -172,7 +146,7 @@ class Dealer:
         
         message = b''.join([bytes_x, bytes_i, bytes_q]) # python 3.x
         # hash the concatenated bytes
-        hash_of_message = self.hash(message)
+        hash_of_message = common.hash(message, self.hash_len, self.aes_nonce)
         share = common.modulo_p(self.p, hash_of_message)
         #print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
         return share

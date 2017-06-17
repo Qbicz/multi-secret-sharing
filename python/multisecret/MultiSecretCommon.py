@@ -8,28 +8,54 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from os import urandom
 from math import log2, floor
-from multisecret.primality import is_probable_prime
-from multisecret.byteHelper import inverse_modulo_p
-import copy # to have deepcopy, independent copy of a list
+import multisecret.byteHelper as bytehelper
 
 
-# common functions, extracted from class Dealer
+# --- common functions, extracted from class Dealer ---
 
 
 def user_count_from_access_structure(access_structure):
+    """ Returns maximal user number found in access structure,
+        which does not have to be equal to a total number of users.
+        The users over this returned number are irrelevant during reconstruction.
+        TODO: reconstruct for subsets of shares to solve the problem
+    """
     max_user_count = 0
     for secret in access_structure:
         for group in secret:
             if max(group) > max_user_count:
                 max_user_count = max(group)
-    print('only returns maximal user number, not a total number of users.\n'
-          'But the user over this number is irrelevant.\n'
-          'TODO: reconstruct for subsets of shares - will solve the problem')
     return max_user_count
 
 
+def hash(message, hash_len, aes_nonce):
+    """A collision resistant hash function h with variable output length:
+    # option 1: use SHA-3 Keccak (variable length digest)
+    # option 2: use BLAKE2 : variable length digest (available
+        at "cryptography" library - but to bytes, not bits resolution)
+    # option 3 (chosen): use the first [log2(p)]+1 bits of AES-CTR(SHA256(m))"""
+
+    # SHA256 of message
+    digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+    digest.update(message)
+    hashed_message = digest.finalize()
+
+    # AES-CTR of the hash
+    aes_key = hashed_message
+    cipher = Cipher(algorithms.AES(aes_key), modes.CTR(aes_nonce), backend=default_backend())
+    encryptor = cipher.encryptor()
+    input = b'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww'
+    #print(input.hex())
+    ciphertext = encryptor.update(input) + encryptor.finalize()
+
+    # take demanded numer of bits
+    varlen_hash = bytehelper.take_first_bits(ciphertext, hash_len)
+    #print('Hash is ', varlen_hash.hex())
+    return varlen_hash
+
+
 def modulo_p(prime, number):
-    """ works for:
+    """ modulo which works for:
     - int type
     - bytes type
     """
