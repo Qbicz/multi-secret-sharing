@@ -41,7 +41,7 @@ class Dealer:
             self.access_structures = access_structures
         self.random_id = []
         self.hash_len = bytehelper.bitlen(self.p)
-        self.aes_nonce = urandom(16)
+        self.hash_aes_nonce = urandom(16)
         self.d = []
 
         print('hash_len:', self.hash_len)
@@ -141,7 +141,7 @@ class Dealer:
 
         message = b''.join([bytes_x, bytes_i, bytes_q])  # python 3.x
         # hash the concatenated bytes
-        hash_of_message = common.hash(message, self.hash_len, self.aes_nonce)
+        hash_of_message = common.hash(message, self.hash_len, self.hash_aes_nonce)
         share = common.modulo_p(self.p, hash_of_message)
         #print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
         return share
