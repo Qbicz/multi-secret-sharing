@@ -34,8 +34,8 @@ def main():
     dealer.master_shares_x = dealer.choose_distinct_master_shares_x()
 
     dealer.access_group_polynomial_coeffs()
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     print('obtained shares', dealer.pseudo_shares[0][0])   
     obtained_shares = []
