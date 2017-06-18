@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-from multisecret.Dealer import Dealer
-from multisecret.byteHelper import inverse_modulo_p
+import multisecret.MultiSecretRoyAdhikari
+import multisecret.byteHelper as bytehelper
+import multisecret.MultiSecretCommon as common
 
 def main():
     """ This example shows low-level functions for splitting
@@ -25,14 +26,16 @@ def main():
     # TODO: in GUI choosing access structures on a matrix
 
     # Create a Dealer
-    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+    dealer = multisecret.MultiSecretRoyAdhikari.Dealer(p256, n_participants, s_secrets, access_structures)
 
-    dealer.provide_id() # a list of IDs stored internally
-    dealer.choose_distinct_x()
+    dealer.random_id = common.provide_id(n_participants,
+                                         dealer.hash_len,
+                                         dealer.p) # a list of IDs stored internally
+    dealer.master_shares_x = dealer.choose_distinct_master_shares_x()
 
     dealer.access_group_polynomial_coeffs()
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     print('obtained shares', dealer.pseudo_shares[0][0])   
     obtained_shares = []

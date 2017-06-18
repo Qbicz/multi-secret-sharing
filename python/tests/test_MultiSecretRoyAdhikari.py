@@ -4,8 +4,8 @@
 from nose.tools import assert_equal
 from nose.tools import assert_not_equal
 from nose.tools import assert_raises
-from multisecret.Dealer import Dealer
-from numpy import array, array_equal
+from multisecret.MultiSecretRoyAdhikari import Dealer
+import multisecret.MultiSecretCommon as common
 
 # TODO: test if hash is the same for the same Dealer object and different among separate objects with random AES-CTR nonce
 
@@ -43,77 +43,24 @@ def test_hash():
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
 
     # test hash function - it should be repeatable for the same Dealer object
-    hash1 = dealer.hash(b'BYTESEQUENCE')
-    hash2 = dealer.hash(b'BYTESEQUENCE')
+    hash1 = common.hash(b'BYTESEQUENCE', dealer.hash_len, dealer.aes_nonce)
+    hash2 = common.hash(b'BYTESEQUENCE', dealer.hash_len, dealer.aes_nonce)
     assert_equal(hash1, hash2)
     
 def test_hash_different():
-    """ different instances of Dealer should have different hash results as the have separate random AES nonces"""
+    """ different instances of Dealer should have different
+        hash results as they have separate random AES nonces"""
     
     # Create a Dealer
     dealer1 = Dealer(p256, n_participants, s_secrets, access_structures)
     dealer2 = Dealer(p256, n_participants, s_secrets, access_structures)
     
-    # test hash function - it should be repeatable for the same Dealer object
-    hash1 = dealer1.hash(b'BYTESEQUENCE')
-    hash2 = dealer2.hash(b'BYTESEQUENCE')
+    # test hash function - it should be different for distinct Dealers
+    hash1 = common.hash(b'BYTESEQUENCE', dealer1.hash_len, dealer1.aes_nonce)
+    hash2 = common.hash(b'BYTESEQUENCE', dealer2.hash_len, dealer2.aes_nonce)
     assert_not_equal(hash1, hash2)
 
 
-def test_modulo_p():
-    p = 1009
-    dealer = Dealer(p, n_participants, s_secrets, access_structures)
-    
-    assert_equal(dealer.modulo_p(2011), 1002)
-    
-
-def test_list_of_random_in_modulo_p():
-    """ test: list_of_random_in_modulo_p """
-    dealer = Dealer(4099, n_participants, s_secrets, access_structures)
-    
-    n = 5
-    randomList = dealer.list_of_random_in_modulo_p(n)
-    dealer.print_list_of_hex(randomList, 'test randomList')
-    # check the length of the list
-    assert_equal(len(randomList), n)
-    # check the type of object in the list
-    assert_equal(isinstance(randomList[0], bytes), True)
-    
-    #dealer_short = Dealer(1009, 2, [13], [[(1,2), ()]])
-    #randomListShort = dealer_short.list_of_random_in_modulo_p(n)
-    #dealer_short.print_list_of_hex(randomListShort, 'test randomListShort')
-    #assert_equal(len(randomListShort[0]), 1)
-
-
-def test_provide_id():
-    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
-    
-    id_list = dealer.provide_id()
-    # check the length of the list
-    assert_equal(len(id_list), n_participants)
-    # check the type of object in the list
-    assert_equal(isinstance(id_list[0], bytes), True)
-    
-
-def test_take_first_bits():
-
-    dealer = Dealer(7, 2, [5,6], [[(1,2)],[(1)]] )
-    
-    input = bytes([0xDE, 0xAD, 0xBE, 0xEF]) # len in bytes
-    print('test input: ', input.hex())
-    
-    # test correct exception raised
-    with assert_raises(ValueError):
-        dealer.take_first_bits(input, 65) # len in bits
-    
-    first_bits = dealer.take_first_bits(input, 12)
-    print('test first bits: ', first_bits.hex())
-    assert_equal(first_bits, bytes([0xDE, 0xA0]))
-    
-    modulo_bits = dealer.take_first_bits(input, 16)
-    assert_equal(modulo_bits, bytes([0xDE, 0xAD]))
-    
-    
 def test_access_group_polynomial_coeffs():
     """ test: access_group_polynomial_coeffs """
     
@@ -129,7 +76,7 @@ def test_access_group_polynomial_coeffs():
     
     # compute d coeffs
     dealer.access_group_polynomial_coeffs()
-    
+
     #dealer.print_list_of_hex(dealer.d[1][1], 'd-1-1')
     # test output
     assert_equal(len(dealer.d), 3)
@@ -139,36 +86,18 @@ def test_access_group_polynomial_coeffs():
     
     # Test index out of range
     with assert_raises(IndexError):
-        print('Test', dealer.print_list_of_hex(dealer.d[2][1], 'd-2-1'))
+        print('Test', common.print_list_of_hex(dealer.d[2][1], 'd-2-1'))
     
     
 def test_get_d_polynomial_coeffs():
     
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
     dealer.access_group_polynomial_coeffs()
-    
+
     coeff1 = dealer.get_d_polynomial_coeffs(secret=2, group=0)[1]
     coeff2 = dealer.d[2][0][1]
     
     assert_equal(coeff1, coeff2)
-    
-
-def test_f_polynomial_compute():
-    
-    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
-    dealer.access_group_polynomial_coeffs()
-    # override coeffs
-    dealer.d[0][0] = [bytes([0x05]), bytes([0x07])]
-    
-    value = dealer.f_polynomial_compute(bytes([0x01]), secret=0, group=0)
-    assert_equal(value, 12+s_secrets[0])
-    
-    value = dealer.f_polynomial_compute(bytes([0x02]), secret=0, group=0)
-    assert_equal(value, 38+s_secrets[0])
-    
-
-def test_pseudo_share_array_size_iqb():
-    pass
 
 
 def test_combine_first_secret_3_participants():
@@ -201,10 +130,10 @@ def test_combine_first_secret_3_participants():
     assert_equal([2,1], dealer.get_d_polynomial_coeffs(0, 0))
     
     # set x-shares for pseudo share generation only
-    dealer.x = [3,4,5]
+    dealer.master_shares_x = [3,4,5]
     
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     # [0,5,5] when testing with p = 7
     #print(dealer.B_values)
@@ -250,10 +179,10 @@ def test_combine_second_secret_3_participants():
     assert_equal([1,2], dealer.get_d_polynomial_coeffs(1, 0))
     
     # set x-shares for pseudo share generation only
-    dealer.x = [3,4,5]
+    dealer.master_shares_x = [3,4,5]
     
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     # [0,5,5] when testing with p = 7
     #print(dealer.B_values)
@@ -302,10 +231,10 @@ def test_combine_secret_for_shorter_group():
     assert_equal([1,2], dealer.get_d_polynomial_coeffs(1, 0))
     
     # set x-shares for pseudo share generation only
-    dealer.x = [3,4,5]
+    dealer.master_shares_x = [3,4,5]
     
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     # [0,5,5] when testing with p = 7
     #print(dealer.B_values)
@@ -351,10 +280,10 @@ def test_combine_with_random_d_coefficients():
     #assert_equal([1,2], dealer.get_d_polynomial_coeffs(1, 0))
     
     # set x-shares for pseudo share generation only
-    dealer.x = [3,4,5]
+    dealer.master_shares_x = [3,4,5]
     
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     # [0,5,5] when testing with p = 7
     #print(dealer.B_values)
@@ -385,15 +314,15 @@ def test_combine_secret_4_participants_in_3_groups():
 
     dealer.random_id = (bytes([1]), bytes([2]), bytes([3]), bytes([4]))
     #dealer.choose_distinct_x()
-    dealer.x = [3,4,5,6]
+    dealer.master_shares_x = [3,4,5,6]
     
     """ TODO: use Dealer method to generate """
     #dealer.d = [[[1,3,4]],[[1,2,4],[2,3,4]],[[1,2,3]]]
     #assert_equal([1,3,4], dealer.get_d_polynomial_coeffs(0, 0))
     dealer.access_group_polynomial_coeffs()
 
-    dealer.compute_all_pseudo_shares_lists()
-    dealer.compute_all_public_shares_M_lists()
+    dealer.compute_all_pseudo_shares()
+    dealer.compute_all_public_shares_M()
     
     #assert_equal(dealer.B_values[0][0], [11, 37])
     

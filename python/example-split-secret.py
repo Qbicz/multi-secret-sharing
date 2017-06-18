@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from multisecret.Dealer import Dealer
+import multisecret.MultiSecretRoyAdhikari
 from multisecret.byteHelper import inverse_modulo_p
 
 if __name__ == "__main__":
@@ -13,8 +13,9 @@ if __name__ == "__main__":
     secrets = [15002900, 313, 501]
     n_participants = 3
     access_structures = [[[1,2,3]], [[1,2,3]], [[1,2,3]]]
-    
-    dealer = Dealer(prime, n_participants, secrets, access_structures)
+
+    # initialize Roy-Adhikari secret sharing algorithm
+    dealer = multisecret.MultiSecretRoyAdhikari.Dealer(prime, n_participants, secrets, access_structures)
     pseudo_shares = dealer.split_secrets()
     
     # Combine first secret for its first access group

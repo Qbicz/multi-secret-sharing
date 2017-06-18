@@ -3,7 +3,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from gui.multisecret_dynamic_gui import Ui_multisecret_gui
 
-from multisecret.Dealer import Dealer
+import multisecret.MultiSecretCommon
+import multisecret.MultiSecretRoyAdhikari
 import sys
 import json
 import jsonpickle
@@ -24,6 +25,10 @@ class MultiSecretController(Ui_multisecret_gui):
     def __init__(self, window):
         Ui_multisecret_gui.__init__(self)
         self.setupUi(window)
+
+        # Initialize problem size in UI
+        self.number_of_users.setProperty("value", INITIAL_USER_COUNT)
+        self.number_of_secrets.setProperty("value", INITIAL_SECRET_COUNT)
 
         # Redraw dynamic tab when value changed in "Problem size"
         self.number_of_users.valueChanged.connect(self.refresh_dynamic_widgets_secrets_users)
@@ -163,7 +168,7 @@ class MultiSecretController(Ui_multisecret_gui):
 
         print(access_structures)
         try:
-            dealer = Dealer(prime, users_count, secrets, access_structures)
+            dealer = multisecret.MultiSecretRoyAdhikari.Dealer(prime, users_count, secrets, access_structures)
         except ValueError as e:
             self.showdialog(str(e))
             print('Error %r' % e)
@@ -181,7 +186,7 @@ class MultiSecretController(Ui_multisecret_gui):
 
         # after loading public info, change GUI to current secrets and users number
         # TODO: test how it affects reconstruction with not-full sets
-        self.user_count = Dealer.user_count_from_access_structure(access_structure)
+        self.user_count = multisecret.MultiSecretCommon.user_count_from_access_structure(access_structure)
         self.secret_count = len(access_structure)
         self.refresh_dynamic_combine_tab(self.secret_count, self.user_count)
 
@@ -232,7 +237,6 @@ class MultiSecretController(Ui_multisecret_gui):
         msg.setIcon(QtWidgets.QMessageBox.Information)
 
         msg.setText(text)
-        #msg.setInformativeText("The number of secrets is set to 3. In the next version you will be able to choose a number of secrets.")
         msg.setWindowTitle("Information")
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.exec_()
@@ -304,7 +308,7 @@ class MultiSecretController(Ui_multisecret_gui):
 
         try:
             # TODO: create a Combiner class
-            combiner = Dealer(self.public_info['prime'],
+            combiner = multisecret.MultiSecretRoyAdhikari.Dealer(self.public_info['prime'],
                               self.user_count,
                               [0]*self.secret_count,
                               self.public_info['access_structures'])
