@@ -26,6 +26,9 @@ class MultiSecretController(Ui_multisecret_gui):
         Ui_multisecret_gui.__init__(self)
         self.setupUi(window)
 
+        # Initialize algorithm list available
+        self.init_algorithm_list()
+
         # Initialize problem size in UI
         self.number_of_users.setProperty("value", INITIAL_USER_COUNT)
         self.number_of_secrets.setProperty("value", INITIAL_SECRET_COUNT)
@@ -66,23 +69,32 @@ class MultiSecretController(Ui_multisecret_gui):
         
         for secret in range(secrets):
             self.secret_labels[secret] = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
-            self.secret_labels[secret].setObjectName("secret_label"+str(secret))
             self.gridLayout_dyn.addWidget(self.secret_labels[secret], secret, 0, 1, 1)
             self.secret_labels[secret].setText('Secret {}'.format(secret))
             
             self.secret_inputs[secret] = QtWidgets.QLineEdit(self.gridLayoutWidget_dyn)
-            self.secret_inputs[secret].setObjectName("secret_input"+str(secret))
             self.gridLayout_dyn.addWidget(self.secret_inputs[secret], secret, 1, 1, 1)
         
             for user in range(users):
                 self.checkboxes[secret][user] = QtWidgets.QCheckBox(self.gridLayoutWidget_dyn)
-                self.checkboxes[secret][user].setObjectName("check_s{}p{}".format(secret, user))
                 self.gridLayout_dyn.addWidget(self.checkboxes[secret][user], secret, 2+user, 1, 1)
                 self.checkboxes[secret][user].setText(_translate("multisecret_gui", "User "+str(user+1)))
-        
+
+        self.algorithm_label = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
+        self.gridLayout_dyn.addWidget(self.algorithm_label,
+                                      secrets + 1, 0, 1, 1)
+        self.algorithm_label.setText('Algorithm ')
+
+        self.algorithm_combobox = QtWidgets.QComboBox(self.gridLayoutWidget_dyn)
+        self.gridLayout_dyn.addWidget(self.algorithm_combobox,
+                                      secrets + 1, 1, 1, users)
+        for algorithm in self.algorithm_list:
+            self.algorithm_combobox.addItem(algorithm)
+        self.algorithm_combobox.currentIndexChanged.connect(self.update_algorithm)
+
         self.button_split_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn)
-        self.button_split_dyn.setObjectName("button_split")
-        self.gridLayout_dyn.addWidget(self.button_split_dyn, secrets+1, 1, 1, users)
+        self.gridLayout_dyn.addWidget(self.button_split_dyn,
+                                      secrets + 2, 1, 1, users)
         self.button_split_dyn.setText('Split secrets')
         
         self.button_split_dyn.clicked.connect(self.split_secret_dynamic)
@@ -140,6 +152,16 @@ class MultiSecretController(Ui_multisecret_gui):
     def choose_secret_to_combine(self):
         self.secret_to_combine = self.spinbox_secret.value()
 
+    def init_algorithm_list(self):
+        self.algorithm_list = [
+            'Roy-Adhikari',
+            'Lin-Yeh'
+        ]
+        self.algorithm = self.algorithm_list[0]
+
+    def update_algorithm(self, algorithm_index):
+        self.algorithm = self.algorithm_list[algorithm_index]
+
     def split_secret_dynamic(self):
         
         users_count = self.number_of_users.value()
@@ -195,43 +217,10 @@ class MultiSecretController(Ui_multisecret_gui):
             self.textBrowser_dyn.append('Secret {} can be obtained by {}.'.format(secret, str(group)))
 
     def combine_secret_dynamic(self):
+        # if checkbox "reconstruct all at once" is checked, run loop
         print('combine_secret_dynamic')
         self.combine_secret()
 
-
-    def split_secret(self):
-        try:
-            secret1 = int(self.secret_1.text())
-            secret2 = int(self.secret_2.text())
-            secret3 = int(self.secret_3.text())
-        except ValueError as e:
-            print('Secrets missing. Error %r' % e)
-            self.showdialog()
-            return
-            
-        secrets = [secret1, secret2, secret3]
-        
-        prime = 2**256 - 2**224 + 2**192 + 2**96 - 1
-
-        # multi secret sharing parameters
-        n_participants = 3
-        access_structures = [[[1,2,3]], [[1,3]], [[1,2,3]]]
-        dealer = Dealer(prime, n_participants, secrets, access_structures)
-        pseudo_shares = dealer.split_secrets()
-        
-        for secret_shares in pseudo_shares:
-            print(' secret')
-            for group_shares in secret_shares:
-                print('  group')
-                for user_share in group_shares:
-                    print('  user', user_share)
-                    
-        # save params: prime, structure, ID (user x), to file to recreate Dealer later
-        self.save_pseudo_shares_to_file(dealer,
-                                        pseudo_shares)
-        
-        self.statusbar.setText('Secret split!')
-    
     def showdialog(self, text='Please specify all secrets.'):
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Information)

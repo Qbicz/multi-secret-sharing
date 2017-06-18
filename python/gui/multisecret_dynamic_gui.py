@@ -50,8 +50,21 @@ class Ui_multisecret_gui(object):
                 self.gridLayout_dyn.addWidget(self.checkboxes[secret][user], secret+1, 2+user, 1, 1)
                 self.checkboxes[secret][user].setText(_translate("multisecret_gui", "User "+str(user+1)))
 
+        self.algorithm_label = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
+        self.gridLayout_dyn.addWidget(self.algorithm_label,
+                                      self.secrets + 1, 0, 1, 1)
+        self.algorithm_label.setText('Algorithm ')
+
+        self.algorithm_combobox = QtWidgets.QComboBox(self.gridLayoutWidget_dyn)
+        self.gridLayout_dyn.addWidget(self.algorithm_combobox,
+                                      self.secrets + 1, 1, 1, self.users)
+        self.algorithm_combobox.addItem('Roy-Adhikari')
+        self.algorithm_combobox.addItem('Lin-Yeh')
+        self.algorithm_combobox.currentIndexChanged.connect(self.update_algorithm)
+
         self.button_split_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn)
-        self.gridLayout_dyn.addWidget(self.button_split_dyn, 5, 1, 1, 3)
+        self.gridLayout_dyn.addWidget(self.button_split_dyn,
+                                      self.secrets + 2, 1, 1, self.users)
         self.button_split_dyn.setText('Split secrets')
 
         self.button_split_dyn.clicked.connect(self.split_secret_dynamic)
