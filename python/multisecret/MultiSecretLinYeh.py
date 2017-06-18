@@ -3,7 +3,7 @@
 
 import multisecret.MultiSecretCommon as common
 from multisecret.primality import is_probable_prime
-from multisecret.byteHelper import inverse_modulo_p
+import multisecret.byteHelper as bytehelper
 import os
 import math
 import copy
@@ -67,6 +67,10 @@ class Dealer:
 
                 self.d[gindex].append(coeffs_for_A)
         return self.d
+
+    def get_id_int(self, participant):
+        """ returns ID as an integer, with indexing from 1 """
+        return int.from_bytes(self.random_id[participant-1], byteorder='big')
 
     def get_d_polynomial_coeffs(self, secret, group):
         return self.d[secret][group]
@@ -179,15 +183,68 @@ class Dealer:
         return self.public_shares_M[i_secret][q_group][participant]
 
     def split_secrets(self):
-        """ Split secret in one step """
+        """ Split secret in one step with Lin-Yeh algorithm """
 
         self.random_id = common.provide_id(self.n, self.hash_len, self.p)
-        self.master_shares_x = common.list_of_random_in_modulo_p(self.n, self.hash_len,
-                                                 self.p)
+        self.master_shares_x = common.list_of_random_in_modulo_p(self.n,
+                                                                 self.hash_len,
+                                                                 self.p)
         self.access_group_polynomial_coeffs()
         self.compute_all_pseudo_shares()
         self.compute_all_public_shares_M()
 
         return self.pseudo_shares
 
+    def combine_secret(self, i_secret, q_group, obtained_pseudo_shares):
+        """
+        combine a single secret in Lin-Yeh algorithm
+        """
+        if isinstance(obtained_pseudo_shares[0], bytes):
+            obtained_shares_int = []
+            for obtained_share in obtained_pseudo_shares:
+                obtained_shares_int.append(
+                    int.from_bytes(obtained_share, byteorder='big'))
+            obtained_pseudo_shares = obtained_shares_int
+
+        print('Obtained pseudo shares:', obtained_pseudo_shares)
+
+        print('Access group:', self.access_structures[i_secret])
+        assert (q_group <= len(self.access_structures[i_secret]))
+
+        combine_sum = 0
+
+        for b, Pb in enumerate(self.access_structures[i_secret][q_group]):
+
+            print('\tb =', b)
+            part_sum_B = (obtained_pseudo_shares[b]
+                          + self.public_shares_M[i_secret][q_group][b]) % self.p
+            print('\tB = U+M, B = %d, M=%d'
+                  % (part_sum_B, self.public_shares_M[i_secret][q_group][b]))
+
+            combine_product = 1
+            for r, Pr in enumerate(self.access_structures[i_secret][q_group]):
+                if r != b:
+                    print('\t\tr =', r)
+                    print('\t\tID_(b=%d) : %d, ID_(r=%d) : %d'
+                          % (Pb, self.get_id_int(Pb), Pr, self.get_id_int(Pr)))
+                    denominator = (self.get_id_int(Pr) - self.get_id_int(
+                        Pb)) % self.p
+                    den_inverse = bytehelper.inverse_modulo_p(denominator,
+                                                              self.p)
+                    print('\t\tdenominator = %d\n its inverse = %d'
+                          % (denominator, den_inverse))
+                    part_product = ((self.get_id_int(
+                        Pr)) % self.p * den_inverse) % self.p
+
+                    combine_product *= part_product
+                    print('\t\tpart_product', part_product)
+                    print('\t\tcombine_product', combine_product)
+
+            combine_sum += (part_sum_B * combine_product) % self.p
+            print('\tcomb prod=%d, part_sum_B=%d, combined_sum=%d'
+                  % (combine_product, part_sum_B, combine_sum))
+
+        print("Combined sum, s%d = %d" % (i_secret, combine_sum % self.p))
+
+        return common.modulo_p(self.p, combine_sum)
 
