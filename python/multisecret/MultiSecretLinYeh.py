@@ -131,13 +131,13 @@ class Dealer:
 
         hash_of_master_share_int = int.from_bytes(hash_of_master_share, byteorder='big')
 
-        print('XOR\n {} \n{}'.format(hash_of_master_share.hex(), bytes_x.hex()))
         # XOR hashed value with master share
         int_pseudo_share = hash_of_master_share_int ^ int_x
-        pseudo_share = bytes([int_pseudo_share])
-        print(pseudo_share.hex())
 
-        # print('Pseudo share for secret s%d, access group A%d, participant P%d:\nU = ' % (i_secret, q_group, participant), share.hex())
+        print('XOR output =', int_pseudo_share)
+        int_pseudo_share = common.modulo_p(self.p, int_pseudo_share)
+        pseudo_share = int_pseudo_share.to_bytes(bytehelper.bytelen(int_pseudo_share), byteorder='big')
+
         assert isinstance(pseudo_share, bytes)
         return pseudo_share
 
@@ -182,6 +182,37 @@ class Dealer:
 
         return self.public_shares_M[i_secret][q_group][participant]
 
+    def get_pseudo_shares_for_participant(self, participant):
+        """ Scan for pseudo shares specific to a chosen participant.
+            Returns a dictionary {(secret number,group) : pseudo_share}
+        """
+        my_pseudo_shares = {}
+
+        for i, _ in enumerate(self.access_structures):
+            for q, _ in enumerate(self.access_structures[i]):
+                for b, Pb in enumerate(self.access_structures[i][q]):
+                    # if we found participant in the access structure,
+                    # copy his pseudo share to a dictionary with tuple key (secret, group)
+                    if Pb == participant:
+                        my_pseudo_shares[(i, q)] = self.pseudo_shares[i][q][b]
+                        print('Pb == participant ==', Pb)
+                        print('my_pseudo_shares[(i=%d,q=%d)]'
+                              '= self.pseudo_shares[%d][%d][b=%d]' % (
+                              i, q, i, q, b))
+        return my_pseudo_shares
+
+    def set_pseudo_shares_from_participant(self, participant, my_pseudo_shares):
+        """ Take my_pseudo_shares dictionary from a specific user and put shares
+            into right places in the dealer's pseudo_shares nested list.
+            (Reverse of get_pseudo_shares_for_participant() )
+        """
+
+        for i, _ in enumerate(self.access_structures):
+            for q, _ in enumerate(self.access_structures[i]):
+                for b, Pb in enumerate(self.access_structures[i][q]):
+                    if Pb == participant:
+                        self.pseudo_shares[i][q][b] = my_pseudo_shares[
+                            '({}, {})'.format(i, q)]
     def split_secrets(self):
         """ Split secret in one step with Lin-Yeh algorithm """
 

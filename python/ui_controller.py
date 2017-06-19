@@ -3,7 +3,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from gui.multisecret_dynamic_gui import Ui_multisecret_gui
 
-import multisecret
+import multisecret.MultiSecretRoyAdhikari
 import multisecret.MultiSecretLinYeh
 import sys
 import json
@@ -182,7 +182,7 @@ class MultiSecretController(Ui_multisecret_gui):
             'Roy-Adhikari',
             'Lin-Yeh'
         ]
-        self.algorithm = self.algorithm_list[1]
+        self.algorithm = self.algorithm_list[0]
 
     def update_algorithm(self, algorithm_index):
         self.algorithm = self.algorithm_list[algorithm_index]
