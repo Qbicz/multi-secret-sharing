@@ -66,7 +66,7 @@ def modulo_p(prime, number):
         return_bytes = True
         number = int.from_bytes(number, byteorder='big')
 
-    if (number >= prime):
+    if (number >= prime or number < 0):
         number = number % prime
 
     if (return_bytes):
