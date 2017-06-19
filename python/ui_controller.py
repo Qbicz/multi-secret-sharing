@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 from gui.multisecret_dynamic_gui import Ui_multisecret_gui
 
 import multisecret.MultiSecretRoyAdhikari
@@ -399,7 +399,7 @@ class MultiSecretController(Ui_multisecret_gui):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    window = QtWidgets.QDialog()
+    window = QtWidgets.QWidget()
 
     ui = MultiSecretController(window)
 

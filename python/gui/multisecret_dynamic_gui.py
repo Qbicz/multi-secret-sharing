@@ -3,15 +3,28 @@ import functools
 
 class Ui_multisecret_gui(object):
     def __init__(self):
+        print('__init__ Ui_multisecret_gui')
         self.secrets = 3
         self.users = 3
-    
+
+    def add_menu_bar(self, gui):
+        exitAction = QtWidgets.QAction('&Exit', gui)
+        exitAction.setShortcut('Ctrl+Q')
+        exitAction.setStatusTip('Exit application')
+        exitAction.triggered.connect(QtWidgets.qApp.quit)
+
+        menubar = QtWidgets.QMenuBar()
+        gui.setMenuBar(menubar)
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(exitAction)
+
+
     def setupUi(self, multisecret_gui):
-        multisecret_gui.setObjectName("multisecret_gui")
         multisecret_gui.resize(751, 481)
+        #self.add_menu_bar(multisecret_gui)
+
         self.tabWidget = QtWidgets.QTabWidget(multisecret_gui)
         #self.tabWidget.setGeometry(QtCore.QRect(0, 0, 751, 481))
-        self.tabWidget.setObjectName("tabWidget")
 
         # put QTabWidget in a layout to enable resizing
         layout = QtWidgets.QVBoxLayout(multisecret_gui)
@@ -165,13 +178,3 @@ class Ui_multisecret_gui(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_dyn_reconstr), _translate("multisecret_gui", "Dynamic reconstruction"))
 
         self.actionSetSecretsNumber.setText(_translate("multisecret_gui", "setSecretsNumber"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    multisecret_gui = QtWidgets.QDialog()
-    ui = Ui_multisecret_gui()
-    ui.setupUi(multisecret_gui)
-    multisecret_gui.show()
-    sys.exit(app.exec_())
