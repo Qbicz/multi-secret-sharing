@@ -8,7 +8,21 @@ p256 = 2**256 - 2**224 + 2**192 + 2**96 - 1
 
 def test_bitlen():
     pass
-    
+
+
+def test_bytelen():
+    number = 255
+    length = bytehelper.bytelen(number)
+    assert_equal(length, 1)
+
+    number = 258
+    length = bytehelper.bytelen(number)
+    assert_equal(length, 2)
+
+    number = 0xFEEDBEEF
+    length = bytehelper.bytelen(number)
+    assert_equal(length, 4)
+
 def test_int_to_bytes():
     pass
     
