@@ -8,7 +8,18 @@ from math import log2, floor
 def bitlen(number):
     """ return length of integer number in bits """
     assert(isinstance(number, int))
-    return floor(log2(number)) + 1
+    if number == 0:
+        return 1
+    else:
+        return floor(log2(number)) + 1
+
+
+def bytelen(number):
+    assert (isinstance(number, int))
+    if number == 0:
+        return 1
+    else:
+        return floor(log2(number) // 8) + 1
 
 
 def inverse_modulo_p(a, p):
