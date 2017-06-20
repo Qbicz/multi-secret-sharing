@@ -56,7 +56,9 @@ class MultiSecretController(Ui_multisecret_gui):
         self.user_data = [None] * self.user_count
 
         self.refresh_dynamic_split_tab(self.secret_count, self.user_count)
-        self.refresh_dynamic_combine_tab(self.secret_count, self.user_count)
+        self.refresh_dynamic_combine_tab(self.secret_count, self.user_count,
+                                         self.gridLayout_dyn_reconstr,
+                                         self.gridLayoutWidget_dyn_reconstr)
 
     def refresh_dynamic_split_tab(self, secrets, users):
         # remove old widgets
@@ -114,29 +116,25 @@ class MultiSecretController(Ui_multisecret_gui):
         # after redrawing, call QWidget.update
         self.tab_dyn.update()
 
-    def refresh_dynamic_combine_tab(self, secrets, users):
-        clear_layout(self.gridLayout_dyn_reconstr)
-
-        self.users = users
-        self.secret_count = secrets
+    def refresh_dynamic_combine_tab(self, secrets, users, layout, parent_widget):
+        clear_layout(layout)
 
         _translate = QtCore.QCoreApplication.translate
         self.secret_labels = [None] * users
 
-        self.reconstr_user_labels = [None] * self.users
-        self.user_data_reconstr_buttons = [None] * self.users
+        self.reconstr_user_labels = [None] * users
+        self.user_data_reconstr_buttons = [None] * users
 
-        self.button_load_public_info_dyn = QtWidgets.QPushButton(
-            self.gridLayoutWidget_dyn_reconstr)
-        self.gridLayout_dyn_reconstr.addWidget(self.button_load_public_info_dyn,
+        self.button_load_public_info_dyn = QtWidgets.QPushButton(parent_widget)
+        layout.addWidget(self.button_load_public_info_dyn,
                                                0, 0, 1, 1)
         self.button_load_public_info_dyn.clicked.connect(
             self.load_public_info_dynamic)
 
-        for user in range(self.users):
+        for user in range(users):
             self.user_data_reconstr_buttons[user] = QtWidgets.QPushButton(
-                self.gridLayoutWidget_dyn_reconstr)
-            self.gridLayout_dyn_reconstr.addWidget(
+                parent_widget)
+            layout.addWidget(
                 self.user_data_reconstr_buttons[user], user + 1, 0, 1, 1)
             # Connect loading pseudo shares to each button
             # functools.partial() is used instead of lambda, to pass actual value of user
@@ -144,27 +142,24 @@ class MultiSecretController(Ui_multisecret_gui):
             self.user_data_reconstr_buttons[user].clicked.connect(
                 functools.partial(self.load_pseudo_shares_from_user, user + 1))
 
-        self.button_reconstr_dyn = QtWidgets.QPushButton(
-            self.gridLayoutWidget_dyn_reconstr)
-        self.gridLayout_dyn_reconstr.addWidget(self.button_reconstr_dyn, 0, 1,
-                                               1, 1)
+        self.button_reconstr_dyn = QtWidgets.QPushButton(parent_widget)
+        layout.addWidget(self.button_reconstr_dyn, 0, 1, 1, 1)
         self.button_reconstr_dyn.clicked.connect(self.combine_secret_dynamic)
 
         # Spinbox for choosing a secret to reconstruct
         self.spinbox_secret = QtWidgets.QSpinBox()
-        self.gridLayout_dyn_reconstr.addWidget(self.spinbox_secret, 0, 2, 1, 1)
+        layout.addWidget(self.spinbox_secret, 0, 2, 1, 1)
         print('secrets:', secrets)
         self.spinbox_secret.setRange(0, secrets - 1)
         self.spinbox_secret.valueChanged.connect(self.choose_secret_to_combine)
 
         self.textBrowser_dyn = QtWidgets.QTextBrowser(
-            self.gridLayoutWidget_dyn_reconstr)
-        self.textBrowser_dyn.setObjectName("textBrowser_dyn")
+            parent_widget)
         self.gridLayout_dyn_reconstr.addWidget(self.textBrowser_dyn, 1, 1,
                                                users + 1, 3)
 
         # Text in buttons
-        for user in range(self.users):
+        for user in range(users):
             self.user_data_reconstr_buttons[user].setText(
                 _translate("multisecret_gui",
                            "Load pseudo share from user " + str(
@@ -252,7 +247,9 @@ class MultiSecretController(Ui_multisecret_gui):
         self.user_count = multisecret.MultiSecretCommon.user_count_from_access_structure(
             access_structure)
         self.secret_count = len(access_structure)
-        self.refresh_dynamic_combine_tab(self.secret_count, self.user_count)
+        self.refresh_dynamic_combine_tab(self.secret_count, self.user_count,
+                                         self.gridLayout_dyn_reconstr,
+                                         self.gridLayoutWidget_dyn_reconstr)
 
         self.textBrowser_dyn.append(
             'Public info loaded. There are {} secrets.'.format(
