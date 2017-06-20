@@ -8,11 +8,9 @@ class Gui(QtWidgets.QMainWindow):
         super().__init__()
         
         self.initUI()
-        
-        
+
     def initUI(self):               
-        
-        exitAction = QtWidgets.QAction(QtGui.QIcon('exit.png'), '&Exit', self)        
+        exitAction = QtWidgets.QAction(QtGui.QIcon('exit.png'), '&Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(QtWidgets.qApp.quit)
@@ -57,10 +55,25 @@ class MyTableWidget(QtWidgets.QWidget):
         # Add tabs to widget        
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
+
+    def draw_combine_tab(self, secrets, users, layout):
+        """ Draw widgets for combining secrets in a layout.
+            Can be called again when the number of secrets/users change. """
+
+        # TODO: implement here ui_controller -> refresh_dynamic_combine_tab(self, secrets, users):
+
+        # TODO: in this class refactor drawing GUI, then add MenuBar and StatusBar
+
+
+class Controller(Gui):
+    def __init__(self):
+        super(Controller, self).__init__()
+        print('Controller initialized!')
+
         
 if __name__ == '__main__':
     
     app = QtWidgets.QApplication(sys.argv)
-    gui = Gui()
+    controller = Controller()
     sys.exit(app.exec_())  
     
