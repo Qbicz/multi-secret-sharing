@@ -31,7 +31,7 @@ class MultiSecretController(Ui_multisecret_gui):
         self.init_algorithm_list()
 
         # Initialize problem size in UI
-        self.number_of_users.setProperty("value", INITIAL_USER_COUNT)
+        self.number_of_users.setProperty('value', INITIAL_USER_COUNT)
         self.number_of_secrets.setProperty("value", INITIAL_SECRET_COUNT)
 
         # Redraw dynamic tab when value changed in "Problem size"
@@ -60,9 +60,9 @@ class MultiSecretController(Ui_multisecret_gui):
                                          self.gridLayout_dyn_reconstr,
                                          self.gridLayoutWidget_dyn_reconstr)
 
-    def refresh_dynamic_split_tab(self, secrets, users):
+    def refresh_dynamic_split_tab(self, secrets, users, layout, parent_widget):
         # remove old widgets
-        clear_layout(self.gridLayout_dyn)
+        clear_layout(layout)
 
         _translate = QtCore.QCoreApplication.translate
         self.secret_labels = [None] * secrets
@@ -74,40 +74,33 @@ class MultiSecretController(Ui_multisecret_gui):
         self.old_secret_number = secrets
 
         for secret in range(secrets):
-            self.secret_labels[secret] = QtWidgets.QLabel(
-                self.gridLayoutWidget_dyn)
-            self.gridLayout_dyn.addWidget(self.secret_labels[secret], secret, 0,
+            self.secret_labels[secret] = QtWidgets.QLabel(parent_widget)
+            layout.addWidget(self.secret_labels[secret], secret, 0,
                                           1, 1)
             self.secret_labels[secret].setText('Secret {}'.format(secret))
 
-            self.secret_inputs[secret] = QtWidgets.QLineEdit(
-                self.gridLayoutWidget_dyn)
-            self.gridLayout_dyn.addWidget(self.secret_inputs[secret], secret, 1,
-                                          1, 1)
+            self.secret_inputs[secret] = QtWidgets.QLineEdit(parent_widget)
+            layout.addWidget(self.secret_inputs[secret], secret, 1, 1, 1)
 
             for user in range(users):
-                self.checkboxes[secret][user] = QtWidgets.QCheckBox(
-                    self.gridLayoutWidget_dyn)
-                self.gridLayout_dyn.addWidget(self.checkboxes[secret][user],
+                self.checkboxes[secret][user] = QtWidgets.QCheckBox(parent_widget)
+                layout.addWidget(self.checkboxes[secret][user],
                                               secret, 2 + user, 1, 1)
-                self.checkboxes[secret][user].setText(
-                    _translate("multisecret_gui", "User " + str(user + 1)))
+                self.checkboxes[secret][user].setText('User ' + str(user + 1))
 
-        self.algorithm_label = QtWidgets.QLabel(self.gridLayoutWidget_dyn)
-        self.gridLayout_dyn.addWidget(self.algorithm_label,
-                                      secrets + 1, 0, 1, 1)
+        self.algorithm_label = QtWidgets.QLabel(parent_widget)
+        layout.addWidget(self.algorithm_label, secrets + 1, 0, 1, 1)
         self.algorithm_label.setText('Algorithm ')
 
-        self.algorithm_combobox = QtWidgets.QComboBox(self.gridLayoutWidget_dyn)
-        self.gridLayout_dyn.addWidget(self.algorithm_combobox,
-                                      secrets + 1, 1, 1, users)
+        self.algorithm_combobox = QtWidgets.QComboBox(parent_widget)
+        layout.addWidget(self.algorithm_combobox, secrets + 1, 1, 1, users)
         for algorithm in self.algorithm_list:
             self.algorithm_combobox.addItem(algorithm)
         self.algorithm_combobox.currentIndexChanged.connect(
             self.update_algorithm)
 
-        self.button_split_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn)
-        self.gridLayout_dyn.addWidget(self.button_split_dyn,
+        self.button_split_dyn = QtWidgets.QPushButton(parent_widget)
+        layout.addWidget(self.button_split_dyn,
                                       secrets + 2, 1, 1, users)
         self.button_split_dyn.setText('Split secrets')
 
@@ -161,13 +154,9 @@ class MultiSecretController(Ui_multisecret_gui):
         # Text in buttons
         for user in range(users):
             self.user_data_reconstr_buttons[user].setText(
-                _translate("multisecret_gui",
-                           "Load pseudo share from user " + str(
-                               user + 1) + "..."))
-        self.button_reconstr_dyn.setText(
-            _translate("multisecret_gui", "Reconstruct secret"))
-        self.button_load_public_info_dyn.setText(
-            _translate("multisecret_gui", "Load public info"))
+                'Load pseudo share from user ' + str(user + 1) + '...')
+        self.button_reconstr_dyn.setText('Reconstruct secret')
+        self.button_load_public_info_dyn.setText('Load public info')
 
     def choose_secret_to_combine(self):
         self.secret_to_combine = self.spinbox_secret.value()
