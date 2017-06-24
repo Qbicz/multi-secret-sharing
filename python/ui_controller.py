@@ -55,7 +55,9 @@ class MultiSecretController(Ui_multisecret_gui):
 
         self.user_data = [None] * self.user_count
 
-        self.refresh_dynamic_split_tab(self.secret_count, self.user_count)
+        self.refresh_dynamic_split_tab(self.secret_count, self.user_count,
+                                       self.gridLayout_dyn,
+                                       self.gridLayoutWidget_dyn)
         self.refresh_dynamic_combine_tab(self.secret_count, self.user_count,
                                          self.gridLayout_dyn_reconstr,
                                          self.gridLayoutWidget_dyn_reconstr)
