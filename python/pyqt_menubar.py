@@ -9,28 +9,30 @@ class Gui(QtWidgets.QMainWindow):
         
         self.initUI()
 
-    def initUI(self):               
-        exitAction = QtWidgets.QAction(QtGui.QIcon('exit.png'), '&Exit', self)
-        exitAction.setShortcut('Ctrl+Q')
-        exitAction.setStatusTip('Exit application')
-        exitAction.triggered.connect(QtWidgets.qApp.quit)
-
-        self.statusBar()
+    def add_menubar(self):
+        exit_action = QtWidgets.QAction(QtGui.QIcon('exit.png'), '&Exit', self)
+        exit_action.setShortcut('Ctrl+Q')
+        exit_action.setStatusTip('Exit application')
+        exit_action.triggered.connect(QtWidgets.qApp.quit)
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(exitAction)
-        
+        fileMenu.addAction(exit_action)
+
+    def initUI(self):
+
+        self.add_menubar()
+        self.statusBar()
+
         self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('Menubar')    
-        #self.show()
+        self.setWindowTitle('Menubar')
         
         self.table_widget = MyTableWidget(self)
         self.setCentralWidget(self.table_widget)
  
         self.show()
  
-class MyTableWidget(QtWidgets.QWidget):        
+class MyTableWidget(QtWidgets.QWidget):
  
     def __init__(self, parent):   
         super(QtWidgets.QWidget, self).__init__(parent)
@@ -54,7 +56,7 @@ class MyTableWidget(QtWidgets.QWidget):
  
         # Add tabs to widget        
         self.layout.addWidget(self.tabs)
-        self.setLayout(self.layout)
+        #self.setLayout(self.layout)
 
     def draw_combine_tab(self, secrets, users, layout):
         """ Draw widgets for combining secrets in a layout.
