@@ -3,7 +3,10 @@
 ![Traditional way of sharing a secret](https://raw.githubusercontent.com/Qbicz/multi-secret-sharing/master/docs/Sharing-Secrets.jpg)
 
 **multi-secret-sharing** is a tool for splitting secret data into parts.
-The parts, or secret shares can be later distributed to several people or backed up on separate disks and online storage facilities.
+
+The parts, or secret shares are saved as JSON files and can be later distributed to several people or backed up on separate disks and online storage facilities.
+
+Implemented and ready-to-use multi secrets sharing schemes are: Roy-Adhikari, Lin-Yeh and Herranz-Ruiz-Saez.
 
 If you want to secure a huge file, it might be better to encrypt it using block cipher, e.g. AES and only split the password with secret sharing.
 
