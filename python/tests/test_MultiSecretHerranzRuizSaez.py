@@ -40,6 +40,19 @@ def test_cipher_generate_user_keys():
     assert_equal(len(dealer.cipher_keys[-1]), Dealer.AES_KEY_LEN)
     assert_equal(len(dealer.cipher_keys), n_participants)
 
+def test_cipher_encrypt():
+    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+    dealer.cipher_generate_user_keys()
+
+    # Encrypt number
+    input = 299
+    key = dealer.cipher_keys[0]
+    ciphertext = dealer.cipher_encrypt(input, key)
+    assert_equal(len(ciphertext), Dealer.AES_BLOCK_SIZE)
+    assert_equal(0,1)
+
+def test_cipher_decrypt():
+    pass
 
 def test_access_group_polynomial_coeffs():
     """ test: access_group_polynomial_coeffs """

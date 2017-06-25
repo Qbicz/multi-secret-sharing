@@ -7,12 +7,17 @@ import multisecret.byteHelper as bytehelper
 import os
 import math
 import copy
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
 
 
 class Dealer:
 
-    # Length of AES keys in bytes
+    # Length of AES keys in bytes. AES-256 has a key of 256 bits or 32 bytes
     AES_KEY_LEN = 32
+    # All AES variants use 128 bit blocks and IV in CBC mode must have the same size as a block
+    AES_BLOCK_SIZE = 16
 
     def __init__(self, p, n_participants, s_secrets, access_structures):
         """ In Omega 1 scheme symmetric encryption in used to protect
@@ -43,12 +48,14 @@ class Dealer:
         self.hash_aes_nonce = os.urandom(16)
         self.d = []
 
+        # Setup for symmetric encryption scheme.
+        # The initialization vector iv must be available to combiner.
         self.cipher_keys = []
+        self.iv = os.urandom(Dealer.AES_BLOCK_SIZE)
 
         print('hash_len:', self.hash_len)
-        print(
-            'Dealer created for Lin-Yeh sharing of %d secrets among %d participants' % (
-            self.k, self.n))
+        print('Dealer created for Herranz-Ruiz-Saez sharing of %d secrets'
+              ' among %d participants' % (self.k, self.n))
 
     def cipher_generate_user_keys(self):
         """ Generate a secret key K for each participant. """
@@ -56,9 +63,31 @@ class Dealer:
             key = os.urandom(Dealer.AES_KEY_LEN)
             self.cipher_keys.append(key)
 
-    def encrypt(self, input, key):
-        """ Symmetric encryption of input using key """
-        pass
+    def cipher_encrypt(self, input, key):
+        """ Symmetric encryption of input using key. If input is not bytes
+            converts the input to needed format. """
+        if(isinstance(input, int)):
+            input = input.to_bytes(bytehelper.bytelen(input), byteorder='big')
+        elif(isinstance(input, str)):
+            input = input.encode('utf-8')
+
+        print(input)
+        assert(isinstance(input, (bytes, bytearray)))
+
+        # Perform padding if the input is not a multiple of a block
+        padder = padding.PKCS7(Dealer.AES_BLOCK_SIZE*8).padder()
+        padded_input = padder.update(input) + padder.finalize()
+        print(padded_input, len(padded_input))
+
+        cipher = Cipher(algorithms.AES(key), modes.CBC(self.iv),
+                        backend=default_backend())
+        encryptor = cipher.encryptor()
+        ciphertext = encryptor.update(padded_input) + encryptor.finalize()
+        print('Encrypted\t{}\n'
+              'Key\t\t{}\n'
+              'IV\t\t{}\n'
+              'Ciphertext:\t{}'.format(padded_input, key, self.iv, ciphertext))
+        return ciphertext
 
     def access_group_polynomial_coeffs(self):
         """ for the qth qualified set of access group,
