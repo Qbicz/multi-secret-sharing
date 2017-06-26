@@ -17,7 +17,7 @@ n_participants = 3
 # Gamma(s_i) = [A1, A2, ... Al], Aq = (P1, P2, Pm), q=1,2...l
 # gamma1 is a group of users authorized to reconstruct s1
 gamma1 = [(1, 3)]
-gamma2 = [(1, 2), (2, 3)]  # A1, A2 implicitly
+gamma2 = [(1, 2)]  # A1, A2 implicitly
 gamma3 = [(1, 2, 3)]  # to secret s3 only all 3 users together can gain access
 access_structures = [gamma1, gamma2, gamma3]
 
@@ -32,6 +32,10 @@ def test_init():
     # test for proper exception: too little participants
     with assert_raises(ValueError):
         dealer = Dealer(p256, 1, s_secrets, access_structures)
+
+def test_assert_one_group_per_secret():
+    with assert_raises(AssertionError):
+        dealer = Dealer(p256, 2, s_secrets, [[(1,2,3)], [(1,2), (1,2,3)]])
 
 def test_cipher_generate_keys():
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
@@ -76,7 +80,7 @@ def test_access_group_polynomial_coeffs():
     A1 = (1, 3)
     # gamma1 is a group of users authorized to reconstruct s1
     gamma1 = [A1]
-    gamma2 = [(1, 2), (2, 3)]  # A1, A2 implicitly
+    gamma2 = [(1, 2)]  # A1, A2 implicitly
     gamma3 = [
         (1, 2, 3)]  # to secret s3 only all 3 users together can gain access
     access_structures = [gamma1, gamma2, gamma3]
@@ -91,7 +95,7 @@ def test_access_group_polynomial_coeffs():
     # test output
     assert_equal(len(dealer.d), 3)
     assert_equal(len(dealer.d[0]), 1)
-    assert_equal(len(dealer.d[1][1]), 1)
+    assert_equal(len(dealer.d[1][0]), 1)
     assert_equal(len(dealer.d[2][0]), 2)
 
     # Test index out of range

@@ -39,6 +39,7 @@ class Dealer:
         self.s_secrets = s_secrets
         if isinstance(access_structures[0], list):
             for group in access_structures:
+                assert(len(group) == 1) # only one access group per secret (threshold scheme)
                 if len(group[0]) < 2:
                     raise ValueError(
                         'Less than 2 participants in one of the access groups!')
@@ -141,8 +142,10 @@ class Dealer:
                                                      self.p)
 
     def access_group_polynomial_coeffs(self):
-        """ for the qth qualified set of access group,
-            the dealer chooses d0, d1, d2... dm in Zp modulo field
+        """ In Herraz-Ruiz-Saez scheme, there's only one access group for
+            each secret (threshold scheme).
+
+            The dealer chooses d0, d1, d2... dm in Zp modulo field
             to construct the polynomial
             f_q(x) = si + d1*x + d2*x^2 + ... + dm*x^(m-1)
 
