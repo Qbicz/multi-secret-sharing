@@ -84,10 +84,10 @@ def modulo_p(prime, number):
     return modulo_number
 
 
-def list_of_random_in_modulo_p(listlen, hashlen, prime):
+def list_of_random_in_modulo_p(listlen, bytelen, prime):
     """helper function returning list of random numbers less than p prime"""
     randoms = []
-    bytelen_of_randoms_generated = hashlen  # TODO: write bytelenOfInt() method in byteHelper
+    bytelen_of_randoms_generated = bytelen  # TODO: write bytelenOfInt() method in byteHelper
 
     for i in range(listlen):
         generated = urandom(bytelen_of_randoms_generated)
