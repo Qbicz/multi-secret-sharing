@@ -18,5 +18,5 @@ config = {
     'name': 'multiSecret'
  }
 
-setup(**config)
+setup(**config, install_requires=['PyQt5'])
  
