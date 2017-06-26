@@ -33,26 +33,42 @@ def test_init():
     with assert_raises(ValueError):
         dealer = Dealer(p256, 1, s_secrets, access_structures)
 
-def test_cipher_generate_user_keys():
+def test_cipher_generate_keys():
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
-    dealer.cipher_generate_user_keys()
+    dealer.cipher_generate_keys()
 
     assert_equal(len(dealer.cipher_keys[-1]), Dealer.AES_KEY_LEN)
-    assert_equal(len(dealer.cipher_keys), n_participants)
+    assert_equal(len(dealer.cipher_keys), len(s_secrets))
 
 def test_cipher_encrypt():
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
-    dealer.cipher_generate_user_keys()
+    dealer.cipher_generate_keys()
 
     # Encrypt number
     input = 299
     key = dealer.cipher_keys[0]
     ciphertext = dealer.cipher_encrypt(input, key)
     assert_equal(len(ciphertext), Dealer.AES_BLOCK_SIZE)
-    assert_equal(0,1)
 
 def test_cipher_decrypt():
-    pass
+    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+    dealer.cipher_generate_keys()
+
+    test_input = 'Test message'
+    ciphertext = dealer.cipher_encrypt(test_input, dealer.cipher_keys[-1])
+    assert_equal(len(ciphertext), Dealer.AES_BLOCK_SIZE)
+
+    plaintext = dealer.cipher_decrypt(ciphertext, dealer.cipher_keys[-1])
+    print('type of decrypted plaintext', type(plaintext))
+    assert_equal(plaintext.decode('utf-8'), test_input) # decrypted data has type bytes
+
+def test_cipher_encrypt_all_secrets():
+    dealer = Dealer(p256, n_participants, [41, 12], access_structures)
+    dealer.cipher_generate_keys()
+    dealer.cipher_encrypt_all_secrets()
+
+    assert_equal(len(dealer.public_encrypted_secrets), len([41, 12]))
+    assert_equal(len(dealer.public_encrypted_secrets[0]), Dealer.AES_BLOCK_SIZE)
 
 def test_access_group_polynomial_coeffs():
     """ test: access_group_polynomial_coeffs """

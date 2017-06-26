@@ -57,9 +57,10 @@ class Dealer:
         print('Dealer created for Herranz-Ruiz-Saez sharing of %d secrets'
               ' among %d participants' % (self.k, self.n))
 
-    def cipher_generate_user_keys(self):
-        """ Generate a secret key K for each participant. """
-        for participant in range(self.n):
+    def cipher_generate_keys(self):
+        """ Generate a key K for each secret. The key will be used to
+            encrypt all secrets. Key is later split among users. """
+        for secret in range(self.k):
             key = os.urandom(Dealer.AES_KEY_LEN)
             self.cipher_keys.append(key)
 
@@ -88,6 +89,34 @@ class Dealer:
               'IV\t\t{}\n'
               'Ciphertext:\t{}'.format(padded_input, key, self.iv, ciphertext))
         return ciphertext
+
+    def cipher_decrypt(self, ciphertext, key):
+        assert(isinstance(ciphertext, (bytes, bytearray)))
+
+        cipher = Cipher(algorithms.AES(key), modes.CBC(self.iv),
+                        backend=default_backend())
+        decryptor = cipher.decryptor()
+        plaintext_padded = decryptor.update(ciphertext) + decryptor.finalize()
+
+        # remove padding
+        unpadder = padding.PKCS7(Dealer.AES_BLOCK_SIZE*8).unpadder()
+        plaintext = unpadder.update(plaintext_padded) + unpadder.finalize()
+        return plaintext
+
+    def cipher_encrypt_all_secrets(self):
+        assert(self.k == len(self.s_secrets))
+
+        self.public_encrypted_secrets = []
+        for j, secret in enumerate(self.s_secrets):
+            # compute c_j = Enc(s_j, K_j)
+            encrypted_secret = self.cipher_encrypt(secret, self.cipher_keys[j])
+            self.public_encrypted_secrets.append(encrypted_secret)
+
+        return self.public_encrypted_secrets
+
+    def split_secret_keys(self):
+
+        common.shamir_polynomial_compute(argument, coeffs, secret_value, prime)
 
     def access_group_polynomial_coeffs(self):
         """ for the qth qualified set of access group,
