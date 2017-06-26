@@ -115,8 +115,30 @@ class Dealer:
         return self.public_encrypted_secrets
 
     def split_secret_keys(self):
+        """ Use Shamir's scheme to share the keys used
+            to encrypt secrets. """
+        self.cipher_generate_keys()
+        assert(self.cipher_keys)
 
-        common.shamir_polynomial_compute(argument, coeffs, secret_value, prime)
+        # Shamir polynomial for each access group
+        self.access_group_polynomial_coeffs()
+        assert(self.d)
+
+        # ID for each participant
+        self.random_id = common.provide_id(self.n, self.hash_len, self.p)
+
+        self.compute_all_key_shares()
+
+    def compute_all_key_shares(self):
+
+        for i, gamma in enumerate(self.access_structures):
+            for q, A in enumerate(self.access_structures[i]):
+                for b, Pb in enumerate(self.access_structures[i][q]):
+
+                    common.shamir_polynomial_compute(self.random_id[Pb],
+                                                     self.d[i][q],
+                                                     self.cipher_keys[i],
+                                                     self.p)
 
     def access_group_polynomial_coeffs(self):
         """ for the qth qualified set of access group,
@@ -183,109 +205,6 @@ class Dealer:
                     print('[i={}][q={}][b={}][Pb={}], pseudo_share={!r}'.format(
                         i, q, b, Pb, self.pseudo_shares[i][q][b]))
 
-    def pseudo_share_participant(self, i_secret, q_group, participant):
-        """ pseudo share generation for a single participant
-            U = hash(master_share_x) XOR master_share_x
-        """
-        print('Pseudo share computation for secret s%r, access group A%r,'
-              'participant P%r' % (i_secret, q_group, participant))
-
-        # convert master share to bytes
-        if isinstance(self.master_shares_x[participant - 1], bytes):
-            bytes_x = self.master_shares_x[participant - 1]
-            int_x = int.from_bytes(self.master_shares_x[participant - 1], byteorder='big')
-        else:
-            bytes_x = bytes([self.master_shares_x[participant - 1]])
-            int_x = self.master_shares_x[participant - 1]
-
-        # hash the master share
-        hash_of_master_share = common.hash(bytes_x, self.hash_len, self.hash_aes_nonce)
-        hash_of_master_share = common.modulo_p(self.p, hash_of_master_share)
-
-        hash_of_master_share_int = int.from_bytes(hash_of_master_share, byteorder='big')
-
-        # XOR hashed value with master share
-        int_pseudo_share = hash_of_master_share_int ^ int_x
-
-        print('XOR output =', int_pseudo_share)
-        int_pseudo_share = common.modulo_p(self.p, int_pseudo_share)
-        pseudo_share = int_pseudo_share.to_bytes(bytehelper.bytelen(int_pseudo_share), byteorder='big')
-
-        assert isinstance(pseudo_share, bytes)
-        return pseudo_share
-
-    def public_user_share_M(self, i_secret, q_group, participant, B_value):
-        """ In Lin-Yeh algorithm, public share M is created as follows:
-            M = B - U
-        """
-        # assert(participant in self.access_structures[i_secret][q_group])
-
-        U_value = int.from_bytes(
-            self.pseudo_shares[i_secret][q_group][participant], byteorder='big')
-        M_public_share = (B_value - U_value) % self.p
-        print('participant %d, U = %d, public M = %d' % (
-        participant, U_value, M_public_share))
-        return M_public_share
-
-    def compute_all_public_shares_M(self):
-        """ experimental, use nested lists instead of np.array """
-
-        # duplicate the structure of access_structure
-        self.public_shares_M = copy.deepcopy(self.access_structures)
-        self.B_values = copy.deepcopy(self.access_structures)
-
-        for i, _ in enumerate(self.access_structures):
-            for q, _ in enumerate(self.access_structures[i]):
-                for b, Pb in enumerate(self.access_structures[i][q]):
-                    print(
-                        'compute_all_public_shares_M, i=%d, q=%d, b=%d, user P%d' % (
-                        i, q, b, Pb))
-
-                    B_value = self.user_polynomial_value_B(i, q, Pb)
-                    print('B_P%d = %d' % (Pb, B_value))
-                    M = self.public_user_share_M(i, q, b, B_value)
-
-                    # for testing store B in a nested list
-                    self.B_values[i][q][b] = B_value
-
-                    # STORE in a nested list
-                    self.public_shares_M[i][q][b] = M
-
-    def get_M_public_user_share(self, i_secret, q_group, participant):
-
-        return self.public_shares_M[i_secret][q_group][participant]
-
-    def get_pseudo_shares_for_participant(self, participant):
-        """ Scan for pseudo shares specific to a chosen participant.
-            Returns a dictionary {(secret number,group) : pseudo_share}
-        """
-        my_pseudo_shares = {}
-
-        for i, _ in enumerate(self.access_structures):
-            for q, _ in enumerate(self.access_structures[i]):
-                for b, Pb in enumerate(self.access_structures[i][q]):
-                    # if we found participant in the access structure,
-                    # copy his pseudo share to a dictionary with tuple key (secret, group)
-                    if Pb == participant:
-                        my_pseudo_shares[(i, q)] = self.pseudo_shares[i][q][b]
-                        print('Pb == participant ==', Pb)
-                        print('my_pseudo_shares[(i=%d,q=%d)]'
-                              '= self.pseudo_shares[%d][%d][b=%d]' % (
-                              i, q, i, q, b))
-        return my_pseudo_shares
-
-    def set_pseudo_shares_from_participant(self, participant, my_pseudo_shares):
-        """ Take my_pseudo_shares dictionary from a specific user and put shares
-            into right places in the dealer's pseudo_shares nested list.
-            (Reverse of get_pseudo_shares_for_participant() )
-        """
-
-        for i, _ in enumerate(self.access_structures):
-            for q, _ in enumerate(self.access_structures[i]):
-                for b, Pb in enumerate(self.access_structures[i][q]):
-                    if Pb == participant:
-                        self.pseudo_shares[i][q][b] = my_pseudo_shares[
-                            '({}, {})'.format(i, q)]
     def split_secrets(self):
         """ Split secret in one step with Lin-Yeh algorithm """
 
