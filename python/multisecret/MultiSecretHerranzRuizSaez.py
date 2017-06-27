@@ -45,8 +45,6 @@ class Dealer:
                         'Less than 2 participants in one of the access groups!')
             self.access_structures = access_structures
         self.random_id = []
-        self.hash_len = math.floor(math.log2(self.p)) + 1
-        self.hash_aes_nonce = os.urandom(16)
         self.d = []
 
         # Setup for symmetric encryption scheme.
