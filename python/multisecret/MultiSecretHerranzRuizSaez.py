@@ -47,12 +47,13 @@ class Dealer:
         self.random_id = []
         self.d = []
 
+        self.hash_len = math.floor(math.log2(self.p)) + 1
+
         # Setup for symmetric encryption scheme.
         # The initialization vector iv must be available to combiner.
         self.cipher_keys = []
         self.iv = os.urandom(Dealer.AES_BLOCK_SIZE)
 
-        print('hash_len:', self.hash_len)
         print('Dealer created for Herranz-Ruiz-Saez sharing of %d secrets'
               ' among %d participants' % (self.k, self.n))
 
@@ -160,6 +161,9 @@ class Dealer:
 
         return user_shares
 
+    def get_share_from_user_for_secret(self, key_shares, secret_index):
+        return key_shares[secret_index]
+
     def access_group_polynomial_coeffs(self):
         """ In Herraz-Ruiz-Saez scheme, there's only one access group for
             each secret (threshold scheme).
@@ -185,24 +189,24 @@ class Dealer:
                 self.d[gindex].append(coeffs_for_A)
         return self.d
 
-    def combine_secret_key(self, i_secret, q_group, obtained_shares):
+    def get_id_int(self, participant):
+        """ returns ID as an integer, with indexing from 1 """
+        return int.from_bytes(self.random_id[participant-1], byteorder='big')
+
+
+    def combine_secret_key(self, i_secret, obtained_shares):
         """
         combine a single key in Herraz-Ruiz-Saez algorithm
         """
-        print('Obtained pseudo shares:', obtained_pseudo_shares)
-
-        print('Access group:', self.access_structures[i_secret])
-        assert (q_group <= len(self.access_structures[i_secret]))
+        print('Obtained pseudo shares:', obtained_shares)
+        q_group = 0
 
         combine_sum = 0
 
         for b, Pb in enumerate(self.access_structures[i_secret][q_group]):
 
-            print('\tb =', b)
-            part_sum_B = (obtained_pseudo_shares[b]
-                          + self.public_shares_M[i_secret][q_group][b]) % self.p
-            print('\tB = U+M, B = %d, M=%d'
-                  % (part_sum_B, self.public_shares_M[i_secret][q_group][b]))
+            print('\tcurrent user {} with index {} =', Pb, b)
+            part_sum = obtained_shares[b] % self.p
 
             combine_product = 1
             for r, Pr in enumerate(self.access_structures[i_secret][q_group]):
@@ -210,22 +214,24 @@ class Dealer:
                     print('\t\tr =', r)
                     print('\t\tID_(b=%d) : %d, ID_(r=%d) : %d'
                           % (Pb, self.get_id_int(Pb), Pr, self.get_id_int(Pr)))
+
                     denominator = (self.get_id_int(Pr) - self.get_id_int(
                         Pb)) % self.p
                     den_inverse = bytehelper.inverse_modulo_p(denominator,
                                                               self.p)
                     print('\t\tdenominator = %d\n its inverse = %d'
                           % (denominator, den_inverse))
+
                     part_product = ((self.get_id_int(
                         Pr)) % self.p * den_inverse) % self.p
-
                     combine_product *= part_product
+
                     print('\t\tpart_product', part_product)
                     print('\t\tcombine_product', combine_product)
 
-            combine_sum += (part_sum_B * combine_product) % self.p
+            combine_sum += (part_sum * combine_product) % self.p
             print('\tcomb prod=%d, part_sum_B=%d, combined_sum=%d'
-                  % (combine_product, part_sum_B, combine_sum))
+                  % (combine_product, part_sum, combine_sum))
 
         print("Combined sum, s%d = %d" % (i_secret, combine_sum % self.p))
 
