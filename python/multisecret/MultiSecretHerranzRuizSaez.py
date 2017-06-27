@@ -115,8 +115,27 @@ class Dealer:
 
         return self.public_encrypted_secrets
 
+    def compute_all_key_shares(self):
+
+        self.key_shares = copy.deepcopy(self.access_structures)
+        print(self.access_structures)
+
+        for i, gamma in enumerate(self.access_structures):
+            for q, A in enumerate(self.access_structures[i]):
+                for b, Pb in enumerate(self.access_structures[i][q]):
+
+                    secret_value = int.from_bytes(self.cipher_keys[i],
+                                                  byteorder='big')
+                    self.key_shares[i][q][b] = \
+                        common.shamir_polynomial_compute(self.random_id[b],
+                                                     self.d[i][q],
+                                                     secret_value,
+                                                     self.p)
+        return self.key_shares
+
     def split_secret_keys(self):
-        """ Use Shamir's scheme to share the keys used
+        """ High-level interface function.
+            Use Shamir's scheme to share the keys used
             to encrypt secrets. """
         self.cipher_generate_keys()
         assert(self.cipher_keys)
@@ -129,17 +148,18 @@ class Dealer:
         self.random_id = common.provide_id(self.n, self.hash_len, self.p)
 
         self.compute_all_key_shares()
+        #self.get_user_key_share(1)
 
-    def compute_all_key_shares(self):
+    def get_user_key_share(self, user):
+        assert(self.key_shares)
+        user_shares = []
 
         for i, gamma in enumerate(self.access_structures):
             for q, A in enumerate(self.access_structures[i]):
-                for b, Pb in enumerate(self.access_structures[i][q]):
 
-                    common.shamir_polynomial_compute(self.random_id[Pb],
-                                                     self.d[i][q],
-                                                     self.cipher_keys[i],
-                                                     self.p)
+                user_shares.append(self.key_shares[i][q][user])
+
+        return user_shares
 
     def access_group_polynomial_coeffs(self):
         """ In Herraz-Ruiz-Saez scheme, there's only one access group for
@@ -173,40 +193,7 @@ class Dealer:
     def get_d_polynomial_coeffs(self, secret, group):
         return self.d[secret][group]
 
-    def user_polynomial_value_B(self, i_secret, q_group, participant):
-        assert (participant in self.access_structures[i_secret][q_group])
-
-        print('user_polynomial_value_B for secret %d, group A %d '.format(
-            i_secret, q_group))
-        participant_id = self.random_id[participant - 1]
-        print('B value for user %d with ID %d'.format(participant,
-                                                      participant_id))
-
-        coeffs = self.get_d_polynomial_coeffs(i_secret, q_group)
-        secret_value = self.s_secrets[i_secret]
-
-        # returns int
-        return common.shamir_polynomial_compute(participant_id, coeffs,
-                                                secret_value, self.p)
-
-    def compute_all_pseudo_shares(self):
-        """ In Lin-Yeh algorithm, pseudo shares are created as follows:
-            U = hash(master_share_x) XOR master_share_x
-        """
-        self.pseudo_shares = copy.deepcopy(self.access_structures)
-        print(self.access_structures)
-
-        for i, gamma in enumerate(self.access_structures):
-            for q, A in enumerate(self.access_structures[i]):
-                for b, Pb in enumerate(self.access_structures[i][q]):
-                    print('[i=%d][q=%d], participant=%r' % (i, q, Pb))
-                    # it's important to call with Pb - Participant number, not b - index
-                    # e.g when A = (2,3) we should call function with 2 and 3, not 0 and 1
-                    # but we store in in a list under indexes [i][q][0], [i][q][1]
-                    self.pseudo_shares[i][q][b] = self.pseudo_share_participant(
-                        i, q, Pb)
-                    print('[i={}][q={}][b={}][Pb={}], pseudo_share={!r}'.format(
-                        i, q, b, Pb, self.pseudo_shares[i][q][b]))
+                 i, q, b, Pb, self.pseudo_shares[i][q][b]))
 
     def split_secrets(self):
         """ Split secret in one step with Lin-Yeh algorithm """
