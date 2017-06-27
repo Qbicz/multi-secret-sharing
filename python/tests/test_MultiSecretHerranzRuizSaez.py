@@ -16,9 +16,9 @@ n_participants = 3
 # access structure: to which secret what group has access
 # Gamma(s_i) = [A1, A2, ... Al], Aq = (P1, P2, Pm), q=1,2...l
 # gamma1 is a group of users authorized to reconstruct s1
-gamma1 = [(1, 3)]
-gamma2 = [(1, 2)]  # A1, A2 implicitly
-gamma3 = [(1, 2, 3)]  # to secret s3 only all 3 users together can gain access
+gamma1 = [[1, 3]]
+gamma2 = [[1, 2]]  # A1, A2 implicitly
+gamma3 = [[1, 2, 3]]  # to secret s3 only all 3 users together can gain access
 access_structures = [gamma1, gamma2, gamma3]
 
 
@@ -73,6 +73,31 @@ def test_cipher_encrypt_all_secrets():
 
     assert_equal(len(dealer.public_encrypted_secrets), len([41, 12]))
     assert_equal(len(dealer.public_encrypted_secrets[0]), Dealer.AES_BLOCK_SIZE)
+
+def test_split_secret_keys():
+    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+
+    # this function invokes low-level methods
+    dealer.split_secret_keys()
+
+    print(dealer.key_shares)
+    assert_equal(len(dealer.key_shares), len(dealer.s_secrets))
+
+def test_get_user_key_share():
+    dealer = Dealer(p256, n_participants, s_secrets, access_structures)
+
+    # this function invokes low-level methods
+    dealer.split_secret_keys()
+    user_share = dealer.get_user_key_share(0)
+
+    print('All key shares', dealer.key_shares)
+    print('User 0 key share', user_share)
+
+    assert_equal(user_share[0], dealer.key_shares[0][0][0])
+    assert_equal(dealer.get_user_key_share(1)[1], dealer.key_shares[1][0][1])
+    assert_equal(dealer.get_user_key_share(1)[0], dealer.key_shares[0][g][1])
+    # if it not available, shout at user!
+
 
 def test_access_group_polynomial_coeffs():
     """ test: access_group_polynomial_coeffs """
