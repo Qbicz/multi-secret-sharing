@@ -88,14 +88,15 @@ def test_get_user_key_share():
 
     # this function invokes low-level methods
     dealer.split_secret_keys()
-    user_share = dealer.get_user_key_share(0)
+    user_share = dealer.get_user_key_share(1)
 
     print('All key shares', dealer.key_shares)
     print('User 0 key share', user_share)
 
     assert_equal(user_share[0], dealer.key_shares[0][0][0])
-    assert_equal(dealer.get_user_key_share(1)[1], dealer.key_shares[1][0][1])
-    assert_equal(dealer.get_user_key_share(1)[0], dealer.key_shares[0][g][1])
+    # user 2 has internally index 1
+    assert_equal(dealer.get_user_key_share(2)[1], dealer.key_shares[1][0][1])
+    assert_equal(dealer.get_user_key_share(2)[0], dealer.key_shares[0][0][1])
     # if it not available, shout at user!
 
 
