@@ -150,12 +150,13 @@ class Dealer:
 
     def get_user_key_share(self, user):
         assert(self.key_shares)
+        assert(user != 0)
         user_shares = []
 
         for i, gamma in enumerate(self.access_structures):
             for q, A in enumerate(self.access_structures[i]):
 
-                user_shares.append(self.key_shares[i][q][user])
+                user_shares.append(self.key_shares[i][q][user - 1])
 
         return user_shares
 
@@ -184,39 +185,10 @@ class Dealer:
                 self.d[gindex].append(coeffs_for_A)
         return self.d
 
-    def get_id_int(self, participant):
-        """ returns ID as an integer, with indexing from 1 """
-        return int.from_bytes(self.random_id[participant-1], byteorder='big')
-
-    def get_d_polynomial_coeffs(self, secret, group):
-        return self.d[secret][group]
-
-                 i, q, b, Pb, self.pseudo_shares[i][q][b]))
-
-    def split_secrets(self):
-        """ Split secret in one step with Lin-Yeh algorithm """
-
-        self.random_id = common.provide_id(self.n, self.hash_len, self.p)
-        self.master_shares_x = common.list_of_random_in_modulo_p(self.n,
-                                                                 self.hash_len,
-                                                                 self.p)
-        self.access_group_polynomial_coeffs()
-        self.compute_all_pseudo_shares()
-        self.compute_all_public_shares_M()
-
-        return self.pseudo_shares
-
-    def combine_secret(self, i_secret, q_group, obtained_pseudo_shares):
+    def combine_secret_key(self, i_secret, q_group, obtained_shares):
         """
-        combine a single secret in Lin-Yeh algorithm
+        combine a single key in Herraz-Ruiz-Saez algorithm
         """
-        if isinstance(obtained_pseudo_shares[0], bytes):
-            obtained_shares_int = []
-            for obtained_share in obtained_pseudo_shares:
-                obtained_shares_int.append(
-                    int.from_bytes(obtained_share, byteorder='big'))
-            obtained_pseudo_shares = obtained_shares_int
-
         print('Obtained pseudo shares:', obtained_pseudo_shares)
 
         print('Access group:', self.access_structures[i_secret])
