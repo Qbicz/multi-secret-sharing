@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import multisecret.MultiSecretRoyAdhikari
-from multisecret.byteHelper import inverse_modulo_p
 
 if __name__ == "__main__":
     
@@ -21,8 +20,9 @@ if __name__ == "__main__":
     # Combine first secret for its first access group
     secret_num = 0
     group_num = 0
-    combined = dealer.combine_secret(secret_num, group_num, pseudo_shares[0][0])
+    combined = dealer.combine_secret(secret_num, group_num,
+                                     pseudo_shares[secret_num][group_num])
     
-    assert combined == secrets[0]
+    assert combined == secrets[secret_num]
     print('Combined secret: ', combined)
     
