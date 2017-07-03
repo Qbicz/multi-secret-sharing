@@ -128,3 +128,36 @@ def test_access_group_polynomial_coeffs():
     with assert_raises(IndexError):
         print('Test', common.print_list_of_hex(dealer.d[2][1], 'd-2-1'))
 
+def test_combine_secret_2_users():
+    """ Acceptance test with 2 users """
+    secrets = [7, 9]
+    dealer = Dealer(41, 2, secrets, [[[1,2]], [[1,2]]])
+    dealer.split_secret_keys()
+
+    share1 = dealer.get_user_key_share(1)
+    share2 = dealer.get_user_key_share(2)
+
+    shares_for_secret_0 = [share1[0], share2[0]]
+    secret0 = dealer.combine_secret_key(0, shares_for_secret_0)
+
+    assert_equal(secret0, secrets[0])
+
+def test_combine_secret_3_users():
+    """ Acceptance test with 3 users """
+
+    pass
+    """
+    secrets = [7, 9]
+    dealer = Dealer(41, 3, secrets, [[[1,2]], [[1,2,3]], [[1,3]]])
+    dealer.split_secret_keys()
+
+    share1 = dealer.get_user_key_share(1)
+    share2 = dealer.get_user_key_share(2)
+#    share3 = dealer.get_user_key_share(3)
+
+    shares_for_secret_0 = [share1[0], share2[0]]
+    secret0 = dealer.combine_secret_key(0, shares_for_secret_0)
+
+    assert_equal(secret0, secrets[1])
+    """
+
