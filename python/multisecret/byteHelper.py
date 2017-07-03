@@ -24,7 +24,6 @@ def bytelen(number):
 
 def inverse_modulo_p(a, p):
     """ multiplicative inverse of a in finite field mod p """
-    
     prime = p
     
     while a < 0:

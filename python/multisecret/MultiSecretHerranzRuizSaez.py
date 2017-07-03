@@ -130,6 +130,9 @@ class Dealer:
                                                      self.d[i][q],
                                                      secret_value,
                                                      self.p)
+                    print('Key share = {} for user {} (index {}) and secret {}'.format(
+                        self.key_shares[i][q][b], Pb, b, i))
+
         return self.key_shares
 
     def split_secret_keys(self):

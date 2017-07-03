@@ -126,7 +126,7 @@ def shamir_polynomial_compute(argument, coeffs, secret_value, prime):
         poly_value += coeff * argument ** (degree + 1)
 
     poly_value += secret_value
-    print('+ secret (%d)'.format(secret_value))
+    print('+ secret ({})'.format(secret_value))
     poly_value = modulo_p(prime, poly_value)
     # print('poly_value', poly_value)
     return poly_value
