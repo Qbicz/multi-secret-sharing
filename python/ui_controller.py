@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from PyQt5 import QtCore, QtWidgets
-from gui.multisecret_dynamic_gui import Ui_multisecret_gui
+from gui.multisecret_dynamic_gui import MultiSecretGui
 
 import multisecret.MultiSecretRoyAdhikari
 import multisecret.MultiSecretLinYeh
@@ -22,10 +22,9 @@ def clear_layout(layout):
         widgetToRemove.setParent(None)
 
 
-class MultiSecretController(Ui_multisecret_gui):
-    def __init__(self, window):
-        Ui_multisecret_gui.__init__(self)
-        self.setupUi(window)
+class MultiSecretController(MultiSecretGui):
+    def __init__(self):
+        super(MultiSecretController, self).__init__()
 
         # Initialize algorithm list available
         self.init_algorithm_list()
@@ -387,9 +386,6 @@ class MultiSecretController(Ui_multisecret_gui):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    window = QtWidgets.QWidget()
+    controller = MultiSecretController()
 
-    ui = MultiSecretController(window)
-
-    window.show()
     sys.exit(app.exec_())

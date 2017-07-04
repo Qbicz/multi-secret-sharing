@@ -1,33 +1,37 @@
 from PyQt5 import QtCore, QtWidgets
 import functools
 
-class Ui_multisecret_gui(object):
+class MultiSecretGui(QtWidgets.QMainWindow):
     def __init__(self):
-        print('__init__ Ui_multisecret_gui')
+        super().__init__()
+        print('__init__ MultiSecretGui')
         self.secrets = 3
         self.users = 3
+        self.setup_ui()
 
-    def add_menu_bar(self, gui):
-        exitAction = QtWidgets.QAction('&Exit', gui)
+    def add_menu_bar(self):
+        exitAction = QtWidgets.QAction('&Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(QtWidgets.qApp.quit)
 
         menubar = QtWidgets.QMenuBar()
-        gui.setMenuBar(menubar)
+        self.setMenuBar(menubar)
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAction)
 
+    def setup_ui(self):
+        self.resize(751, 481)
+        self.add_menu_bar()
 
-    def setupUi(self, multisecret_gui):
-        multisecret_gui.resize(751, 481)
-        #self.add_menu_bar(multisecret_gui)
+        self.central_widget = QtWidgets.QWidget()
+        self.setCentralWidget(self.central_widget)
 
-        self.tabWidget = QtWidgets.QTabWidget(multisecret_gui)
+        self.tabWidget = QtWidgets.QTabWidget(self)
         #self.tabWidget.setGeometry(QtCore.QRect(0, 0, 751, 481))
 
         # put QTabWidget in a layout to enable resizing
-        layout = QtWidgets.QVBoxLayout(multisecret_gui)
+        layout = QtWidgets.QVBoxLayout(self.central_widget)
         layout.addWidget(self.tabWidget)
 
         self.tab = QtWidgets.QWidget()
@@ -35,7 +39,7 @@ class Ui_multisecret_gui(object):
         #
         # Dynamically created split tab
         #
-        self.tab_dyn = QtWidgets.QWidget(multisecret_gui)
+        self.tab_dyn = QtWidgets.QWidget(self)
         self.gridLayoutWidget_dyn = QtWidgets.QWidget(self.tab_dyn)
         self.gridLayoutWidget_dyn.setGeometry(QtCore.QRect(10, 40, 711, 391))
         self.gridLayout_dyn = QtWidgets.QGridLayout(self.gridLayoutWidget_dyn)
@@ -147,12 +151,14 @@ class Ui_multisecret_gui(object):
         self.tabWidget.addTab(self.tab_3, "")
         # end of tab
 
-        self.actionSetSecretsNumber = QtWidgets.QAction(multisecret_gui)
+        self.actionSetSecretsNumber = QtWidgets.QAction(self)
         self.actionSetSecretsNumber.setObjectName("actionSetSecretsNumber")
 
-        self.retranslateUi(multisecret_gui)
+        self.retranslateUi(self)
         self.tabWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(multisecret_gui)
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+        self.show()
 
 
     def retranslateUi(self, multisecret_gui):
