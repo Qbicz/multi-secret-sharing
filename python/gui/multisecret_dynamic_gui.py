@@ -15,10 +15,27 @@ class MultiSecretGui(QtWidgets.QMainWindow):
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(QtWidgets.qApp.quit)
 
+        openAction = QtWidgets.QAction('Open', self)
+        openAction.setShortcut('Ctrl+O')
+        openAction.setStatusTip('Open a file')
+        #openAction.triggered.connect(self.openFile)
+
         menubar = QtWidgets.QMenuBar()
         self.setMenuBar(menubar)
+
+        # File menu
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAction)
+        fileMenu.addAction(openAction)
+
+        # Algorithms menu
+        algoMenu = menubar.addMenu('&Algorithms')
+
+        # Settings menu
+        settMenu = menubar.addMenu('&Settings')
+
+        # About menu
+        aboutMenu = menubar.addMenu('&About')
 
     def setup_ui(self):
         self.resize(751, 481)
