@@ -131,14 +131,23 @@ def test_access_group_polynomial_coeffs():
 def test_combine_secret_2_users():
     """ Acceptance test with 2 users """
     secrets = [7, 9]
-    dealer = Dealer(41, 2, secrets, [[[1,2]], [[1,2]]])
+    dealer = Dealer(p256, 2, secrets, [[[1,2]], [[1,2]]])
     dealer.split_secret_keys()
 
     share1 = dealer.get_user_key_share(1)
     share2 = dealer.get_user_key_share(2)
 
+    print('Secrets shared!')
+
     shares_for_secret_0 = [share1[0], share2[0]]
-    secret0 = dealer.combine_secret_key(0, shares_for_secret_0)
+    print('Combine using shares: %r', shares_for_secret_0)
+
+    secret_key_0 = dealer.combine_secret_key(0, shares_for_secret_0)
+
+    assert(secret_key_0, dealer.cipher_keys[0])
+
+    secret0_bytes = dealer.cipher_decrypt(dealer.public_encrypted_secrets[0], secret_key_0)
+    secret0 = int.from_bytes(secret0_bytes, byteorder='big')
 
     assert_equal(secret0, secrets[0])
 
