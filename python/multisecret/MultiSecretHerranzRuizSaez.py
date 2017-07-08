@@ -14,8 +14,8 @@ from cryptography.hazmat.primitives import padding
 
 class Dealer:
 
-    # Length of AES keys in bytes. AES-256 has a key of 256 bits or 32 bytes
-    AES_KEY_LEN = 32
+    # Length of AES keys in bytes. AES-128 has a key of 128 bits or 16 bytes
+    AES_KEY_LEN = 16
     # All AES variants use 128 bit blocks and IV in CBC mode must have the same size as a block
     AES_BLOCK_SIZE = 16
 
@@ -93,6 +93,10 @@ class Dealer:
     def cipher_decrypt(self, ciphertext, key):
         assert(isinstance(ciphertext, (bytes, bytearray)))
 
+        if isinstance(key, int):
+            key = int.to_bytes(key, Dealer.AES_KEY_LEN, byteorder='big')
+        print('--- key ---', key)
+
         cipher = Cipher(algorithms.AES(key), modes.CBC(self.iv),
                         backend=default_backend())
         decryptor = cipher.decryptor()
@@ -111,6 +115,7 @@ class Dealer:
             # compute c_j = Enc(s_j, K_j)
             encrypted_secret = self.cipher_encrypt(secret, self.cipher_keys[j])
             self.public_encrypted_secrets.append(encrypted_secret)
+            #print()
 
         return self.public_encrypted_secrets
 
@@ -123,6 +128,7 @@ class Dealer:
             for q, A in enumerate(self.access_structures[i]):
                 for b, Pb in enumerate(self.access_structures[i][q]):
 
+                    print('secret_value (cipher_key)', self.cipher_keys[i])
                     secret_value = int.from_bytes(self.cipher_keys[i],
                                                   byteorder='big')
                     self.key_shares[i][q][b] = \
@@ -148,6 +154,8 @@ class Dealer:
 
         # ID for each participant
         self.random_id = common.provide_id(self.n, self.hash_len, self.p)
+
+        self.cipher_encrypt_all_secrets()
 
         self.compute_all_key_shares()
         #self.get_user_key_share(1)
