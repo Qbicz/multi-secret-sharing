@@ -41,7 +41,6 @@ class MultiSecretController(MultiSecretGui):
 
         self.user_count = INITIAL_USER_COUNT
         self.secret_count = INITIAL_SECRET_COUNT
-        self.user_data = [None] * self.user_count
 
         self.secret_to_combine = 0
 
@@ -165,7 +164,8 @@ class MultiSecretController(MultiSecretGui):
     def init_algorithm_list(self):
         self.algorithm_list = [
             'Roy-Adhikari',
-            'Lin-Yeh'
+            'Lin-Yeh',
+            'Herranz-Ruiz-Saez'
         ]
         self.algorithm = self.algorithm_list[0]
 
@@ -236,6 +236,9 @@ class MultiSecretController(MultiSecretGui):
         # TODO: test how it affects reconstruction with not-full sets
         self.user_count = multisecret.MultiSecretCommon.user_count_from_access_structure(
             access_structure)
+        # create container for user shares which will be loaded
+        self.user_data = [None] * self.user_count
+
         self.secret_count = len(access_structure)
         self.refresh_dynamic_combine_tab(self.secret_count, self.user_count,
                                          self.gridLayout_dyn_reconstr,
