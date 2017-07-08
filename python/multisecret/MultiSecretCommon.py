@@ -108,8 +108,8 @@ def provide_id(participants_num, hash_len, prime):
                                                   hash_len,
                                                   prime)
     print_list_of_hex(random_id, 'Participant ID ')
-
     return random_id
+
 
 def shamir_polynomial_compute(argument, coeffs, secret_value, prime):
     """ compute f_q(x) for q-th access group in access structure """
