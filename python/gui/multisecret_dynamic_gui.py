@@ -98,6 +98,7 @@ class MultiSecretGui(QtWidgets.QMainWindow):
                                       self.secrets + 1, 1, 1, self.users)
         self.algorithm_combobox.addItem('Roy-Adhikari')
         self.algorithm_combobox.addItem('Lin-Yeh')
+        self.algorithm_combobox.addItem('Herranz-Ruiz-Saez')
         self.algorithm_combobox.currentIndexChanged.connect(self.update_algorithm)
 
         self.button_split_dyn = QtWidgets.QPushButton(self.gridLayoutWidget_dyn)

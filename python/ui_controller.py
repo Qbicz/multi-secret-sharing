@@ -5,6 +5,7 @@ from gui.multisecret_dynamic_gui import MultiSecretGui
 
 import multisecret.MultiSecretRoyAdhikari
 import multisecret.MultiSecretLinYeh
+import multisecret.MultiSecretHerranzRuizSaez
 import sys
 import json
 import jsonpickle
@@ -213,6 +214,11 @@ class MultiSecretController(MultiSecretGui):
                                                               users_count,
                                                               secrets,
                                                               access_structures)
+            elif self.algorithm == 'Herranz-Ruiz-Saez':
+                dealer = multisecret.MultiSecretHerranzRuizSaez.Dealer(prime,
+                                                              users_count,
+                                                              secrets,
+                                                              access_structures)
             else:
                 print('Wrong algorithm, cannot split.')
                 return
@@ -342,8 +348,14 @@ class MultiSecretController(MultiSecretGui):
                     self.user_count,
                     [0] * self.secret_count,
                     self.public_info['access_structures'])
+            elif self.algorithm == 'Herranz-Ruiz-Saez':
+                combiner = multisecret.MultiSecretHerranzRuizSaez.Dealer(
+                    self.public_info['prime'],
+                    self.user_count,
+                    [0] * self.secret_count,
+                    self.public_info['access_structures'])
             else:
-                print('Wrong algorithm, cannot split.')
+                print('Wrong algorithm, cannot combine.')
                 return
 
             print('Combine secret using', self.algorithm)
@@ -376,12 +388,22 @@ class MultiSecretController(MultiSecretGui):
                 'You have not loaded all shares. Cannot reconstruct!')
             return
 
-        obtained_shares = combiner.pseudo_shares
+        if self.algorithm == 'Herranz-Ruiz-Saez':
+            obtained_shares = combiner.key_shares
+        else:
+            obtained_shares = combiner.pseudo_shares
+
         # in GUI it's only possible to create 1 access group for secret
         access_group = 0
-        secret = combiner.combine_secret(
-            self.secret_to_combine, access_group,
-            obtained_shares[self.secret_to_combine][access_group])
+
+        if self.algorithm == 'Herranz-Ruiz-Saez':
+            secret = combiner.combine_secret(
+                self.secret_to_combine, access_group,
+                obtained_shares[self.secret_to_combine])
+        else:
+            secret = combiner.combine_secret(
+                self.secret_to_combine, access_group,
+                obtained_shares[self.secret_to_combine][access_group])
 
         self.textBrowser_dyn.append('Combined a secret: s{} = {}'.format(
             self.secret_to_combine, secret))
