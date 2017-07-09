@@ -95,6 +95,8 @@ class Dealer:
 
         if isinstance(key, int):
             key = int.to_bytes(key, Dealer.AES_KEY_LEN, byteorder='big')
+
+        assert(len(key), Dealer.AES_KEY_LEN)
         print('--- key ---', key)
 
         cipher = Cipher(algorithms.AES(key), modes.CBC(self.iv),
@@ -110,14 +112,14 @@ class Dealer:
     def cipher_encrypt_all_secrets(self):
         assert(self.k == len(self.s_secrets))
 
-        self.public_encrypted_secrets = []
+        self.public_shares_M = []
         for j, secret in enumerate(self.s_secrets):
             # compute c_j = Enc(s_j, K_j)
             encrypted_secret = self.cipher_encrypt(secret, self.cipher_keys[j])
-            self.public_encrypted_secrets.append(encrypted_secret)
+            self.public_shares_M.append(encrypted_secret)
             #print()
 
-        return self.public_encrypted_secrets
+        return self.public_shares_M
 
     def compute_all_key_shares(self):
 
@@ -141,7 +143,7 @@ class Dealer:
 
         return self.key_shares
 
-    def split_secret_keys(self):
+    def split_secrets(self):
         """ High-level interface function.
             Use Shamir's scheme to share the keys used
             to encrypt secrets. """
@@ -157,7 +159,7 @@ class Dealer:
 
         self.cipher_encrypt_all_secrets()
 
-        self.compute_all_key_shares()
+        return self.compute_all_key_shares()
         #self.get_user_key_share(1)
 
     def get_user_key_share(self, user):
@@ -171,6 +173,42 @@ class Dealer:
                 user_shares.append(self.key_shares[i][q][user - 1])
 
         return user_shares
+
+    def get_pseudo_shares_for_participant(self, participant):
+        """
+            Named for compatibility with other algorithms.
+
+            Scan for pseudo shares specific to a chosen participant.
+            Returns a dictionary {(secret number, access group) : pseudo_share}
+        """
+        my_pseudo_shares = {}
+
+        for i, _ in enumerate(self.access_structures):
+            for q, _ in enumerate(self.access_structures[i]):
+                for b, Pb in enumerate(self.access_structures[i][q]):
+                    # if we found participant in the access structure,
+                    # copy his pseudo share to a dictionary with tuple key (secret, group)
+                    if Pb == participant:
+                        my_pseudo_shares[(i, q)] = self.key_shares[i][q][b]
+                        print('Pb == participant ==', Pb)
+                        print('my_pseudo_shares[(i=%d,q=%d)]'
+                              '= self.pseudo_shares[%d][%d][b=%d]' % (
+                              i, q, i, q, b))
+        return my_pseudo_shares
+
+    def set_pseudo_shares_from_participant(self, participant, my_pseudo_shares):
+        """ Take my_pseudo_shares dictionary from a specific user and put shares
+            into right places in the dealer's pseudo_shares nested list.
+            (Reverse of get_pseudo_shares_for_participant() )
+        """
+        self.key_shares = copy.deepcopy(self.access_structures)
+
+        for i, _ in enumerate(self.access_structures):
+            for q, _ in enumerate(self.access_structures[i]):
+                for b, Pb in enumerate(self.access_structures[i][q]):
+                    if Pb == participant:
+                        self.key_shares[i][q][b] = my_pseudo_shares[
+                            '({}, {})'.format(i, q)]
 
     def get_share_from_user_for_secret(self, key_shares, secret_index):
         return key_shares[secret_index]
@@ -248,3 +286,15 @@ class Dealer:
 
         return common.modulo_p(self.p, combine_sum)
 
+    def combine_secret(self, i_secret, _, obtained_pseudo_shares):
+        """ combine secret keys and use them to decipher secrets.
+            High-level function. """
+
+        secret_key = self.combine_secret_key(i_secret, obtained_pseudo_shares[i_secret])
+
+        assert(len(secret_key), Dealer.AES_KEY_LEN)
+
+        secret_bytes = self.cipher_decrypt(self.public_shares_M[i_secret],
+                                              secret_key)
+        secret = int.from_bytes(secret_bytes, byteorder='big')
+        return secret

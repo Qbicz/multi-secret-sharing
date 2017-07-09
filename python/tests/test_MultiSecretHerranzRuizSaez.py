@@ -71,8 +71,8 @@ def test_cipher_encrypt_all_secrets():
     dealer.cipher_generate_keys()
     dealer.cipher_encrypt_all_secrets()
 
-    assert_equal(len(dealer.public_encrypted_secrets), len([41, 12]))
-    assert_equal(len(dealer.public_encrypted_secrets[0]), Dealer.AES_BLOCK_SIZE)
+    assert_equal(len(dealer.public_shares_M), len([41, 12]))
+    assert_equal(len(dealer.public_shares_M[0]), Dealer.AES_BLOCK_SIZE)
 
 def test_split_secret_keys():
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
@@ -146,7 +146,7 @@ def test_combine_secret_2_users():
 
     assert(secret_key_0, dealer.cipher_keys[0])
 
-    secret0_bytes = dealer.cipher_decrypt(dealer.public_encrypted_secrets[0], secret_key_0)
+    secret0_bytes = dealer.cipher_decrypt(dealer.public_shares_M[0], secret_key_0)
     secret0 = int.from_bytes(secret0_bytes, byteorder='big')
 
     assert_equal(secret0, secrets[0])
