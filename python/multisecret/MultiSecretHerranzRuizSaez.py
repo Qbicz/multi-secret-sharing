@@ -91,12 +91,12 @@ class Dealer:
         return ciphertext
 
     def cipher_decrypt(self, ciphertext, key):
-        assert(isinstance(ciphertext, (bytes, bytearray)))
+        assert isinstance(ciphertext, (bytes, bytearray))
 
         if isinstance(key, int):
             key = int.to_bytes(key, Dealer.AES_KEY_LEN, byteorder='big')
 
-        assert(len(key), Dealer.AES_KEY_LEN)
+        assert len(key) == Dealer.AES_KEY_LEN
         print('--- key ---', key)
 
         cipher = Cipher(algorithms.AES(key), modes.CBC(self.iv),
@@ -110,7 +110,7 @@ class Dealer:
         return plaintext
 
     def cipher_encrypt_all_secrets(self):
-        assert(self.k == len(self.s_secrets))
+        assert self.k == len(self.s_secrets)
 
         self.public_shares_M = []
         for j, secret in enumerate(self.s_secrets):
@@ -148,11 +148,11 @@ class Dealer:
             Use Shamir's scheme to share the keys used
             to encrypt secrets. """
         self.cipher_generate_keys()
-        assert(self.cipher_keys)
+        assert self.cipher_keys
 
         # Shamir polynomial for each access group
         self.access_group_polynomial_coeffs()
-        assert(self.d)
+        assert self.d
 
         # ID for each participant
         self.random_id = common.provide_id(self.n, self.hash_len, self.p)
@@ -163,8 +163,8 @@ class Dealer:
         #self.get_user_key_share(1)
 
     def get_user_key_share(self, user):
-        assert(self.key_shares)
-        assert(user != 0)
+        assert self.key_shares
+        assert user != 0
         user_shares = []
 
         for i, gamma in enumerate(self.access_structures):
@@ -292,7 +292,7 @@ class Dealer:
 
         secret_key = self.combine_secret_key(i_secret, obtained_pseudo_shares[i_secret])
 
-        assert(len(secret_key), Dealer.AES_KEY_LEN)
+        assert len(secret_key) == Dealer.AES_KEY_LEN
 
         secret_bytes = self.cipher_decrypt(self.public_shares_M[i_secret],
                                               secret_key)
