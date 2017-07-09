@@ -376,22 +376,23 @@ class MultiSecretController(MultiSecretGui):
         # create a structure for pseudo shares
         combiner.pseudo_shares = deepcopy(combiner.access_structures)
 
-        try:
-            for user in range(1, combiner.n + 1):
-                # ID from user
-                print('\nID from user', self.user_data[user - 1]['id'])
-                combiner.random_id[user - 1] = self.user_data[user - 1]['id']
+        #try:
+        for user in range(1, combiner.n + 1):
+            # ID from user
+            print('\nID from user', self.user_data[user - 1]['id'])
+            combiner.random_id[user - 1] = self.user_data[user - 1]['id']
 
-                # pseudo shares from user
-                print(self.user_data[user - 1])
-                user_shares = self.user_data[user - 1]['shares']
-                combiner.set_pseudo_shares_from_participant(user, user_shares)
+            # pseudo shares from user
+            print(self.user_data[user - 1])
+            user_shares = self.user_data[user - 1]['shares']
+            assert isinstance(user_shares, dict)
+            combiner.set_pseudo_shares_from_participant(user, user_shares)
 
-        except TypeError as e:
-            print('caught error %r' % e)
-            self.textBrowser_dyn.append(
-                'You have not loaded all shares. Cannot reconstruct!')
-            return
+        #except TypeError as e:
+        #    print('caught error %r' % e)
+        #    self.textBrowser_dyn.append(
+        #        'You have not loaded all shares. Cannot reconstruct!')
+        #    return
 
         if self.algorithm == 'Herranz-Ruiz-Saez':
             obtained_shares = combiner.key_shares
@@ -404,7 +405,7 @@ class MultiSecretController(MultiSecretGui):
         if self.algorithm == 'Herranz-Ruiz-Saez':
             secret = combiner.combine_secret(
                 self.secret_to_combine, access_group,
-                obtained_shares[self.secret_to_combine])
+                obtained_shares[self.secret_to_combine]) # Herranz scheme don't use access groups
         else:
             secret = combiner.combine_secret(
                 self.secret_to_combine, access_group,
