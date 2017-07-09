@@ -291,6 +291,7 @@ class Dealer:
             High-level function. """
 
         secret_key = self.combine_secret_key(i_secret, obtained_pseudo_shares[i_secret])
+        secret_key = secret_key.to_bytes(2*self.AES_KEY_LEN, byteorder='big')
 
         assert len(secret_key) == Dealer.AES_KEY_LEN
 
