@@ -2,44 +2,42 @@ from PyQt5 import QtCore, QtWidgets
 import functools
 
 class MultiSecretGui(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, menu_callbacks):
         super().__init__()
-        print('__init__ MultiSecretGui')
         self.secrets = 3
         self.users = 3
+        self.menu_callbacks = menu_callbacks
         self.setup_ui()
 
     def add_menu_bar(self):
-        exitAction = QtWidgets.QAction('&Exit', self)
-        exitAction.setShortcut('Ctrl+W')
-        exitAction.setStatusTip('Exit application')
-        exitAction.triggered.connect(QtWidgets.qApp.quit)
-
-        openAction = QtWidgets.QAction('Choose shares directory', self)
-        openAction.setShortcut('Ctrl+O')
-        openAction.setStatusTip('Open a file')
-        #openAction.triggered.connect(self.openFile)
-
-        saveOutputAction = QtWidgets.QAction('Save reconstruction output', self)
-        saveOutputAction.setShortcut('Ctrl+S')
-
         menubar = QtWidgets.QMenuBar()
         self.setMenuBar(menubar)
 
         # File menu
         fileMenu = menubar.addMenu('&File')
+        #
+        saveOutputAction = QtWidgets.QAction('Save reconstruction output', self)
+        saveOutputAction.setShortcut('Ctrl+S')
+        saveOutputAction.triggered.connect(self.menu_callbacks['save_output'])
         fileMenu.addAction(saveOutputAction)
-        fileMenu.addAction(openAction)
+        #
+        exitAction = QtWidgets.QAction('&Exit', self)
+        exitAction.setShortcut('Ctrl+W')
+        exitAction.setStatusTip('Exit application')
+        exitAction.triggered.connect(QtWidgets.qApp.quit)
         fileMenu.addAction(exitAction)
 
         # Algorithms menu
         algoMenu = menubar.addMenu('&Algorithms')
-
-        # Settings menu
-        #settMenu = menubar.addMenu('&Settings')
+        # show basic algorithms info
 
         # About menu
-        aboutMenu = menubar.addMenu('&About')
+        helpMenu = menubar.addMenu('&Help')
+        #
+        showAboutAction = QtWidgets.QAction('About', self)
+        showAboutAction.setShortcut('Ctrl+H')
+        showAboutAction.triggered.connect(self.about_popup)
+        helpMenu.addAction(showAboutAction)
 
     def setup_ui(self):
         self.resize(751, 481)
@@ -183,7 +181,6 @@ class MultiSecretGui(QtWidgets.QMainWindow):
 
         self.show()
 
-
     def retranslateUi(self, multisecret_gui):
         _translate = QtCore.QCoreApplication.translate
         multisecret_gui.setWindowTitle(_translate("multisecret_gui", "Multi-secret Sharing Tool"))
@@ -207,3 +204,6 @@ class MultiSecretGui(QtWidgets.QMainWindow):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_dyn_reconstr), _translate("multisecret_gui", "Dynamic reconstruction"))
 
         self.actionSetSecretsNumber.setText(_translate("multisecret_gui", "setSecretsNumber"))
+
+    def about_popup(self):
+        pass

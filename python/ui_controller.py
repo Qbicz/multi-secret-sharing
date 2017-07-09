@@ -25,7 +25,11 @@ def clear_layout(layout):
 
 class MultiSecretController(MultiSecretGui):
     def __init__(self):
-        super(MultiSecretController, self).__init__()
+        # pass methods which will be run from menubar to GUI
+        menu_callbacks = {
+            'save_output' : self.menu_save_output
+        }
+        super(MultiSecretController, self).__init__(menu_callbacks)
 
         # Initialize algorithm list available
         self.init_algorithm_list()
@@ -44,6 +48,9 @@ class MultiSecretController(MultiSecretGui):
         self.secret_count = INITIAL_SECRET_COUNT
 
         self.secret_to_combine = 0
+
+    def menu_save_output(self):
+        print('Save output')
 
     def refresh_dynamic_widgets_secrets_users(self):
 
