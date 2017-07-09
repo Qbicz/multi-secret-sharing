@@ -227,9 +227,8 @@ class MultiSecretController(MultiSecretGui):
             self.showdialog(str(e))
             print('Error %r' % e)
             return
-        pseudo_shares = dealer.split_secrets()
-        self.save_pseudo_shares_to_file(dealer,
-                                        pseudo_shares)
+        dealer.split_secrets()
+        self.save_pseudo_shares_to_file(dealer)
         print('Split secret using', self.algorithm)
 
     def load_public_info_dynamic(self):
@@ -239,10 +238,9 @@ class MultiSecretController(MultiSecretGui):
         access_structure = self.public_info['access_structures']
 
         # after loading public info, change GUI to current secrets and users number
-        # TODO: test how it affects reconstruction with not-full sets
         self.user_count = multisecret.MultiSecretCommon.user_count_from_access_structure(
             access_structure)
-        # create container for user shares which will be loaded
+         # create container for user shares which will be loaded
         self.user_data = [None] * self.user_count
 
         self.secret_count = len(access_structure)
@@ -271,7 +269,7 @@ class MultiSecretController(MultiSecretGui):
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.exec_()
 
-    def save_pseudo_shares_to_file(self, dealer, pseudo_shares):
+    def save_pseudo_shares_to_file(self, dealer):
         """ Save python dictionary with data needed for secret reconstruction.
             jsonpickle is used for encoding because data contains bytes objects,
             not recognized by json encoder """
