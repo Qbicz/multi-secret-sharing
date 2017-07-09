@@ -78,7 +78,7 @@ def test_split_secret_keys():
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
 
     # this function invokes low-level methods
-    dealer.split_secret_keys()
+    dealer.split_secrets()
 
     print(dealer.key_shares)
     assert_equal(len(dealer.key_shares), len(dealer.s_secrets))
@@ -87,7 +87,7 @@ def test_get_user_key_share():
     dealer = Dealer(p256, n_participants, s_secrets, access_structures)
 
     # this function invokes low-level methods
-    dealer.split_secret_keys()
+    dealer.split_secrets()
     user_share = dealer.get_user_key_share(1)
 
     print('All key shares', dealer.key_shares)
@@ -132,7 +132,7 @@ def test_combine_secret_2_users():
     """ Acceptance test with 2 users """
     secrets = [7, 9]
     dealer = Dealer(p256, 2, secrets, [[[1,2]], [[1,2]]])
-    dealer.split_secret_keys()
+    dealer.split_secrets()
 
     share1 = dealer.get_user_key_share(1)
     share2 = dealer.get_user_key_share(2)
@@ -144,7 +144,7 @@ def test_combine_secret_2_users():
 
     secret_key_0 = dealer.combine_secret_key(0, shares_for_secret_0)
 
-    assert(secret_key_0, dealer.cipher_keys[0])
+    assert_equal(secret_key_0.to_bytes(dealer.AES_KEY_LEN, byteorder='big'), dealer.cipher_keys[0])
 
     secret0_bytes = dealer.cipher_decrypt(dealer.public_shares_M[0], secret_key_0)
     secret0 = int.from_bytes(secret0_bytes, byteorder='big')
