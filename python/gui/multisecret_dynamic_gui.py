@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtWidgets
 import functools
+import webbrowser
 
 class MultiSecretGui(QtWidgets.QMainWindow):
     def __init__(self, menu_callbacks):
@@ -29,7 +30,7 @@ class MultiSecretGui(QtWidgets.QMainWindow):
 
         # Algorithms menu
         algoMenu = menubar.addMenu('&Algorithms')
-        # show basic algorithms info
+
 
         # About menu
         helpMenu = menubar.addMenu('&Help')
@@ -38,6 +39,10 @@ class MultiSecretGui(QtWidgets.QMainWindow):
         showAboutAction.setShortcut('Ctrl+H')
         showAboutAction.triggered.connect(self.about_popup)
         helpMenu.addAction(showAboutAction)
+        #
+        websiteAction = QtWidgets.QAction('Open project website', self)
+        websiteAction.triggered.connect(self.open_github_page)
+        helpMenu.addAction(websiteAction)
 
     def setup_ui(self):
         self.resize(751, 481)
@@ -205,5 +210,35 @@ class MultiSecretGui(QtWidgets.QMainWindow):
 
         self.actionSetSecretsNumber.setText(_translate("multisecret_gui", "setSecretsNumber"))
 
-    def about_popup(self):
-        pass
+    @staticmethod
+    def about_popup():
+        print('About')
+
+        text = ('Multi-secret Sharing Tool\n\n'
+
+            'Filip Kubicz 2016-2017\n\n'
+
+            'Created as a part of master thesis "Selected methods \n'
+            'of multi-secret sharing" supervised by Marek Ogiela, DSc.'
+                )
+
+        MultiSecretGui.popup(text, 'About')
+
+    @staticmethod
+    def open_github_page():
+        print('Go to project page')
+
+        url = 'https://github.com/Qbicz/multi-secret-sharing'
+        # Open URL in a new tab, if a browser window is already open.
+        webbrowser.open_new_tab(url)
+
+    @staticmethod
+    def popup(text, window_title):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+
+        msg.setText(text)
+        msg.setWindowTitle(window_title)
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.exec_()
+
