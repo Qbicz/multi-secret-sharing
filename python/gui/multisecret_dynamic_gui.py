@@ -30,7 +30,21 @@ class MultiSecretGui(QtWidgets.QMainWindow):
 
         # Algorithms menu
         algoMenu = menubar.addMenu('&Algorithms')
-
+        #
+        RA_Action = QtWidgets.QAction('Roy-Adhikari', self)
+        RA_Action.triggered.connect(
+            lambda: self.menu_about_algorithms('Roy-Adhikari'))
+        algoMenu.addAction(RA_Action)
+        #
+        LY_Action = QtWidgets.QAction('Li-Yeh', self)
+        LY_Action.triggered.connect(
+            lambda: self.menu_about_algorithms('Li-Yeh'))
+        algoMenu.addAction(LY_Action)
+        #
+        HRS_Action = QtWidgets.QAction('Herranz-Ruiz-Saez', self)
+        HRS_Action.triggered.connect(
+            lambda: self.menu_about_algorithms('Herranz-Ruiz-Saez'))
+        algoMenu.addAction(HRS_Action)
 
         # About menu
         helpMenu = menubar.addMenu('&Help')
@@ -209,6 +223,34 @@ class MultiSecretGui(QtWidgets.QMainWindow):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_dyn_reconstr), _translate("multisecret_gui", "Dynamic reconstruction"))
 
         self.actionSetSecretsNumber.setText(_translate("multisecret_gui", "setSecretsNumber"))
+
+    @staticmethod
+    def menu_about_algorithms(algorithm):
+
+        RA_description = "Multi-secret sharing scheme proposed by Partha Sarathi " \
+                         "Roy and Avishek Adhikari is a multi-use, renewable and" \
+                         "verifiable algorithm using general access structure for " \
+                         "admission control.\n\n" \
+                         "Roy-Adhikari scheme relies on Shamir polynomial secret" \
+                         "splitting and interpolation. The private shares of users" \
+                         "are shadowed by using a hash function. These shadows " \
+                         "are used to protect splitted secrets."
+
+        LY_description = "Scheme published by Han-Yu Lin and Yi-Shiung Yeh is " \
+                         "multi-use. It leverages one-way collision resistant " \
+                         "hash function and XOR operation to create pseudo (shadow)" \
+                         " shares."
+
+        HRS_description = "asdf"
+
+        if algorithm == 'Roy-Adhikari':
+            MultiSecretGui.popup(RA_description, 'Roy-Adhikari scheme')
+        if algorithm == 'Li-Yeh':
+            MultiSecretGui.popup(LY_description, 'Li-Yeh scheme')
+        if algorithm == 'Herranz-Ruiz-Saez':
+            MultiSecretGui.popup(HRS_description, 'Roy-Adhikari scheme')
+        else:
+            print('Wrong algorithm selected.')
 
     @staticmethod
     def about_popup():
