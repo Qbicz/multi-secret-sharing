@@ -181,20 +181,21 @@ class Dealer:
             Scan for pseudo shares specific to a chosen participant.
             Returns a dictionary {(secret number, access group) : pseudo_share}
         """
-        my_pseudo_shares = {}
 
-        for i, _ in enumerate(self.access_structures):
-            for q, _ in enumerate(self.access_structures[i]):
+        my_shares = {}
+        access_group = 0 # Herranz scheme does not use groups
+
+        assert self.key_shares
+        assert participant != 0
+
+        for i, gamma in enumerate(self.access_structures):
+            for q, A in enumerate(self.access_structures[i]):
                 for b, Pb in enumerate(self.access_structures[i][q]):
-                    # if we found participant in the access structure,
-                    # copy his pseudo share to a dictionary with tuple key (secret, group)
                     if Pb == participant:
-                        my_pseudo_shares[(i, q)] = self.key_shares[i][q][b]
-                        print('Pb == participant ==', Pb)
-                        print('my_pseudo_shares[(i=%d,q=%d)]'
-                              '= self.pseudo_shares[%d][%d][b=%d]' % (
-                              i, q, i, q, b))
-        return my_pseudo_shares
+
+                        my_shares[(i, access_group)] = self.key_shares[i][access_group][b]
+
+        return my_shares
 
     def set_pseudo_shares_from_participant(self, participant, my_pseudo_shares):
         """ Take my_pseudo_shares dictionary from a specific user and put shares
@@ -290,8 +291,9 @@ class Dealer:
         """ combine secret keys and use them to decipher secrets.
             High-level function. """
 
+        print('Obtained: {}'.format(obtained_pseudo_shares))
         secret_key = self.combine_secret_key(i_secret, obtained_pseudo_shares[i_secret])
-        secret_key = secret_key.to_bytes(2*self.AES_KEY_LEN, byteorder='big')
+        secret_key = secret_key.to_bytes(bytehelper.bytelen(secret_key) , byteorder='big')
 
         assert len(secret_key) == Dealer.AES_KEY_LEN
 
