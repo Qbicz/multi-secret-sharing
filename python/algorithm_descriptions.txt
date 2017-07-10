@@ -1,0 +1,4 @@
+Herranz-Ruiz-Saez
+
+Scheme Omega 1 designed by Javier Herranz, .. Ruiz and .. Saez is different from Roy-Adhikari and Lin-Yeh because it does not use the concept of pseudo shares. Instead, the algorithm uses symmetric cipher such as AES to encrypt the secrets and only perform secret sharing of the keys. In case of large secrets this approach is much faster and more memory efficient.
+
