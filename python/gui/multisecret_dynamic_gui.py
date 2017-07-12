@@ -38,7 +38,7 @@ class MultiSecretGui(QtWidgets.QMainWindow):
         #
         LY_Action = QtWidgets.QAction('Li-Yeh', self)
         LY_Action.triggered.connect(
-            lambda: self.menu_about_algorithms('Li-Yeh'))
+            lambda: self.menu_about_algorithms('Lin-Yeh'))
         algoMenu.addAction(LY_Action)
         #
         HRS_Action = QtWidgets.QAction('Herranz-Ruiz-Saez', self)
@@ -231,24 +231,31 @@ class MultiSecretGui(QtWidgets.QMainWindow):
                          "Roy and Avishek Adhikari is a multi-use, renewable and" \
                          "verifiable algorithm using general access structure for " \
                          "admission control.\n\n" \
-                         "Roy-Adhikari scheme relies on Shamir polynomial secret" \
-                         "splitting and interpolation. The private shares of users" \
+                         "Roy-Adhikari scheme relies on Shamir polynomial secret " \
+                         "splitting and interpolation. The private shares of users " \
                          "are shadowed by using a hash function. These shadows " \
                          "are used to protect splitted secrets."
 
         LY_description = "Scheme published by Han-Yu Lin and Yi-Shiung Yeh is " \
-                         "multi-use. It leverages one-way collision resistant " \
-                         "hash function and XOR operation to create pseudo (shadow)" \
-                         " shares."
+                         "multi-use and supports general access structure. " \
+                         "It leverages one-way collision resistant hash function" \
+                         " and XOR operation to create pseudo (shadow) shares.\n\n" \
+                         ""
 
-        HRS_description = "asdf"
+        HRS_description = "Scheme Omega 1 designed by Javier Herranz, Alexandre Ruiz " \
+                          "and Herman Saez is different from Roy-Adhikari and Lin-Yeh " \
+                          "because it does not use the concept of pseudo shares. \n\n" \
+                          "Instead, the algorithm uses symmetric cipher such as AES " \
+                          "to encrypt the secrets and only perform secret sharing of " \
+                          "the keys. In case of large secrets this approach is much " \
+                          "faster and more memory efficient."
 
         if algorithm == 'Roy-Adhikari':
             MultiSecretGui.popup(RA_description, 'Roy-Adhikari scheme')
-        if algorithm == 'Li-Yeh':
-            MultiSecretGui.popup(LY_description, 'Li-Yeh scheme')
+        if algorithm == 'Lin-Yeh':
+            MultiSecretGui.popup(LY_description, 'Lin-Yeh scheme')
         if algorithm == 'Herranz-Ruiz-Saez':
-            MultiSecretGui.popup(HRS_description, 'Roy-Adhikari scheme')
+            MultiSecretGui.popup(HRS_description, 'Herranz-Ruiz-Saez scheme')
         else:
             print('Wrong algorithm selected.')
 

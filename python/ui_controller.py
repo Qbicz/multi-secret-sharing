@@ -52,6 +52,9 @@ class MultiSecretController(MultiSecretGui):
     def menu_save_output(self):
         print('Save output')
 
+        output = super(MultiSecretController, self)
+        # parse?
+
     def refresh_dynamic_widgets_secrets_users(self):
 
         self.user_count = self.number_of_users.value()
