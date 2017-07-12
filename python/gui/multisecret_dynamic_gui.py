@@ -265,13 +265,15 @@ class MultiSecretGui(QtWidgets.QMainWindow):
 
         text = ('Multi-secret Sharing Tool\n\n'
 
-            'Filip Kubicz 2016-2017\n\n'
+                'Filip Kubicz 2016-2017\n\n'
 
-            'Created as a part of master thesis "Selected methods \n'
-            'of multi-secret sharing" supervised by Marek Ogiela, DSc.'
+                'Created as a part of master thesis "Selected methods \n'
+                'of multi-secret sharing" supervised by Marek Ogiela, DSc.\n\n'
+
+                'AGH University of Science and Technology in Krakow'
                 )
 
-        MultiSecretGui.popup(text, 'About')
+        MultiSecretGui.popup(text, 'Multi-secret Sharing Tool')
 
     @staticmethod
     def open_github_page():
