@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import multisecret.MultiSecretRoyAdhikari
-import multisecret.byteHelper as bytehelper
 import multisecret.MultiSecretCommon as common
 
 def main():

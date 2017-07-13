@@ -1,19 +1,19 @@
 # Functions common for implemented multi-secret sharing algorithms
 # Filip Kubicz 2016-2017
 
+from os import urandom
+from math import log2, floor
+
 # import SHA256
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 # import AES-CTR
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from os import urandom
-from math import log2, floor
+
 import multisecret.byteHelper as bytehelper
 
 
 # --- common functions, extracted from class Dealer ---
-
-
 def user_count_from_access_structure(access_structure):
     """ Returns maximal user number found in access structure,
         which does not have to be equal to a total number of users.

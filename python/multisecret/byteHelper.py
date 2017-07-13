@@ -46,17 +46,8 @@ def inverse_modulo_p(a, p):
         y1 = (tmp_y2 - (q*y1)) % prime
         
     return y1 % prime
-        
 
-def int_to_bytes(int_number):
-    pass
-
-
-def bytes_to_int(byte_number):
-    pass
-    
 """ use multipledispatch """
-
 
 def take_first_bits(input, bitlen):
     # print('Length of input', len(input))

@@ -4,10 +4,10 @@
 from nose.tools import assert_equal
 from nose.tools import assert_not_equal
 from nose.tools import assert_raises
+
 from multisecret.MultiSecretLinYeh import Dealer
 import multisecret.MultiSecretCommon as common
 
-# TODO: test if hash is the same for the same Dealer object and different among separate objects with random AES-CTR nonce
 
 """ Declare basic params used to initialize Dealer in test cases """
 # large prime from NIST P-256 elliptic curve

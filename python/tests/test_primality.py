@@ -1,5 +1,4 @@
 from nose.tools import assert_equal
-from nose.tools import assert_raises
 from multisecret.primality import is_probable_prime, is_prime
 
 # large prime

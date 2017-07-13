@@ -1,13 +1,13 @@
 # Prototype of "Dynamic Multi Secret Sharing Scheme" by Lin & Yeh
 # Filip Kubicz 2016-2017
 
-import multisecret.MultiSecretCommon as common
-from multisecret.primality import is_probable_prime
-import multisecret.byteHelper as bytehelper
 import os
 import math
 import copy
 
+import multisecret.MultiSecretCommon as common
+from multisecret.primality import is_probable_prime
+import multisecret.byteHelper as bytehelper
 
 class Dealer:
 

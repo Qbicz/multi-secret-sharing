@@ -1,15 +1,17 @@
 # Prototype of Omega 1 Multi Secret Sharing Scheme by Herranz, Ruiz & Saez
 # Filip Kubicz 2017
 
-import multisecret.MultiSecretCommon as common
-from multisecret.primality import is_probable_prime
-import multisecret.byteHelper as bytehelper
 import os
 import math
 import copy
+
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
+
+import multisecret.MultiSecretCommon as common
+from multisecret.primality import is_probable_prime
+import multisecret.byteHelper as bytehelper
 
 
 class Dealer:

@@ -4,6 +4,7 @@
 from nose.tools import assert_equal
 from nose.tools import assert_not_equal
 from nose.tools import assert_raises
+
 from multisecret.MultiSecretRoyAdhikari import Dealer
 import multisecret.MultiSecretCommon as common
 

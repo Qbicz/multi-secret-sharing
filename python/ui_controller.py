@@ -1,16 +1,17 @@
 #! /usr/bin/env python3
 
+import sys
+import json
+import jsonpickle
+from copy import deepcopy
+import functools
+
 from PyQt5 import QtCore, QtWidgets
 from gui.multisecret_dynamic_gui import MultiSecretGui
 
 import multisecret.MultiSecretRoyAdhikari
 import multisecret.MultiSecretLinYeh
 import multisecret.MultiSecretHerranzRuizSaez
-import sys
-import json
-import jsonpickle
-from copy import deepcopy
-import functools
 
 INITIAL_USER_COUNT = 3
 INITIAL_SECRET_COUNT = 3

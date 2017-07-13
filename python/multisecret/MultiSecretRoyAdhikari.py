@@ -1,11 +1,6 @@
 # Prototype of Multi-secret sharing scheme by Roy & Adhikari
 # Filip Kubicz 2016-2017
 
-# import SHA256
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
-# import AES-CTR
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from os import urandom
 from math import log2, floor
 import copy # to have deepcopy, independent copy of a list
