@@ -1,6 +1,6 @@
-from PyQt5 import QtCore, QtWidgets
 import functools
 import webbrowser
+from PyQt5 import QtCore, QtWidgets
 
 class MultiSecretGui(QtWidgets.QMainWindow):
     def __init__(self, menu_callbacks):
