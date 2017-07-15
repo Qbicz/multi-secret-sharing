@@ -55,11 +55,10 @@ class MultiSecretController(MultiSecretGui):
 
         output = self.textBrowser_dyn.toPlainText()
         print(output)
-        filename = 'reconstruction_output.txt'
 
+        filename = QtWidgets.QFileDialog.getSaveFileName()[0] # filename is first element of a tuple
         with open(filename, 'w') as f:
             f.write(output)
-
 
     def refresh_dynamic_widgets_secrets_users(self):
 
