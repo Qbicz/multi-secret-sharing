@@ -53,8 +53,13 @@ class MultiSecretController(MultiSecretGui):
     def menu_save_output(self):
         print('Save output')
 
-        output = super(MultiSecretController, self)
-        # parse?
+        output = self.textBrowser_dyn.toPlainText()
+        print(output)
+        filename = 'reconstruction_output.txt'
+
+        with open(filename, 'w') as f:
+            f.write(output)
+
 
     def refresh_dynamic_widgets_secrets_users(self):
 
