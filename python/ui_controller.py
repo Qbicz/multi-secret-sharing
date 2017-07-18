@@ -5,6 +5,7 @@ import json
 import jsonpickle
 from copy import deepcopy
 import functools
+import time
 
 from PyQt5 import QtCore, QtWidgets
 from gui.multisecret_dynamic_gui import MultiSecretGui
@@ -57,8 +58,13 @@ class MultiSecretController(MultiSecretGui):
         print(output)
 
         filename = QtWidgets.QFileDialog.getSaveFileName()[0] # filename is first element of a tuple
-        with open(filename, 'w') as f:
-            f.write(output)
+        try:
+            with open(filename, 'w') as f:
+                timestamp = time.strftime("%Y/%m/%d %H:%M:%S_", time.localtime())
+                f.write(timestamp + '\n')
+                f.write(output)
+        except FileNotFoundError as e:
+            print('File not specified.', e) # user aborted choosing a file
 
     def refresh_dynamic_widgets_secrets_users(self):
 
