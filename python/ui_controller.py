@@ -270,8 +270,8 @@ class MultiSecretController(MultiSecretGui):
                                          self.gridLayoutWidget_dyn_reconstr)
 
         self.textBrowser_dyn.append(
-            'Public info loaded. There are {} secrets.'.format(
-                self.secret_count))
+            'Public info loaded. There are {} secrets.\nThe algorithm is {}.'.format(
+                self.secret_count, self.public_info['algorithm']))
         for secret, group in enumerate(access_structure):
             self.textBrowser_dyn.append(
                 'Secret {} can be obtained by {}.'.format(secret, str(group)))
@@ -299,7 +299,8 @@ class MultiSecretController(MultiSecretGui):
         # TODO: add timestamps and FileChooser dialogs
         public_info = {'prime': dealer.p,
                        'access_structures': dealer.access_structures,
-                       'public_shares_M': dealer.public_shares_M}
+                       'public_shares_M': dealer.public_shares_M,
+                       'algorithm': self.algorithm}
 
         public_info_json_string = jsonpickle.encode(public_info)
         with open('public_info.json', 'w') as public_info_file:
@@ -330,6 +331,7 @@ class MultiSecretController(MultiSecretGui):
             return
 
         self.public_info = jsonpickle.decode(json_string)
+        self.algorithm = self.public_info['algorithm']
         print('loaded data from JSON', self.public_info)
 
     def load_pseudo_shares_from_user(self, participant):
@@ -377,7 +379,7 @@ class MultiSecretController(MultiSecretGui):
                 print('Wrong algorithm, cannot combine.')
                 return
 
-            print('Combine secret using', self.algorithm)
+            self.textBrowser_dyn.append('Combine secret using {} algorithm.'.format(self.algorithm))
             combiner.public_shares_M = self.public_info['public_shares_M']
         except AttributeError as e:
             print('caught error %r' % e)
