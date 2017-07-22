@@ -75,7 +75,6 @@ class Dealer:
         elif(isinstance(input, str)):
             input = input.encode('utf-8')
 
-        print(input)
         assert(isinstance(input, (bytes, bytearray)))
 
         # Perform padding if the input is not a multiple of a block
@@ -83,14 +82,16 @@ class Dealer:
         padded_input = padder.update(input) + padder.finalize()
         print(padded_input, len(padded_input))
 
-        cipher = Cipher(algorithms.AES(key), modes.CBC(self.iv),
+        iv = Dealer.AES_IV_VALUE
+
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv),
                         backend=default_backend())
         encryptor = cipher.encryptor()
         ciphertext = encryptor.update(padded_input) + encryptor.finalize()
-        print('Encrypted\t{}\n'
+        print('Plaintext\t{}\n'
               'Key\t\t{}\n'
               'IV\t\t{}\n'
-              'Ciphertext:\t{}'.format(padded_input, key, self.iv, ciphertext))
+              'Ciphertext:\t{}'.format(padded_input, key, iv, ciphertext))
         return ciphertext
 
     def cipher_decrypt(self, ciphertext, key):
@@ -101,15 +102,24 @@ class Dealer:
 
         assert len(key) == Dealer.AES_KEY_LEN
         print('--- key ---', key)
+        iv = Dealer.AES_IV_VALUE
 
-        cipher = Cipher(algorithms.AES(key), modes.CBC(self.iv),
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv),
                         backend=default_backend())
         decryptor = cipher.decryptor()
         plaintext_padded = decryptor.update(ciphertext) + decryptor.finalize()
 
+        print('Ciphertext\t\t{}\n'
+              'Key\t\t\t{}\n'
+              'IV\t\t\t{}\n'
+              'Plaintext padded:\t{}\n'.format(
+               ciphertext, key, iv, plaintext_padded))
+
         # remove padding
         unpadder = padding.PKCS7(Dealer.AES_BLOCK_SIZE*8).unpadder()
         plaintext = unpadder.update(plaintext_padded) + unpadder.finalize()
+
+        print('Plaintext:\t\t{}'.format(plaintext))
         return plaintext
 
     def cipher_encrypt_all_secrets(self):
