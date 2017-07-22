@@ -20,6 +20,7 @@ class Dealer:
     AES_KEY_LEN = 16
     # All AES variants use 128 bit blocks and IV in CBC mode must have the same size as a block
     AES_BLOCK_SIZE = 16
+    AES_IV_VALUE = bytes(AES_BLOCK_SIZE)
 
     def __init__(self, p, n_participants, s_secrets, access_structures):
         """ In Omega 1 scheme symmetric encryption in used to protect
@@ -54,7 +55,7 @@ class Dealer:
         # Setup for symmetric encryption scheme.
         # The initialization vector iv must be available to combiner.
         self.cipher_keys = []
-        self.iv = os.urandom(Dealer.AES_BLOCK_SIZE)
+        self.iv = Dealer.AES_IV_VALUE
 
         print('Dealer created for Herranz-Ruiz-Saez sharing of %d secrets'
               ' among %d participants' % (self.k, self.n))
