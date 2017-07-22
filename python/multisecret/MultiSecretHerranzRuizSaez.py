@@ -299,14 +299,15 @@ class Dealer:
 
         return common.modulo_p(self.p, combine_sum)
 
-    def combine_secret(self, i_secret, _, obtained_pseudo_shares):
+    def combine_secret(self, i_secret, q_group, obtained_pseudo_shares):
         """ combine secret keys and use them to decipher secrets.
             High-level function. """
 
         print('Obtained: {}'.format(obtained_pseudo_shares))
-        secret_key = self.combine_secret_key(i_secret, obtained_pseudo_shares[i_secret])
+        print('i_secret: {}'.format(i_secret))
+        secret_key = self.combine_secret_key(i_secret, obtained_pseudo_shares[i_secret][q_group])
         secret_key = secret_key.to_bytes(bytehelper.bytelen(secret_key) , byteorder='big')
-
+        print('Secret key: {}'.format(secret_key))
         assert len(secret_key) == Dealer.AES_KEY_LEN
 
         secret_bytes = self.cipher_decrypt(self.public_shares_M[i_secret],
