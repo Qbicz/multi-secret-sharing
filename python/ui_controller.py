@@ -391,6 +391,7 @@ class MultiSecretController(MultiSecretGui):
 
         # create a structure for pseudo shares
         combiner.pseudo_shares = deepcopy(combiner.access_structures)
+        combiner.key_shares = deepcopy(combiner.access_structures)
 
         #try:
         for user in range(1, combiner.n + 1):

@@ -204,7 +204,6 @@ class Dealer:
             into right places in the dealer's pseudo_shares nested list.
             (Reverse of get_pseudo_shares_for_participant() )
         """
-        self.key_shares = copy.deepcopy(self.access_structures)
 
         for i, _ in enumerate(self.access_structures):
             for q, _ in enumerate(self.access_structures[i]):
