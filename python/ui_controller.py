@@ -413,6 +413,7 @@ class MultiSecretController(MultiSecretGui):
 
         if self.algorithm == 'Herranz-Ruiz-Saez':
             obtained_shares = combiner.key_shares
+            del combiner.pseudo_shares
         else:
             obtained_shares = combiner.pseudo_shares
 
@@ -422,7 +423,7 @@ class MultiSecretController(MultiSecretGui):
         if self.algorithm == 'Herranz-Ruiz-Saez':
             secret = combiner.combine_secret(
                 self.secret_to_combine, access_group,
-                obtained_shares[self.secret_to_combine]) # Herranz scheme don't use access groups
+                obtained_shares) # Herranz scheme don't use access groups
         else:
             secret = combiner.combine_secret(
                 self.secret_to_combine, access_group,
