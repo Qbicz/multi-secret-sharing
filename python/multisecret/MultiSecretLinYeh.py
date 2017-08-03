@@ -213,6 +213,7 @@ class Dealer:
                     if Pb == participant:
                         self.pseudo_shares[i][q][b] = my_pseudo_shares[
                             '({}, {})'.format(i, q)]
+
     def split_secrets(self):
         """ Split secret in one step with Lin-Yeh algorithm """
 

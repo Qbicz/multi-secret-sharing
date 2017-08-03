@@ -222,6 +222,11 @@ class Dealer:
                     if Pb == participant:
                         self.key_shares[i][q][b] = my_pseudo_shares[
                             '({}, {})'.format(i, q)]
+                        print('set_pseudo_shares_from_participant:\n'
+                              '\tsecret {}'
+                              '\tuser Pb {}'
+                              '\tuser index b = {}'
+                              '\tkey_share = {}'.format(i, Pb, b, self.key_shares[i][q][b]))
 
     def get_share_from_user_for_secret(self, key_shares, secret_index):
         return key_shares[secret_index]
@@ -267,7 +272,7 @@ class Dealer:
 
         for b, Pb in enumerate(self.access_structures[i_secret][q_group]):
 
-            print('\tcurrent user {} with index {} =', Pb, b)
+            print('\tcurrent user {} with index {} ='.format(Pb, b))
             part_sum = obtained_shares[b] % self.p
 
             combine_product = 1
@@ -275,7 +280,7 @@ class Dealer:
                 if r != b:
                     print('\t\tr =', r)
                     print('\t\tID_(b=%d) : %d, ID_(r=%d) : %d'
-                          % (Pb, self.get_id_int(Pb), Pr, self.get_id_int(Pr)))
+                          %  (Pb, self.get_id_int(Pb), Pr, self.get_id_int(Pr)))
 
                     denominator = (self.get_id_int(Pr) - self.get_id_int(
                         Pb)) % self.p
