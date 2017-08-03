@@ -152,21 +152,32 @@ def test_combine_secret_2_users():
     assert_equal(secret0, secrets[0])
 
 def test_combine_secret_3_users():
-    """ Acceptance test with 3 users """
+    """ Acceptance test with 3 users and not-full access groups """
 
-    pass
-    """
     secrets = [7, 9]
-    dealer = Dealer(41, 3, secrets, [[[1,2]], [[1,2,3]], [[1,3]]])
-    dealer.split_secret_keys()
+    dealer = Dealer(17, 4, secrets, [[[1, 4]], [[2, 3, 4]]])
+    dealer.split_secrets()
+    print('Secrets shared!')
 
-    share1 = dealer.get_user_key_share(1)
-    share2 = dealer.get_user_key_share(2)
-#    share3 = dealer.get_user_key_share(3)
+    user_shares = []
+    for user in range(4):
+        share = dealer.get_user_key_share(user)
+        user_shares.append(share)
 
-    shares_for_secret_0 = [share1[0], share2[0]]
-    secret0 = dealer.combine_secret_key(0, shares_for_secret_0)
+    shares_for_secret_0 = [share[0] for share in user_shares]
+    #shares_for_secret_0 = [share1[0], share2[0]]it
+    print('Combine using shares: %r', shares_for_secret_0)
+    assert False
 
-    assert_equal(secret0, secrets[1])
-    """
+    secret_key_0 = dealer.combine_secret_key(0, shares_for_secret_0)
+
+    assert_equal(secret_key_0.to_bytes(dealer.AES_KEY_LEN, byteorder='big'),
+                 dealer.cipher_keys[0])
+
+    secret0_bytes = dealer.cipher_decrypt(dealer.public_shares_M[0],
+                                          secret_key_0)
+    secret0 = int.from_bytes(secret0_bytes, byteorder='big')
+
+    assert_equal(secret0, secrets[0])
+
 
