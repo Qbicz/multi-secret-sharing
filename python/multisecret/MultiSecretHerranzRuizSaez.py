@@ -59,6 +59,7 @@ class Dealer:
 
         print('Dealer created for Herranz-Ruiz-Saez sharing of %d secrets'
               ' among %d participants' % (self.k, self.n))
+        print('Access structure:', self.access_structures)
 
     def cipher_generate_keys(self):
         """ Generate a key K for each secret. The key will be used to
@@ -269,6 +270,8 @@ class Dealer:
         q_group = 0
 
         combine_sum = 0
+
+        print('combine_secret_key for access structure {}', self.access_structures)
 
         for b, Pb in enumerate(self.access_structures[i_secret][q_group]):
 

@@ -412,6 +412,10 @@ class MultiSecretController(MultiSecretGui):
         #    return
 
         if self.algorithm == 'Herranz-Ruiz-Saez':
+            print('In HRS algorithm, key shares:', combiner.key_shares)
+
+            print('HRS, combine secret', self.secret_to_combine)
+
             obtained_shares = combiner.key_shares
             del combiner.pseudo_shares
         else:

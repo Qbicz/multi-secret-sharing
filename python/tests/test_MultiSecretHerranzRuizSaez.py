@@ -155,12 +155,15 @@ def test_combine_secret_3_users():
     """ Acceptance test with 3 users and not-full access groups """
 
     secrets = [7, 9]
-    dealer = Dealer(17, 4, secrets, [[[1, 4]], [[2, 3, 4]]])
+    user_num = 4
+    dealer = Dealer(17, user_num, secrets, [[[1, 4]], [[2, 3, 4]]])
     dealer.split_secrets()
     print('Secrets shared!')
 
     user_shares = []
-    for user in range(4):
+
+    # for user in dealer.access_structures[0][0]
+    for user in range(user_num): # here only users who are in access group should give their shares
         share = dealer.get_user_key_share(user)
         user_shares.append(share)
 
