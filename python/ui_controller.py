@@ -13,6 +13,7 @@ from gui.multisecret_dynamic_gui import MultiSecretGui
 import multisecret.MultiSecretRoyAdhikari
 import multisecret.MultiSecretLinYeh
 import multisecret.MultiSecretHerranzRuizSaez
+import multisecret.byteHelper as bytehelper
 
 INITIAL_USER_COUNT = 3
 INITIAL_SECRET_COUNT = 3
@@ -204,7 +205,9 @@ class MultiSecretController(MultiSecretGui):
         secrets = [None] * secrets_count
         try:
             for s in range(secrets_count):
-                secrets[s] = int(self.secret_inputs[s].text())
+                secret_text = self.secret_inputs[s].text()
+                secret_bytes = bytes([ord(char) for char in secret_text])
+                secrets[s] = int.from_bytes(secret_bytes, byteorder='big')
         except ValueError as e:
             print('Secrets missing. Error %r' % e)
             self.showdialog()
@@ -433,8 +436,13 @@ class MultiSecretController(MultiSecretGui):
                 self.secret_to_combine, access_group,
                 obtained_shares[self.secret_to_combine][access_group])
 
+        # decode secret
+        secret_bytes = secret.to_bytes(bytehelper.bytelen(secret),
+                                       byteorder='big')
+        secret_text = ''.join([chr(num) for num in secret_bytes])
+
         self.textBrowser_dyn.append('Combined a secret: s{} = {}'.format(
-            self.secret_to_combine, secret))
+            self.secret_to_combine, secret_text))
 
 
 if __name__ == "__main__":
