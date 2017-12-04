@@ -6,9 +6,12 @@
 
 The parts, or secret shares are saved as JSON files and can be later distributed to several people or backed up on separate disks and online storage facilities.
 
-Implemented and ready-to-use multi secrets sharing schemes are: Roy-Adhikari, Lin-Yeh and Herranz-Ruiz-Saez.
+Implemented and ready-to-use multi secrets sharing schemes are:
+- [Roy-Adhikari](https://arxiv.org/abs/1409.0089)
+- [Lin-Yeh](https://pdfs.semanticscholar.org/0ebb/e71b8ba333b3a5431a489c761915de59ba00.pdf)
+- [Herranz-Ruiz-Saez](http://www.sciencedirect.com/science/article/pii/S0020019013001373).
 
-If you want to secure a huge file, it might be better to encrypt it using block cipher, e.g. AES and only split the password with secret sharing.
+If you want to secure a huge file, it might be better to encrypt it using block cipher, e.g. AES and only split the password with secret sharing. That's what Herranz-Ruiz-Saez actually does.
 
 **WARNING. This project is under development and is not suitable for vulnerable tasks. If you want to encrypt your disk or some important data, better use a tested program, such as [VeraCrypt](https://sourceforge.net/projects/veracrypt/).**
 
