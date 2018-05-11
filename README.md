@@ -2,7 +2,7 @@
 
 ![Traditional way of sharing a secret](https://raw.githubusercontent.com/Qbicz/multi-secret-sharing/master/docs/Sharing-Secrets.jpg)
 
-**multi-secret-sharing** is a tool for splitting secret data into parts.
+**multi-secret-sharing** is a tool for splitting multiple secrets among multiple stakeholders.
 
 The parts, or secret shares are saved as JSON files and can be later distributed to several people or backed up on separate disks and online storage facilities.
 
@@ -65,21 +65,25 @@ If under Windows Qt5 DLL's are not found by the PyInstaller script, explicitly p
 ```bash
 pyinstaller --windowed --onefile --path C:\Python35\Lib\site-packages\PyQt5\Qt\bin ui_controller.py
 ```
-# Implementation of multi-secret sharing algorithms
-
-Imagine a situation where you want to secure vulnerable data and give access to it only to a specified group of people, e.g. board of directors of a company. The vulnerable secret can be codes to open a safe or to fire the ballistic missiles.
-
-*Now imagine that the level of authority in group is varied. The president can open the safe, while at least 2 vice-presidents must gather together to open it.*
-
-Now imagine you have 17 safes or 56 missiles. You can have 56 secret codes and split them 56 times to give each member a share. Now the directors have to remeber 56 different passwords.
-
-**Here multi-secret sharing comes in handy. It allows the creator of the scheme to assign 'access structures' which can gain access to whole secret, or just a chosen part of it. Using multi-secret sharing all participants only have to remember one password.**
-
-In this repo, different multi-secret sharing schemes will be implemented and compared.
-
-- Algorithm 1 based on "Multi-Use Multi-Secret Sharing Scheme for General Access Structure" by Roy & Adhikari
 
 
 # Continuous Integration with Jenkins
 TBD.
 https://www.blazemeter.com/blog/how-start-working-github-plugin-jenkins
+
+
+
+# Background and motivation
+
+Imagine a situation where you want to secure vulnerable data and give access to it only to a specified group of people, e.g. board of directors of a company. The vulnerable secret can be codes to open a safe or to fire the ballistic missiles.
+
+*Now imagine that the level of authority in group is varied. The president can open the safe, while at least 2 vice-presidents must gather together to open it.*
+
+Now imagine you have 17 safes or 56 missiles. You can have 56 secret codes and split them 56 times to give each member a share. Now the directors have to generate and store 56 different passwords.
+
+**Here multi-secret sharing comes in handy. Using multi-secret sharing all participants only have to remember one password. It allows the creator of the scheme to assign 'access structures' specifying who can gain access to whole all secrets or just a chosen subset of secrets. **
+
+[Secret-sharing](https://en.wikipedia.org/wiki/Secret_sharing)
+[Multi-secret sharing](https://en.wikipedia.org/wiki/Secret_sharing#Multi-secret_and_space_efficient_(batched)_secret_sharing)
+
+
