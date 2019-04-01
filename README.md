@@ -4,7 +4,7 @@
 
 **multi-secret-sharing** is a tool for splitting multiple secrets among multiple stakeholders.
 
-**It uses cryptography to divide vulnerable secret data into multiple parts in such a way that compromising even a few servers/secret parts does not endanger security of a secret.**
+It uses cryptography to divide secret data into multiple parts in such a way that compromising even a few secret parts does not endanger security of a secret.
 
 The parts, or secret shares are saved as JSON files and can be later distributed to several people or backed up on separate disks and online storage facilities.
 
@@ -12,6 +12,8 @@ Implemented and ready-to-use multi secrets sharing schemes are:
 - [Roy-Adhikari](https://arxiv.org/abs/1409.0089)
 - [Lin-Yeh](https://pdfs.semanticscholar.org/0ebb/e71b8ba333b3a5431a489c761915de59ba00.pdf)
 - [Herranz-Ruiz-Saez](http://www.sciencedirect.com/science/article/pii/S0020019013001373).
+
+**Note: this repo contains implementations of multi-secret sharing algorithms together with sample application. This is NOT a fully secure cryptosystem and thus not ready for real usage. The code in current form is not meant to be resistant to side-channel attacks.**
 
 _If you want to encrypt your disk or a huge file, a more suitable program would be [VeraCrypt](https://sourceforge.net/projects/veracrypt/)._
 
