@@ -1,9 +1,9 @@
 ### Python Prototype TODO
 
-- [ ] public API and hidden methods
-- [ ] Move helper functions to a ProbabilityHelper class
-- [ ] Discuss research reasons
+- [x] public API and hidden methods
+- [x] Move helper functions to a ProbabilityHelper class
+- [x] Discuss research reasons
 - [x] Do a generation of shares for all users at once
-- [ ] GUI in Qt Designer before going to C++
-- [ ] Calculate f polynomial value to have B
-- [ ] check why v, u = 2 while q,i size = 1 
+- [x] GUI in Qt Designer before going to C++
+- [x] Calculate f polynomial value to have B
+- [x] check why v, u = 2 while q,i size = 1 
