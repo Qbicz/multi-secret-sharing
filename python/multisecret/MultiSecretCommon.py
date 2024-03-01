@@ -29,11 +29,12 @@ def user_count_from_access_structure(access_structure):
 
 
 def hash(message, hash_len, aes_nonce):
-    """A collision resistant hash function h with variable output length:
+    """A collision resistant hash function h with variable output length
+    (down to bit resolution needed):
     - option 1: use SHA-3 Keccak (variable length digest)
     - option 2: use BLAKE2 : variable length digest (available
-        at "cryptography" library - but to bytes, not bits resolution)
-    - option 3 (chosen, implemented her): use the first [log2(p)]+1 bits
+        at "cryptography" library - but to bytes, not bits resolution - unsuitable)
+    - option 3 (chosen, implemented here): use the first [log2(p)]+1 bits
                 of AES-CTR(SHA256(m))"""
 
     # SHA256 of message
