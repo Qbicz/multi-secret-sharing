@@ -92,4 +92,6 @@ Now imagine you have 17 safes or 56 missiles. You can have 56 secret codes and s
 [Secret-sharing](https://en.wikipedia.org/wiki/Secret_sharing)
 [Multi-secret sharing](https://en.wikipedia.org/wiki/Secret_sharing#Multi-secret_and_space_efficient_(batched)_secret_sharing)
 
+See also SMPC (Secure Multi-Party Comuputation) and it's recent use in Worldcoin project:
+[Worldcoin Foundation unveils new SMPC system, deletes old iris code](https://worldcoin.org/blog/announcements/worldcoin-foundation-unveils-new-smpc-system-deletes-old-iris-codes)
 
